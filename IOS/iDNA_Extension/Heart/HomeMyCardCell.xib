@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TabBarHome"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="HomeMyCardCell" id="gTV-IL-0wX" customClass="HomeMyCardCell">
+            <rect key="frame" x="0.0" y="0.0" width="80" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="80" height="100"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hkK-go-1As" customClass="HJManagedImageV">
+                        <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="80" id="KXC-2K-YEX"/>
+                            <constraint firstAttribute="height" constant="80" id="gpe-HD-rfd"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lov-kA-mYN">
+                        <rect key="frame" x="0.0" y="83" width="80" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="17" id="NrX-se-Dfo"/>
+                            <constraint firstAttribute="width" constant="80" id="Vmt-99-2QJ"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Lov-kA-mYN" secondAttribute="trailing" id="9ga-bW-eyj"/>
+                <constraint firstItem="Lov-kA-mYN" firstAttribute="top" secondItem="hkK-go-1As" secondAttribute="bottom" constant="3" id="MtD-Nu-QgP"/>
+                <constraint firstAttribute="bottom" secondItem="Lov-kA-mYN" secondAttribute="bottom" id="WFR-E2-5dn"/>
+                <constraint firstItem="Lov-kA-mYN" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="XPS-rR-TsP"/>
+                <constraint firstItem="hkK-go-1As" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="nk1-XZ-Ptg"/>
+                <constraint firstAttribute="trailing" secondItem="hkK-go-1As" secondAttribute="trailing" id="p2l-jv-j0q"/>
+                <constraint firstItem="hkK-go-1As" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ysp-KZ-5wG"/>
+            </constraints>
+            <size key="customSize" width="80" height="101"/>
+            <connections>
+                <outlet property="hjmImage" destination="hkK-go-1As" id="RU5-An-F24"/>
+                <outlet property="labelName" destination="Lov-kA-mYN" id="UhE-dU-7sM"/>
+            </connections>
+            <point key="canvasLocation" x="34" y="101"/>
+        </collectionViewCell>
+    </objects>
+</document>

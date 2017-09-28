@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TabBarRider">
+            <connections>
+                <outlet property="headerView" destination="qYu-ub-HhW" id="JyK-Vg-dYl"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="qYu-ub-HhW" customClass="RiderHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="icon_profile.png" translatesAutoresizingMaskIntoConstraints="NO" id="fdb-uU-qhM">
+                    <rect key="frame" x="12" y="15" width="70" height="70"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="70" id="3Yp-z1-9XN"/>
+                        <constraint firstAttribute="height" constant="70" id="aHd-Pu-D02"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="Mr.Somkid Simajarn" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="PVe-wy-7ip">
+                    <rect key="frame" x="91" y="15" width="219" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="219" id="IuS-M7-oOA"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="24"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="Biz: Heart" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="C6J-i1-q3y">
+                    <rect key="frame" x="90" y="63" width="219" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="219" id="NrE-NR-5rD"/>
+                        <constraint firstAttribute="height" constant="22" id="WRa-zq-hZj"/>
+                        <constraint firstAttribute="width" constant="219" id="mOb-tg-GbH"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="mOb-tg-GbH"/>
+                        </mask>
+                    </variation>
+                </label>
+            </subviews>
+            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="PVe-wy-7ip" firstAttribute="leading" secondItem="fdb-uU-qhM" secondAttribute="trailing" constant="9" id="3xZ-0i-tac"/>
+                <constraint firstItem="fdb-uU-qhM" firstAttribute="leading" secondItem="qYu-ub-HhW" secondAttribute="leading" constant="12" id="URe-9M-y32"/>
+                <constraint firstItem="C6J-i1-q3y" firstAttribute="leading" secondItem="PVe-wy-7ip" secondAttribute="leading" id="XqV-GE-eVu"/>
+                <constraint firstItem="PVe-wy-7ip" firstAttribute="top" secondItem="qYu-ub-HhW" secondAttribute="top" constant="15" id="fGv-96-n9C"/>
+                <constraint firstItem="fdb-uU-qhM" firstAttribute="centerY" secondItem="qYu-ub-HhW" secondAttribute="centerY" id="hf3-IV-hox"/>
+                <constraint firstAttribute="trailing" secondItem="PVe-wy-7ip" secondAttribute="trailing" constant="10" id="msV-Yf-e9y"/>
+                <constraint firstItem="C6J-i1-q3y" firstAttribute="top" secondItem="PVe-wy-7ip" secondAttribute="bottom" constant="8" id="ta9-nm-Ilu"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="198" y="11"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="icon_profile.png" width="456" height="456"/>
+    </resources>
+</document>
