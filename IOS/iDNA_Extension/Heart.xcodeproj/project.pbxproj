@@ -24,7 +24,6 @@
 		602B4BAF1EAA781400DD1C5A /* ItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 602B4BAE1EAA781400DD1C5A /* ItemViewController.m */; };
 		602B4BB11EAB4F1800DD1C5A /* character_borring_half.png in Resources */ = {isa = PBXBuildFile; fileRef = 602B4BB01EAB4F1800DD1C5A /* character_borring_half.png */; };
 		602D39711E0DF6FE0017BADB /* EditFriendDisplayNameThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 602D39701E0DF6FE0017BADB /* EditFriendDisplayNameThread.m */; };
-		6035CFEA1DFA9E13008EDE47 /* libSWTableViewCell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6035CFE91DFA9E13008EDE47 /* libSWTableViewCell.a */; };
 		6035CFED1DFAA2F7008EDE47 /* Untitled-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6035CFEC1DFAA2F7008EDE47 /* Untitled-1.png */; };
 		6035F9B81EA0ADC900CDDFF4 /* AddComment.m in Sources */ = {isa = PBXBuildFile; fileRef = 6035F9B71EA0ADC900CDDFF4 /* AddComment.m */; };
 		6035F9C11EA0BEC200CDDFF4 /* ViewCommentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6035F9BF1EA0BEC200CDDFF4 /* ViewCommentCell.m */; };
@@ -144,13 +143,10 @@
 		605F2A111E092DAD00751B48 /* AddByIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A101E092DAD00751B48 /* AddByIDViewController.m */; };
 		605F2A141E0A069E00751B48 /* InviteFriendBySMS.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A131E0A069E00751B48 /* InviteFriendBySMS.m */; };
 		605F2A171E0A06AE00751B48 /* InviteFriendByEmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A161E0A06AE00751B48 /* InviteFriendByEmail.m */; };
-		605F2A2D1E0A21BE00751B48 /* libZXingObjC-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */; };
 		605F2A2F1E0A221D00751B48 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2E1E0A221D00751B48 /* AVFoundation.framework */; };
 		605F2A311E0A222A00751B48 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A301E0A222900751B48 /* CoreMedia.framework */; };
 		605F2A331E0A223200751B48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A321E0A223200751B48 /* CoreVideo.framework */; };
 		605F2A351E0A223900751B48 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A341E0A223900751B48 /* ImageIO.framework */; };
-		605F2A371E0A22CE00751B48 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */; };
-		605F2A381E0A22CE00751B48 /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		605F2A3D1E0A45ED00751B48 /* ResultSearchFriend.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A3C1E0A45ED00751B48 /* ResultSearchFriend.m */; };
 		605F2A401E0A4A5C00751B48 /* ResultSearchFriendThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A3F1E0A4A5C00751B48 /* ResultSearchFriendThread.m */; };
 		605F2A431E0A856800751B48 /* PeopleYouMayKnowThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A421E0A856800751B48 /* PeopleYouMayKnowThread.m */; };
@@ -190,6 +186,8 @@
 		608073D31E232C1800953503 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608073D21E232C1800953503 /* SettingsViewController.m */; };
 		608073D61E2331A500953503 /* ChangePassword.m in Sources */ = {isa = PBXBuildFile; fileRef = 608073D51E2331A500953503 /* ChangePassword.m */; };
 		608073D81E234E8E00953503 /* ic-share.png in Resources */ = {isa = PBXBuildFile; fileRef = 608073D71E234E8E00953503 /* ic-share.png */; };
+		6087E65C1FA0C6DE00AE20E2 /* AFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6087E65B1FA0C6DE00AE20E2 /* AFViewController.m */; };
+		6087E65F1FA0C7B700AE20E2 /* libSWTableViewCell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6087E6601FA0C7B700AE20E2 /* libSWTableViewCell.a */; };
 		608FE3D01EA4CEA400A672C4 /* ListEP.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FE3CF1EA4CEA400A672C4 /* ListEP.m */; };
 		609DB4131E5EDA7E009A2662 /* TokenThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 609DB4121E5EDA7E009A2662 /* TokenThread.m */; };
 		60A796F21E5316A900857A1D /* SendHeartHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A796F11E5316A900857A1D /* SendHeartHeader.m */; };
@@ -368,55 +366,6 @@
 			remoteGlobalIDString = 602B4B961EAA6C1A00DD1C5A;
 			remoteInfo = "iDNA Share Extension";
 		};
-		605F2A211E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25403CB3166A96FA00E13304;
-			remoteInfo = "ZXingObjC-iOS";
-		};
-		605F2A231E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25403CC4166A96FA00E13304;
-			remoteInfo = "Unit Tests iOS";
-		};
-		605F2A251E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25404166166AADAC00E13304;
-			remoteInfo = "ZXingObjC-osx";
-		};
-		605F2A271E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25404178166AADAC00E13304;
-			remoteInfo = "Unit Tests OS X";
-		};
-		605F2A291E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2540439E166ABA0A00E13304;
-			remoteInfo = "OS X Framework";
-		};
-		605F2A2B1E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DB72547F1A523C9200EFF81B;
-			remoteInfo = "iOS Framework";
-		};
-		605F2A391E0A22CE00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = DB72547E1A523C9200EFF81B;
-			remoteInfo = "iOS Framework";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -437,7 +386,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				605F2A381E0A22CE00751B48 /* ZXingObjC.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -676,7 +624,6 @@
 		605F2A131E0A069E00751B48 /* InviteFriendBySMS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteFriendBySMS.m; sourceTree = "<group>"; };
 		605F2A151E0A06AE00751B48 /* InviteFriendByEmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InviteFriendByEmail.h; sourceTree = "<group>"; };
 		605F2A161E0A06AE00751B48 /* InviteFriendByEmail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteFriendByEmail.m; sourceTree = "<group>"; };
-		605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC.xcodeproj; path = ZXingObjC/ZXingObjC.xcodeproj; sourceTree = "<group>"; };
 		605F2A2E1E0A221D00751B48 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		605F2A301E0A222900751B48 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		605F2A321E0A223200751B48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -739,6 +686,10 @@
 		608073D41E2331A500953503 /* ChangePassword.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangePassword.h; sourceTree = "<group>"; };
 		608073D51E2331A500953503 /* ChangePassword.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangePassword.m; sourceTree = "<group>"; };
 		608073D71E234E8E00953503 /* ic-share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic-share.png"; sourceTree = "<group>"; };
+		6087E65B1FA0C6DE00AE20E2 /* AFViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewController.m; sourceTree = "<group>"; };
+		6087E65E1FA0C7A800AE20E2 /* libZXingObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libZXingObjC.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6087E6601FA0C7B700AE20E2 /* libSWTableViewCell.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSWTableViewCell.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6087E6611FA0C7FB00AE20E2 /* AFViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFViewController.h; sourceTree = "<group>"; };
 		608FE3CE1EA4CEA400A672C4 /* ListEP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEP.h; sourceTree = "<group>"; };
 		608FE3CF1EA4CEA400A672C4 /* ListEP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEP.m; sourceTree = "<group>"; };
 		609DB4111E5EDA7E009A2662 /* TokenThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TokenThread.h; sourceTree = "<group>"; };
@@ -1027,13 +978,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6087E65F1FA0C7B700AE20E2 /* libSWTableViewCell.a in Frameworks */,
 				605F2AB91E0B7C0500751B48 /* UIKit.framework in Frameworks */,
 				605F2A351E0A223900751B48 /* ImageIO.framework in Frameworks */,
 				605F2A331E0A223200751B48 /* CoreVideo.framework in Frameworks */,
 				605F2A311E0A222A00751B48 /* CoreMedia.framework in Frameworks */,
 				605F2A2F1E0A221D00751B48 /* AVFoundation.framework in Frameworks */,
-				605F2A2D1E0A21BE00751B48 /* libZXingObjC-iOS.a in Frameworks */,
-				6035CFEA1DFA9E13008EDE47 /* libSWTableViewCell.a in Frameworks */,
 				6040F2DC1DC0B8CA007FF270 /* Foundation.framework in Frameworks */,
 				6040F2DA1DC0B8C2007FF270 /* libicucore.tbd in Frameworks */,
 				6040F2D81DC0B8B3007FF270 /* libsqlite3.0.tbd in Frameworks */,
@@ -1045,7 +995,6 @@
 				6040F2CC1DC0B856007FF270 /* MessageUI.framework in Frameworks */,
 				6040F2CA1DC0B84F007FF270 /* MobileCoreServices.framework in Frameworks */,
 				827F26CB673D1B54CA42E5CB /* libPods-Heart.a in Frameworks */,
-				605F2A371E0A22CE00751B48 /* ZXingObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1276,12 +1225,13 @@
 		6040F2C61DC0B80F007FF270 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6087E6601FA0C7B700AE20E2 /* libSWTableViewCell.a */,
+				6087E65E1FA0C7A800AE20E2 /* libZXingObjC.a */,
 				605F2AB81E0B7C0500751B48 /* UIKit.framework */,
 				605F2A341E0A223900751B48 /* ImageIO.framework */,
 				605F2A321E0A223200751B48 /* CoreVideo.framework */,
 				605F2A301E0A222900751B48 /* CoreMedia.framework */,
 				605F2A2E1E0A221D00751B48 /* AVFoundation.framework */,
-				605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */,
 				6035CFE91DFA9E13008EDE47 /* libSWTableViewCell.a */,
 				6040F2DD1DC0B8D6007FF270 /* StoreKit.framework */,
 				6040F2DB1DC0B8CA007FF270 /* Foundation.framework */,
@@ -1339,19 +1289,6 @@
 				605F09311E91D7FD0030D249 /* KASlideShow.h */,
 			);
 			name = KASlideShow;
-			sourceTree = "<group>";
-		};
-		605F2A191E0A216A00751B48 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */,
-				605F2A241E0A216B00751B48 /* Unit Tests iOS.xctest */,
-				605F2A261E0A216B00751B48 /* libZXingObjC-osx.a */,
-				605F2A281E0A216B00751B48 /* Unit Tests OS X.xctest */,
-				605F2A2A1E0A216B00751B48 /* ZXingObjC.framework */,
-				605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		605F2A931E0B7B0400751B48 /* GKImagePicker */ = {
@@ -1546,6 +1483,8 @@
 				87C713EF1D6EE8AE00C9A1A9 /* MainTabBar.m */,
 				87C713F21D6EE8AE00C9A1A9 /* TabBarContacts.h */,
 				87C713F31D6EE8AE00C9A1A9 /* TabBarContacts.m */,
+				6087E6611FA0C7FB00AE20E2 /* AFViewController.h */,
+				6087E65B1FA0C6DE00AE20E2 /* AFViewController.m */,
 				605C75291E5DD8C00088F155 /* TabBarDNA.h */,
 				605C752A1E5DD8C00088F155 /* TabBarDNA.m */,
 				60EA684E1E90E25500EF56C0 /* TabBarStore.h */,
@@ -1925,7 +1864,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				605F2A3A1E0A22CE00751B48 /* PBXTargetDependency */,
 				602B4BA11EAA6C1A00DD1C5A /* PBXTargetDependency */,
 			);
 			name = Heart;
@@ -1984,12 +1922,6 @@
 			mainGroup = 87C713881D6EE82D00C9A1A9;
 			productRefGroup = 87C713921D6EE82D00C9A1A9 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 605F2A191E0A216A00751B48 /* Products */;
-					ProjectRef = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				87C713901D6EE82D00C9A1A9 /* Heart */,
@@ -1997,51 +1929,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libZXingObjC-iOS.a";
-			remoteRef = 605F2A211E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A241E0A216B00751B48 /* Unit Tests iOS.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests iOS.xctest";
-			remoteRef = 605F2A231E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A261E0A216B00751B48 /* libZXingObjC-osx.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libZXingObjC-osx.a";
-			remoteRef = 605F2A251E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A281E0A216B00751B48 /* Unit Tests OS X.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests OS X.xctest";
-			remoteRef = 605F2A271E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A2A1E0A216B00751B48 /* ZXingObjC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ZXingObjC.framework;
-			remoteRef = 605F2A291E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ZXingObjC.framework;
-			remoteRef = 605F2A2B1E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		602B4B951EAA6C1A00DD1C5A /* Resources */ = {
@@ -2221,13 +2108,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Heart-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2394,6 +2284,7 @@
 				60EA68381E90961600EF56C0 /* HeaderTabStoreCell.m in Sources */,
 				60AF36C21E42C0DB00F772F9 /* FriendID_Menu.m in Sources */,
 				60B8AAF81E929671005BC902 /* GetAppDetailThread.m in Sources */,
+				6087E65C1FA0C6DE00AE20E2 /* AFViewController.m in Sources */,
 				605F09331E91D7FD0030D249 /* KASlideShow.m in Sources */,
 				60AF36A41E4062DB00F772F9 /* SendHeartByClass.m in Sources */,
 				60E4752B1DEBF20700F45D35 /* AddListFriendsThread.m in Sources */,
@@ -2460,11 +2351,6 @@
 			isa = PBXTargetDependency;
 			target = 602B4B961EAA6C1A00DD1C5A /* iDNA Share Extension */;
 			targetProxy = 602B4BA01EAA6C1A00DD1C5A /* PBXContainerItemProxy */;
-		};
-		605F2A3A1E0A22CE00751B48 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "iOS Framework";
-			targetProxy = 605F2A391E0A22CE00751B48 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2626,6 +2512,7 @@
 				CODE_SIGN_ENTITLEMENTS = Heart/Heart.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Kongkiat Kaewopas (9K4MW62Y24)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2636,11 +2523,63 @@
 				INFOPLIST_FILE = Heart/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"GoogleToolboxForMac\"",
+					"-l\"Protobuf\"",
+					"-l\"SDWebImage\"",
+					"-l\"SWTableViewCell\"",
+					"-l\"ZXingObjC\"",
+					"-l\"c++\"",
+					"-l\"icucore\"",
+					"-l\"leveldb-library\"",
+					"-l\"nanopb\"",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"AddressBook\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"FirebaseAnalytics\"",
+					"-framework",
+					"\"FirebaseCore\"",
+					"-framework",
+					"\"FirebaseCoreDiagnostics\"",
+					"-framework",
+					"\"FirebaseDatabase\"",
+					"-framework",
+					"\"FirebaseInstanceID\"",
+					"-framework",
+					"\"FirebaseMessaging\"",
+					"-framework",
+					"\"FirebaseNanoPB\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"StoreKit\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = heart.idna;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
@@ -2652,6 +2591,7 @@
 				CODE_SIGN_ENTITLEMENTS = Heart/Heart.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Kongkiat Kaewopas (9K4MW62Y24)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2662,11 +2602,63 @@
 				INFOPLIST_FILE = Heart/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"GoogleToolboxForMac\"",
+					"-l\"Protobuf\"",
+					"-l\"SDWebImage\"",
+					"-l\"SWTableViewCell\"",
+					"-l\"ZXingObjC\"",
+					"-l\"c++\"",
+					"-l\"icucore\"",
+					"-l\"leveldb-library\"",
+					"-l\"nanopb\"",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"AddressBook\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreVideo\"",
+					"-framework",
+					"\"FirebaseAnalytics\"",
+					"-framework",
+					"\"FirebaseCore\"",
+					"-framework",
+					"\"FirebaseCoreDiagnostics\"",
+					"-framework",
+					"\"FirebaseDatabase\"",
+					"-framework",
+					"\"FirebaseInstanceID\"",
+					"-framework",
+					"\"FirebaseMessaging\"",
+					"-framework",
+					"\"FirebaseNanoPB\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"StoreKit\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = heart.idna;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};
