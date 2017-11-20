@@ -128,6 +128,6 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     MainTabBar *tabBar = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBar"];
     [self presentViewController:tabBar animated:YES completion:nil];
-    
+    NSLog(@"");
 }
 @end

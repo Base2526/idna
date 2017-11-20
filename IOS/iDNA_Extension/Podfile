@@ -11,6 +11,8 @@ target 'Heart' do
   pod 'Firebase/Messaging'
   pod 'Firebase/Database'
 
+  pod 'FirebaseAnalytics'
+
 
   pod 'SWTableViewCell', '~> 0.3.7'
 
@@ -19,4 +21,6 @@ target 'Heart' do
   
   # https://github.com/HeshamMegid/HMSegmentedControl
   # pod 'HMSegmentedControl'
+
+  pod 'ZXingObjC', '~> 3.2.1'
 end

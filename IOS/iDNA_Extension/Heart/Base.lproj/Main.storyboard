@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="17A405" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -1233,7 +1232,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Message" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tla-ft-8EF">
-                                <rect key="frame" x="41" y="121" width="293" height="30"/>
+                                <rect key="frame" x="41" y="101" width="293" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="293" id="0nl-Bc-c52"/>
                                     <constraint firstAttribute="height" constant="30" id="je1-Rk-v05"/>
@@ -1245,7 +1244,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4tW-U2-Aot">
-                                <rect key="frame" x="170" y="168" width="34" height="30"/>
+                                <rect key="frame" x="170" y="148" width="34" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="1vu-3L-QPV"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="34" id="KSK-9N-FUM"/>
@@ -2090,7 +2089,7 @@
                                 </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wqc-Y8-Rtb">
-                                <rect key="frame" x="-1" y="279" width="374.5" height="175"/>
+                                <rect key="frame" x="-1" y="279" width="375" height="175"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <string key="text">โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน                     
@@ -2175,7 +2174,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="xK7-Ob-3Nl">
             <objects>
                 <navigationController id="uIs-NA-J5f" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="x2u-UN-KfS">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="x2u-UN-KfS">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -2786,7 +2785,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vRP-p5-Wch" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="vvM-6q-sYn">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vvM-6q-sYn">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -2918,7 +2917,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="W2q-qm-iae">
             <objects>
                 <navigationController id="rvM-94-5cT" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="bz7-ZB-UOS">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bz7-ZB-UOS">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -2975,7 +2974,7 @@ Email: info@satitpatumwan.ac.th
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="82L-s9-brV">
-                                            <rect key="frame" x="1" y="8" width="325" height="34"/>
+                                            <rect key="frame" x="9" y="8" width="325" height="34"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="325" id="CYn-ai-3qd"/>
                                                 <constraint firstAttribute="height" constant="34" id="cer-nQ-iW9"/>
@@ -3031,7 +3030,7 @@ Email: info@satitpatumwan.ac.th
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hse-I5-abj">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hse-I5-abj">
                                 <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                                 <connections>
                                     <outlet property="delegate" destination="VAH-Ei-hLT" id="UIE-DA-ORe"/>
@@ -3476,7 +3475,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pby-nU-g7Y" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="2Lw-IJ-dqB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="2Lw-IJ-dqB">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3494,7 +3493,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="iVx-mn-bQz" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="MeM-7u-tfB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="MeM-7u-tfB">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3536,7 +3535,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1Xy-oE-sLy" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Axr-6M-043">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Axr-6M-043">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3553,7 +3552,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="Gt5-G8-zAu">
             <objects>
                 <navigationController id="SL6-UX-Vlp" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="KXp-YX-6Cj">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="KXp-YX-6Cj">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3668,7 +3667,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="pQH-1V-xuM">
             <objects>
                 <navigationController id="3TI-Sg-OTw" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Z3E-6t-4S4">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Z3E-6t-4S4">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3894,7 +3893,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="7K7-z7-iMj" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="9nc-8H-TU7">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="9nc-8H-TU7">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -3936,7 +3935,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tWd-NZ-RkZ" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="1Yn-qr-148">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1Yn-qr-148">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -6965,7 +6964,7 @@ Email: info@satitpatumwan.ac.th
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YDS-dO-naY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-343" y="7331"/>
+            <point key="canvasLocation" x="-344" y="7416"/>
         </scene>
         <!--ViewComment-->
         <scene sceneID="dc5-zy-V2l">
@@ -7262,7 +7261,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="4rk-0p-la9">
             <objects>
                 <navigationController id="2UN-wv-cpS" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="z3c-0x-aBr">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="z3c-0x-aBr">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.99607843139999996" green="0.99215686270000003" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -7525,7 +7524,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="GZ1-cr-wlU">
             <objects>
                 <navigationController id="Irb-ER-eak" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="Wb2-kt-IaE">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Wb2-kt-IaE">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.99607843139999996" green="0.99215686270000003" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -7622,7 +7621,7 @@ Email: info@satitpatumwan.ac.th
         <scene sceneID="zx3-3A-0eH">
             <objects>
                 <navigationController id="5WG-r2-a4j" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="2dy-pq-gfT">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="2dy-pq-gfT">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.99607843139999996" green="0.99215686270000003" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -7786,7 +7785,7 @@ Email: info@satitpatumwan.ac.th
             <objects>
                 <navigationController storyboardIdentifier="ShowNavigation" automaticallyAdjustsScrollViewInsets="NO" id="NZi-bO-E1v" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="qFa-9O-OHu">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="qFa-9O-OHu">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

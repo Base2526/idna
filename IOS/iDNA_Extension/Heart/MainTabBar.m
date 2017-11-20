@@ -48,9 +48,9 @@
     /*
      กำหนด font sanfracisco uitabbar
      */
-    [[UITabBarItem appearance] setTitleTextAttributes:@{
-                                                        NSFontAttributeName:[UIFont fontWithName:@"SFUIText-Light" size:11.0f]
-                                                        } forState:UIControlStateNormal];
+//    [[UITabBarItem appearance] setTitleTextAttributes:@{
+//                                                        NSFontAttributeName:[UIFont fontWithName:@"SFUIText-Light" size:11.0f]
+//                                                        } forState:UIControlStateNormal];
     
 //    var userDefaults = NSUserDefaults(suiteName: "group.com.company.myApp")
 //    userDefaults!.setObject("user12345", forKey: "userId")
@@ -73,6 +73,9 @@
     MXScrollViewController *tabBarContacts =[storybrd instantiateViewControllerWithIdentifier:@"MXContactsScrollViewController"];
     tabBarContacts.title = @"CONTACTS";
     
+    // TabBarContacts *tabBarContacts =[storybrd instantiateViewControllerWithIdentifier:@"TabBarContacts"];
+    // tabBarContacts.title = @"CONTACTS";
+    
     //  self.tabBarItem.selectedImage = [[UIImage imageNamed:@"yourImage_selectedImage"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     [tabBarContacts.tabBarItem setImage:[UIImage imageNamed:@"ic_contacts"]];
     // setTitleTextAttributes
@@ -88,13 +91,13 @@
     heartNavController.visibleViewController.navigationItem.rightBarButtonItem = searchItem;
     
 
-//    TabBarDNA *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"TabBarDNA"];
-//    tarBarHome.title = @"DNA";
-//    [tarBarHome.tabBarItem setImage:[UIImage imageNamed:@"ic-dna.png"]];
-//    UINavigationController* homeNavController = [[UINavigationController alloc] initWithRootViewController:tarBarHome];
-
-    MXScrollViewController *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"MXiDNAScrollViewController"];
+    TabBarDNA *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"TabBarDNA"];
     tarBarHome.title = @"iDNA";
+    //[tarBarHome.tabBarItem setImage:[UIImage imageNamed:@"ic-dna.png"]];
+    // UINavigationController* homeNavController = [[UINavigationController alloc] initWithRootViewController:tarBarHome];
+
+    // MXScrollViewController *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"MXiDNAScrollViewController"];
+    // tarBarHome.title = @"iDNA";
     
     UIImage *ic_idna = [UIImage imageNamed:@"ic_idna"];
     [tarBarHome.tabBarItem setImage:ic_idna];

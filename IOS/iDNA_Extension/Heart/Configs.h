@@ -9,9 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@import Firebase;
-@import FirebaseMessaging;
-@import FirebaseDatabase;
+//@import Firebase;
+//@import FirebaseMessaging;
+//@import FirebaseDatabase;
+
+#import <Firebase/Firebase.h>
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#import <FirebaseDatabase/FirebaseDatabase.h>
 
 //#import <CoreLocation/CoreLocation.h>
 

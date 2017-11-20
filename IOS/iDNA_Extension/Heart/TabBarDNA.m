@@ -7,9 +7,13 @@
 //
 
 #import "TabBarDNA.h"
+
 #import "RecipeViewCell.h"
 #import "RecipeCollectionHeaderView.h"
 #import "IDReusableView.h"
+#import "HomeMyCardCell.h"
+#import "DNAFollowingCell.h"
+
 #import "MyID.h"
 #import "CreateMyApplication.h"
 #import "CreateMyCard.h"
@@ -19,8 +23,7 @@
 #import "PreLogin.h"
 #import "MyApp.h"
 #import "MyCard.h"
-#import "HomeMyCardCell.h"
-#import "DNAFollowingCell.h"
+
 
 @interface TabBarDNA (){
     NSMutableArray *sectionTitleArray;
@@ -61,6 +64,7 @@
 //    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout*)self._collection.collectionViewLayout;
 //    collectionViewLayout.sectionInset = UIEdgeInsetsMake(20, 0, 20, 0);
     
+   
     
     [self._collection registerNib:[UINib nibWithNibName:@"IDReusableView" bundle:nil]
        forSupplementaryViewOfKind:UICollectionElementKindSectionHeader

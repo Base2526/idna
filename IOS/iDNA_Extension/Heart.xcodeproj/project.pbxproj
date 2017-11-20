@@ -16,6 +16,9 @@
 		601F9B1A1DED396600148DAE /* NotAcceptFriendThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 601F9B191DED396600148DAE /* NotAcceptFriendThread.m */; };
 		601F9B1F1DED789500148DAE /* TabBarFriendCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 601F9B1D1DED789500148DAE /* TabBarFriendCell.m */; };
 		601F9B201DED789500148DAE /* TabBarFriendCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 601F9B1E1DED789500148DAE /* TabBarFriendCell.xib */; };
+		601FAF581FAFE7A2001AE54F /* AFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 601FAF571FAFE7A2001AE54F /* AFViewController.m */; };
+		601FAF5A1FAFE7E3001AE54F /* AFTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 601FAF591FAFE7E3001AE54F /* AFTableViewCell.m */; };
+		601FAF5C1FAFE839001AE54F /* 001_1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 601FAF5B1FAFE838001AE54F /* 001_1.gif */; };
 		602307341DF02F6D00B6250C /* FriendID.m in Sources */ = {isa = PBXBuildFile; fileRef = 602307331DF02F6D00B6250C /* FriendID.m */; };
 		602307361DF0306700B6250C /* icon_peoples.png in Resources */ = {isa = PBXBuildFile; fileRef = 602307351DF0306700B6250C /* icon_peoples.png */; };
 		602B4B9B1EAA6C1A00DD1C5A /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 602B4B9A1EAA6C1A00DD1C5A /* ShareViewController.m */; };
@@ -144,13 +147,10 @@
 		605F2A111E092DAD00751B48 /* AddByIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A101E092DAD00751B48 /* AddByIDViewController.m */; };
 		605F2A141E0A069E00751B48 /* InviteFriendBySMS.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A131E0A069E00751B48 /* InviteFriendBySMS.m */; };
 		605F2A171E0A06AE00751B48 /* InviteFriendByEmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A161E0A06AE00751B48 /* InviteFriendByEmail.m */; };
-		605F2A2D1E0A21BE00751B48 /* libZXingObjC-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */; };
 		605F2A2F1E0A221D00751B48 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2E1E0A221D00751B48 /* AVFoundation.framework */; };
 		605F2A311E0A222A00751B48 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A301E0A222900751B48 /* CoreMedia.framework */; };
 		605F2A331E0A223200751B48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A321E0A223200751B48 /* CoreVideo.framework */; };
 		605F2A351E0A223900751B48 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A341E0A223900751B48 /* ImageIO.framework */; };
-		605F2A371E0A22CE00751B48 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */; };
-		605F2A381E0A22CE00751B48 /* ZXingObjC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		605F2A3D1E0A45ED00751B48 /* ResultSearchFriend.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A3C1E0A45ED00751B48 /* ResultSearchFriend.m */; };
 		605F2A401E0A4A5C00751B48 /* ResultSearchFriendThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A3F1E0A4A5C00751B48 /* ResultSearchFriendThread.m */; };
 		605F2A431E0A856800751B48 /* PeopleYouMayKnowThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 605F2A421E0A856800751B48 /* PeopleYouMayKnowThread.m */; };
@@ -368,55 +368,6 @@
 			remoteGlobalIDString = 602B4B961EAA6C1A00DD1C5A;
 			remoteInfo = "iDNA Share Extension";
 		};
-		605F2A211E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25403CB3166A96FA00E13304;
-			remoteInfo = "ZXingObjC-iOS";
-		};
-		605F2A231E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25403CC4166A96FA00E13304;
-			remoteInfo = "Unit Tests iOS";
-		};
-		605F2A251E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25404166166AADAC00E13304;
-			remoteInfo = "ZXingObjC-osx";
-		};
-		605F2A271E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25404178166AADAC00E13304;
-			remoteInfo = "Unit Tests OS X";
-		};
-		605F2A291E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2540439E166ABA0A00E13304;
-			remoteInfo = "OS X Framework";
-		};
-		605F2A2B1E0A216B00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DB72547F1A523C9200EFF81B;
-			remoteInfo = "iOS Framework";
-		};
-		605F2A391E0A22CE00751B48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = DB72547E1A523C9200EFF81B;
-			remoteInfo = "iOS Framework";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -437,7 +388,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				605F2A381E0A22CE00751B48 /* ZXingObjC.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -457,6 +407,9 @@
 		601F9B1C1DED789500148DAE /* TabBarFriendCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarFriendCell.h; sourceTree = "<group>"; };
 		601F9B1D1DED789500148DAE /* TabBarFriendCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarFriendCell.m; sourceTree = "<group>"; };
 		601F9B1E1DED789500148DAE /* TabBarFriendCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TabBarFriendCell.xib; sourceTree = "<group>"; };
+		601FAF571FAFE7A2001AE54F /* AFViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFViewController.m; sourceTree = "<group>"; };
+		601FAF591FAFE7E3001AE54F /* AFTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFTableViewCell.m; sourceTree = "<group>"; };
+		601FAF5B1FAFE838001AE54F /* 001_1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 001_1.gif; sourceTree = "<group>"; };
 		602307321DF02F6D00B6250C /* FriendID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendID.h; sourceTree = "<group>"; };
 		602307331DF02F6D00B6250C /* FriendID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendID.m; sourceTree = "<group>"; };
 		602307351DF0306700B6250C /* icon_peoples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_peoples.png; sourceTree = "<group>"; };
@@ -676,7 +629,6 @@
 		605F2A131E0A069E00751B48 /* InviteFriendBySMS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteFriendBySMS.m; sourceTree = "<group>"; };
 		605F2A151E0A06AE00751B48 /* InviteFriendByEmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InviteFriendByEmail.h; sourceTree = "<group>"; };
 		605F2A161E0A06AE00751B48 /* InviteFriendByEmail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteFriendByEmail.m; sourceTree = "<group>"; };
-		605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC.xcodeproj; path = ZXingObjC/ZXingObjC.xcodeproj; sourceTree = "<group>"; };
 		605F2A2E1E0A221D00751B48 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		605F2A301E0A222900751B48 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		605F2A321E0A223200751B48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -1032,7 +984,6 @@
 				605F2A331E0A223200751B48 /* CoreVideo.framework in Frameworks */,
 				605F2A311E0A222A00751B48 /* CoreMedia.framework in Frameworks */,
 				605F2A2F1E0A221D00751B48 /* AVFoundation.framework in Frameworks */,
-				605F2A2D1E0A21BE00751B48 /* libZXingObjC-iOS.a in Frameworks */,
 				6035CFEA1DFA9E13008EDE47 /* libSWTableViewCell.a in Frameworks */,
 				6040F2DC1DC0B8CA007FF270 /* Foundation.framework in Frameworks */,
 				6040F2DA1DC0B8C2007FF270 /* libicucore.tbd in Frameworks */,
@@ -1045,7 +996,6 @@
 				6040F2CC1DC0B856007FF270 /* MessageUI.framework in Frameworks */,
 				6040F2CA1DC0B84F007FF270 /* MobileCoreServices.framework in Frameworks */,
 				827F26CB673D1B54CA42E5CB /* libPods-Heart.a in Frameworks */,
-				605F2A371E0A22CE00751B48 /* ZXingObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1281,7 +1231,6 @@
 				605F2A321E0A223200751B48 /* CoreVideo.framework */,
 				605F2A301E0A222900751B48 /* CoreMedia.framework */,
 				605F2A2E1E0A221D00751B48 /* AVFoundation.framework */,
-				605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */,
 				6035CFE91DFA9E13008EDE47 /* libSWTableViewCell.a */,
 				6040F2DD1DC0B8D6007FF270 /* StoreKit.framework */,
 				6040F2DB1DC0B8CA007FF270 /* Foundation.framework */,
@@ -1335,23 +1284,10 @@
 		605F09391E91D8240030D249 /* KASlideShow */ = {
 			isa = PBXGroup;
 			children = (
-				605F09321E91D7FD0030D249 /* KASlideShow.m */,
 				605F09311E91D7FD0030D249 /* KASlideShow.h */,
+				605F09321E91D7FD0030D249 /* KASlideShow.m */,
 			);
 			name = KASlideShow;
-			sourceTree = "<group>";
-		};
-		605F2A191E0A216A00751B48 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */,
-				605F2A241E0A216B00751B48 /* Unit Tests iOS.xctest */,
-				605F2A261E0A216B00751B48 /* libZXingObjC-osx.a */,
-				605F2A281E0A216B00751B48 /* Unit Tests OS X.xctest */,
-				605F2A2A1E0A216B00751B48 /* ZXingObjC.framework */,
-				605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		605F2A931E0B7B0400751B48 /* GKImagePicker */ = {
@@ -1546,6 +1482,8 @@
 				87C713EF1D6EE8AE00C9A1A9 /* MainTabBar.m */,
 				87C713F21D6EE8AE00C9A1A9 /* TabBarContacts.h */,
 				87C713F31D6EE8AE00C9A1A9 /* TabBarContacts.m */,
+				601FAF591FAFE7E3001AE54F /* AFTableViewCell.m */,
+				601FAF571FAFE7A2001AE54F /* AFViewController.m */,
 				605C75291E5DD8C00088F155 /* TabBarDNA.h */,
 				605C752A1E5DD8C00088F155 /* TabBarDNA.m */,
 				60EA684E1E90E25500EF56C0 /* TabBarStore.h */,
@@ -1698,6 +1636,7 @@
 		87C713AB1D6EE86D00C9A1A9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				601FAF5B1FAFE838001AE54F /* 001_1.gif */,
 				60EA683F1E9096EC00EF56C0 /* icon_tab_slide.png */,
 				605C75271E5DD8580088F155 /* ic-store.png */,
 				605C75251E5DD84B0088F155 /* ic-dna.png */,
@@ -1925,7 +1864,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				605F2A3A1E0A22CE00751B48 /* PBXTargetDependency */,
 				602B4BA11EAA6C1A00DD1C5A /* PBXTargetDependency */,
 			);
 			name = Heart;
@@ -1984,12 +1922,6 @@
 			mainGroup = 87C713881D6EE82D00C9A1A9;
 			productRefGroup = 87C713921D6EE82D00C9A1A9 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 605F2A191E0A216A00751B48 /* Products */;
-					ProjectRef = 605F2A181E0A216A00751B48 /* ZXingObjC.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				87C713901D6EE82D00C9A1A9 /* Heart */,
@@ -1997,51 +1929,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		605F2A221E0A216B00751B48 /* libZXingObjC-iOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libZXingObjC-iOS.a";
-			remoteRef = 605F2A211E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A241E0A216B00751B48 /* Unit Tests iOS.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests iOS.xctest";
-			remoteRef = 605F2A231E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A261E0A216B00751B48 /* libZXingObjC-osx.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libZXingObjC-osx.a";
-			remoteRef = 605F2A251E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A281E0A216B00751B48 /* Unit Tests OS X.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests OS X.xctest";
-			remoteRef = 605F2A271E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A2A1E0A216B00751B48 /* ZXingObjC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ZXingObjC.framework;
-			remoteRef = 605F2A291E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		605F2A2C1E0A216B00751B48 /* ZXingObjC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ZXingObjC.framework;
-			remoteRef = 605F2A2B1E0A216B00751B48 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		602B4B951EAA6C1A00DD1C5A /* Resources */ = {
@@ -2102,6 +1989,7 @@
 				602307361DF0306700B6250C /* icon_peoples.png in Resources */,
 				87C713E31D6EE88400C9A1A9 /* woman1.jpg in Resources */,
 				605F2ADA1E0B7C3D00751B48 /* PLCameraSheetDoneButton.png in Resources */,
+				601FAF5C1FAFE839001AE54F /* 001_1.gif in Resources */,
 				87C713D61D6EE88400C9A1A9 /* man7.jpg in Resources */,
 				6040F28D1DC09E79007FF270 /* 001_1.gif in Resources */,
 				60D4358C1E08C5CA00BF0F46 /* ContactusCell.xib in Resources */,
@@ -2221,13 +2109,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Heart-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2257,6 +2148,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				601FAF5A1FAFE7E3001AE54F /* AFTableViewCell.m in Sources */,
+				601FAF581FAFE7A2001AE54F /* AFViewController.m in Sources */,
 				870F22CC1D741E8400B7D219 /* Info.m in Sources */,
 				605F2ACB1E0B7C1400751B48 /* GKImagePicker.m in Sources */,
 				6040F28B1DC09E5F007FF270 /* ContactusViewController.m in Sources */,
@@ -2460,11 +2353,6 @@
 			isa = PBXTargetDependency;
 			target = 602B4B961EAA6C1A00DD1C5A /* iDNA Share Extension */;
 			targetProxy = 602B4BA01EAA6C1A00DD1C5A /* PBXContainerItemProxy */;
-		};
-		605F2A3A1E0A22CE00751B48 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "iOS Framework";
-			targetProxy = 605F2A391E0A22CE00751B48 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
