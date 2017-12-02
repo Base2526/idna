@@ -17,6 +17,9 @@
 #import "MyApplicationsRepo.h"
 #import "MyApplications.h"
 
+#import "Center.h"
+#import "CenterRepo.h"
+
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
 #endif
@@ -410,6 +413,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     childObserver_Friends = [[NSMutableArray alloc] init];
     NSString *child = [NSString stringWithFormat:@"%@%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     
+    ////////////////////////////////////////////  friends  /////////////////////////////////////////////////
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
@@ -477,8 +481,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 //            }];
         }
         
-        
-        
         NSDictionary *item = snapshot.value;
         /*
          เราจะ tage เฉพาะ profile friend เท่านั้น
@@ -508,7 +510,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         }];
         
     
-        
         // toonchat_message
         NSString *child_cmessage = [NSString stringWithFormat:@"toonchat_message/%@/", [item objectForKey:@"chat_id"]];
         [[ref child:child_cmessage] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -577,9 +578,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
     }];
+    ////////////////////////////////////////////  Friends  /////////////////////////////////////////////////
     
     
-    // my_applications
+    ////////////////////////////////////////////  MY Applications  /////////////////////////////////////////////////
     [[[ref child:child] child:@"my_applications"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@ -> %@", snapshot.key, snapshot.value, snapshot.ref);
         
@@ -602,6 +604,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_reloadData" object:self userInfo:@{}];
         }
     }];
+    
     [[[ref child:child] child:@"my_applications"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
@@ -626,6 +629,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_reloadData" object:self userInfo:@{}];
     }];
     
+    ////////////////////////////////////////////  MY Applications  /////////////////////////////////////////////////
     
     /*
      กรณี friend_id มีการ change data เช่น online, offline
@@ -778,8 +782,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         }
     }];
     
-    
-    // <---- Tag Groups
+    ////////////////////////////////////////////  Groups  /////////////////////////////////////////////////
     [[[ref child:child] child:@"groups"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
@@ -859,7 +862,234 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
         }
     }];
-    // ----> Tag Groups
+    ////////////////////////////////////////////  Groups  /////////////////////////////////////////////////
+    
+    ////////////////////////////////////////////  Classs  /////////////////////////////////////////////////
+    [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        /*
+        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
+        if ([groupChatRepo get:snapshot.key] == nil){
+            
+            GroupChat *groupChat = [[GroupChat alloc] init];
+            groupChat.group_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            groupChat.create    = [timeStampObj stringValue];
+            groupChat.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [groupChatRepo insert:groupChat];
+            
+        }else{
+            GroupChat *groupChat = [[GroupChat alloc] init];
+            groupChat.group_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            groupChat.create    = [timeStampObj stringValue];
+            groupChat.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [groupChatRepo update:groupChat];
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        */
+    }];
+    
+    [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        /*
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
+        GroupChat *groupChat = [[GroupChat alloc] init];
+        groupChat.group_id = snapshot.key;
+        
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+        groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        groupChat.create    = [timeStampObj stringValue];
+        groupChat.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [groupChatRepo update:groupChat];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        */
+    }];
+    
+    [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot){
+        
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        /*
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
+        
+        if ([groupChatRepo get:snapshot.key] != nil) {
+            [groupChatRepo deleteGroup:snapshot.key];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        }
+        */
+    }];
+    
+    ////////////////////////////////////////////  Classs  /////////////////////////////////////////////////
+    
+    
+    ////////////////////////////////////////////  Center  /////////////////////////////////////////////////
+    NSString *child_center = [NSString stringWithFormat:@"%@center/", [[Configs sharedInstance] FIREBASE_ROOT_PATH]];
+    
+    [[ref child:child_center] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        // GroupChatRepo
+        CenterRepo *centerRepo = [[CenterRepo alloc] init];
+        
+        for (NSString* key in snapshot.value) {
+            NSDictionary* value = [snapshot.value objectForKey:key];
+            // do stuff
+            
+            if ([centerRepo get:key] == nil){
+                
+                Center *center = [[Center alloc] init];
+                center.item_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+                center.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                center.create    = [timeStampObj stringValue];
+                center.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [centerRepo insert:center];
+                
+            }else{
+                Center *center = [[Center alloc] init];
+                center.item_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+                center.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                center.create    = [timeStampObj stringValue];
+                center.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [centerRepo update:center];
+            }
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tab_center_reloadData" object:self userInfo:@{}];
+    }];
+    
+    [[ref child:child_center]observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        CenterRepo *centerRepo = [[CenterRepo alloc] init];
+        for (NSString* key in snapshot.value) {
+            NSDictionary* value = [snapshot.value objectForKey:key];
+            
+            if ([centerRepo get:key] == nil){
+                
+                Center *center = [[Center alloc] init];
+                center.item_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+                center.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                center.create    = [timeStampObj stringValue];
+                center.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [centerRepo insert:center];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"tab_center_reloadData" object:self userInfo:@{}];
+            }else{
+                Center *center = [[Center alloc] init];
+                center.item_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:value options:0 error:&err];
+                center.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                center.create    = [timeStampObj stringValue];
+                center.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [centerRepo update:center];
+                
+                /*
+                 กรณีมีการ udpate เราต้อง postNotification ไปยัง Tab_Center_Detail โดยส่ง app_id ไปด้วย เราจะ refresh เฉพาะ app_id เทา่นั้น
+                 */
+
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Center_Detail" object:self userInfo:@{@"app_id": key}];
+            }
+        }
+        /*
+        Center *center = [[Center alloc] init];
+        center.item_id = snapshot.key;
+        
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+        center.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        center.create    = [timeStampObj stringValue];
+        center.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [centerRepo update:center];
+        **/
+        
+        
+    }];
+    
+    [[ref child:child_center ] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        CenterRepo *centerRepo = [[CenterRepo alloc] init];
+        
+        if ([centerRepo get:snapshot.key] != nil) {
+            [centerRepo deleteCenter:snapshot.key];
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tab_center_reloadData" object:self userInfo:@{}];
+    }];
+    ////////////////////////////////////////////  Center  /////////////////////////////////////////////////
     
     NSMutableDictionary *groups = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"groups"];
     for (NSString* key in groups) {

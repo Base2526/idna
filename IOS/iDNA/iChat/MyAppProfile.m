@@ -286,6 +286,15 @@
 //            UILabel *label = (UILabel *)[cell viewWithTag:10];
 //            label.text = [anObject objectForKey:@"name"];//[self.data objectForKey:@"category"];
 //
+            
+            NSData *data =  [[myApp objectAtIndex:[myAppRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            id anObject = [category_application objectForKey:[f objectForKey:@"category"]];
+            
+            NSLog(@"%@", [self.data objectForKey:@"category"]);
+            UILabel *label = (UILabel *)[cell viewWithTag:10];
+            label.text = [anObject objectForKey:@"name"];//[self.data objectForKey:@"category"];
             NSLog(@"");
         }
             break;

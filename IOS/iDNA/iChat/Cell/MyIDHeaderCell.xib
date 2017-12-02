@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,23 +15,33 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="120"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="119"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="119.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gbi-Qy-4io" customClass="HJManagedImageV">
                         <rect key="frame" x="110" y="10" width="100" height="100"/>
+                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="100" id="DbR-q1-geY"/>
                             <constraint firstAttribute="width" constant="100" id="V85-nE-lsU"/>
                         </constraints>
                     </view>
+                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="clh-Lv-nEv">
+                        <rect key="frame" x="255" y="10" width="49" height="31"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="47" id="Sm4-QJ-2gY"/>
+                            <constraint firstAttribute="height" constant="31" id="f3r-qI-40b"/>
+                        </constraints>
+                    </switch>
                 </subviews>
                 <constraints>
                     <constraint firstItem="gbi-Qy-4io" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="2XJ-pm-fTZ"/>
+                    <constraint firstItem="clh-Lv-nEv" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="Dmg-Hc-Z6M"/>
+                    <constraint firstAttribute="trailing" secondItem="clh-Lv-nEv" secondAttribute="trailing" constant="18" id="gz3-FD-PsM"/>
                     <constraint firstItem="gbi-Qy-4io" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="tKQ-Zz-KdE"/>
                 </constraints>
             </tableViewCellContentView>
-            <point key="canvasLocation" x="34" y="107"/>
+            <point key="canvasLocation" x="-774" y="-413"/>
         </tableViewCell>
     </objects>
 </document>

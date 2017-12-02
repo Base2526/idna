@@ -27,12 +27,14 @@
 	define("FIREBASE_DEFAULT_PATH", '/idna/');
 	define("FIREBASE_LOGIN_PATH", 'user/');
 	define("FIREBASE_MY_APPLIPATIONS_PATH", 'my_applications/');
+	define("FIREBASE_MY_APPLIPATIONS_POSTS_PATH", 'posts/');
 
 	define("FIREBASE_CENTER", 'center/'); 
 	define("FIREBASE_CENTER_SLIDE", 'center-slide/'); 
 
 
 	define("PATH_GROUPS", "groups");
+	define("PATH_CLASSS", "classs");
 
 
 	// Bundle Identifier  

@@ -10,20 +10,27 @@
 #import "ViewCommentCell.h"
 #import "AddComment.h"
 
-@interface ViewComment (){
-    NSMutableArray *data;
-    UIActivityIndicatorView *activityIndicator;
-}
+#import "CenterRepo.h"
+#import "Center.h"
 
+@interface ViewComment (){
+    NSDictionary *data;
+    UIActivityIndicatorView *activityIndicator;
+    
+    CenterRepo* centerRepo;
+}
 @end
 
 @implementation ViewComment
+@synthesize app_id, post_id;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    data = [[NSMutableArray alloc] init];
+    data = [[NSDictionary alloc] init];
+    centerRepo = [[CenterRepo alloc] init];
+    
     [self._table registerNib:[UINib nibWithNibName:@"ViewCommentCell" bundle:nil] forCellReuseIdentifier:@"ViewCommentCell"];
     
     self._table.estimatedRowHeight = 400.0;
@@ -38,7 +45,6 @@
     activityIndicator.center=self.view.center;
     [activityIndicator startAnimating];
     [self.view addSubview:activityIndicator];
-    
     
     [self reloadData:nil];
 }
@@ -85,9 +91,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // return [data count];
-    
-    return 10;
+    return 2;//[data count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -178,6 +182,19 @@
 }
 
 -(void) reloadData:(NSNotification *) notification{
+    
+    if (notification == nil) {
+        NSMutableArray*_t_myApp =  [centerRepo get:app_id];
+        NSData *_t_myApp_data =  [[_t_myApp objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary *app_data   = [NSJSONSerialization JSONObjectWithData:_t_myApp_data options:0 error:nil];
+        NSDictionary *post_data = [[app_data objectForKey:@"posts"] objectForKey:post_id];
+        
+        if ([post_data objectForKey:@"comments"]) {
+        }
+        
+        NSLog(@"");
+    }
 
     [activityIndicator stopAnimating];
     [activityIndicator removeFromSuperview];

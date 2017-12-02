@@ -338,7 +338,6 @@
             
             /*
              btnFollow : คือปุ่มกดเพือให้เพือนกด follow
-             
              btnFollower : คือปุ่มแสดงว่ามีคน follower เท่าไร เห็นเฉพาะเจ้าของ application เท่านั้น
              */
             view.btnFollow.hidden = NO;
@@ -346,6 +345,8 @@
             if ([[[Configs sharedInstance] getUIDU] isEqualToString:[f objectForKey:@"owner_id"]]) {
                 view.btnFollow.hidden = YES;
                 view.btnFollower.hidden = NO;
+                
+                
             }
             
             return view;
@@ -386,28 +387,37 @@
     MyAppCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyAppCell" forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    /*
+    
     // items_post
     NSArray *keys = [[data objectForKey:@"posts"] allKeys];
     id aKey = [keys objectAtIndex:indexPath.row];
     id anObject = [[data objectForKey:@"posts"] objectForKey:aKey];
     
-    NSMutableDictionary *picture = [anObject valueForKey:@"picture"];
-    if ([picture count] > 0 ) {
+//    NSMutableDictionary *picture = [anObject valueForKey:@"picture"];
+//    if ([picture count] > 0 ) {
+//        [cell.hjmImage clear];
+//        [cell.hjmImage showLoadingWheel];
+//
+//        NSString *url = [[NSString stringWithFormat:@"%@/sites/default/files/%@", [Configs sharedInstance].API_URL, [picture objectForKey:@"filename"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//
+//        [cell.hjmImage setUrl:[NSURL URLWithString:url]];
+//        // [img setImage:[UIImage imageWithData:fileData]];
+//        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.hjmImage ];
+//    }else{
+//    }
+    
+   //  NSMutableDictionary *posts = [data objectForKey:@"posts"];
+    if ([anObject objectForKey:@"image_url"]) {
         [cell.hjmImage clear];
         [cell.hjmImage showLoadingWheel];
-        
-        NSString *url = [[NSString stringWithFormat:@"%@/sites/default/files/%@", [Configs sharedInstance].API_URL, [picture objectForKey:@"filename"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        [cell.hjmImage setUrl:[NSURL URLWithString:url]];
-        // [img setImage:[UIImage imageWithData:fileData]];
+        [cell.hjmImage setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[anObject objectForKey:@"image_url"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.hjmImage ];
-    }else{
-    }
+    }else{}
 
-    cell.title.text = [anObject objectForKey:@"title"];
+    cell.title.text = [NSString stringWithFormat:@"%@-%@", [anObject objectForKey:@"title"], aKey];
     cell.labelMessage.text = [anObject objectForKey:@"message"];
     
+     /*
     cell.btnPopup.hidden = TRUE;
     cell.btnPopup.enabled = FALSE;
     if (isOwner) {
@@ -516,6 +526,16 @@
     cell.btnShare.tag = indexPath.row;
     [cell.btnShare addTarget:self action:@selector(onShare:) forControlEvents:UIControlEventTouchDown];
     */
+    
+    //    cell.btnEdit
+    //    cell.btnDelete
+    
+    cell.btnEdit.tag = indexPath.row;
+    [cell.btnEdit addTarget:self action:@selector(onEdit:) forControlEvents:UIControlEventTouchDown];
+    
+    cell.btnDelete.tag = indexPath.row;
+    [cell.btnDelete addTarget:self action:@selector(onDelete:) forControlEvents:UIControlEventTouchDown];
+    
     return cell;
 }
 
@@ -879,6 +899,40 @@
     
 }
 
+-(void)onEdit:(id)sender{
+    UIButton *btn = (UIButton *)sender;
+    // NSLog(@"onEdit > %d", [btn tag]);
+    
+    NSArray *keys = [[data objectForKey:@"posts"] allKeys];
+    id aKey = [keys objectAtIndex:[btn tag]];
+    id anObject = [[data objectForKey:@"posts"] objectForKey:aKey];
+    
+    AddPost *v = [self.storyboard instantiateViewControllerWithIdentifier:@"AddPost"];
+    // v.is_add = @"1";
+    // v.item_id = item_id;
+    v.is_edit = @"1";
+    v.app_id = app_id;
+    v.category_id = [data objectForKey:@"category"];
+    v.post_id = aKey;
+    // [self.navigationController pushViewController:v animated:YES];
+    
+    [self presentViewController:[[UINavigationController alloc] initWithRootViewController:v] animated:YES completion:nil];
+}
+
+-(void)onDelete:(id)sender{
+    UIButton *btn = (UIButton *)sender;
+    NSLog(@"onDelete > %d", [btn tag]);
+    
+//    NSArray *keys = [[data objectForKey:@"posts"] allKeys];
+//    id aKey = [keys objectAtIndex:[btn tag]];
+//    id anObject = [[data objectForKey:@"posts"] objectForKey:aKey];
+    
+    CustomAlertView *alertView = [[CustomAlertView alloc] initWithTitle:@"Delete" message:@"Confirm Delete." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil];
+    
+        alertView.tag = -999;
+    alertView.object = [NSString stringWithFormat:@"%d", [btn tag]] ;
+    [alertView show];
+}
 -(void)onShare:(id)sender{
     
     UIButton *btn = (UIButton *)sender;
@@ -1168,6 +1222,9 @@
         [sender setTitle:@"Follow" forState:UIControlStateNormal];
     }
      */
+    
+    
+    NSLog(@"");
 }
 
 -(void)f_setFollower:(NSString *) status
@@ -1201,49 +1258,68 @@
 }
 
 - (void)alertView:(CustomAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    /*
     switch (alertView.tag) {
         case -999:
             if (buttonIndex == 0){
                 NSLog(@"ยกเลิก");
             }else{
-                NSDictionary* userInfo = alertView.object;
+                NSArray *keys = [[data objectForKey:@"posts"] allKeys];
+                id aKey = [keys objectAtIndex:[alertView.object integerValue]];
+                id anObject = [[data objectForKey:@"posts"] objectForKey:aKey];
                 
-                [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
                 
-                AddPostThread *apThread = [[AddPostThread alloc] init];
-                [apThread setCompletionHandler:^(NSString *data) {
-                    
-                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                    
-                    NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                    
-                    if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                __block NSString *child = [NSString stringWithFormat:@"%@%@/my_applications/%@/posts/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], app_id, aKey];
+                
+                [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+                    if (error == nil) {
+                        // NSLog(@"%@-%@", ref, ref.key);
                         
-                        [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Delete success."];
+                        NSString* post_id = ref.key;
                         
-                      
-                        // [[NSNotificationCenter defaultCenter] postNotificationName:@"AddPost" object:nil userInfo:jsonDict[@"values"]];
-                        // [self.navigationController popViewControllerAnimated:YES];
+                        MyApplicationsRepo *myAppRepo = [[MyApplicationsRepo alloc] init];
+                        
+                        NSMutableArray* _t_myApp = [myAppRepo get:app_id];
+                        
+                        NSData *data =  [[_t_myApp objectAtIndex:[myAppRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                        
+                        if (data == nil) {
+                            // บางกรณี firebase จะ  tigger value  เร้วมากนทำให้ data == nil  เราต้องเปลียนการ write data เป็นบาง transiton  ติดไว้ก่อน
+                            return;
+                        }
+                        NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                        
+                        if ([f objectForKey:@"posts"]) {
+                            NSMutableDictionary *posts = [[f objectForKey:@"posts"] mutableCopy];
+                            if ([posts objectForKey:post_id]) {
+                                // [posts setObject:values forKey:post_id];
+                                [posts removeObjectForKey:post_id];
+                                
+                                NSMutableDictionary *newF = [[NSMutableDictionary alloc] init];
+                                [newF addEntriesFromDictionary:f];
+                                [newF removeObjectForKey:@"posts"];
+                                [newF setObject:posts forKey:@"posts"];
+                                
+                                f = newF;
+                            }
+                        }
+                        
+                        MyApplications *myApp = [[MyApplications alloc] init];
+                        myApp.app_id = app_id;
+                        
+                        NSError * err;
+                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:f options:0 error:&err];
+                        myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                        BOOL sv = [myAppRepo update:myApp];
                         
                         [self reloadData:nil];
-                    }else{
-                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
                     }
-                    
                 }];
-                
-                [apThread setErrorHandler:^(NSString *error) {
-                    [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-                }];
-                
-                [apThread start:@"-1":item_id :alertView.object :nil :@"" :@""];
             }
             break;
             
         default:
             break;
-    }*/
+    }
 }
 
 #pragma mark - WYPopoverControllerDelegate
@@ -1323,6 +1399,7 @@
     AddPost *v = [self.storyboard instantiateViewControllerWithIdentifier:@"AddPost"];
     // v.is_add = @"1";
     // v.item_id = item_id;
+    v.is_edit = @"0";
     v.app_id = app_id;
     // [self.navigationController pushViewController:v animated:YES];
     
@@ -1473,8 +1550,19 @@
     }
     */
     
+    NSMutableArray*_t_myApp_all =  [myAppRepo getMyApplicationAll];
+    NSMutableArray*_t_myApp =  [myAppRepo get:app_id];
+    NSData *_t_myApp_data =  [[_t_myApp objectAtIndex:[myAppRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    data = [NSJSONSerialization JSONObjectWithData:_t_myApp_data options:0 error:nil];
+    
+    
     UIBarButtonItem *addPostButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onAddPost:)];
     self.navigationItem.rightBarButtonItems = @[addPostButton];
+    
+    [activityIndicator stopAnimating];
+    [activityIndicator removeFromSuperview];
+    [self._table reloadData];
 }
 
 @end

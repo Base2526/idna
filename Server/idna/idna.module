@@ -1094,7 +1094,7 @@ function idna_services_resources()
         ),
       ),
     ),
-      'user_friends_heart'=>array(
+    'user_friends_heart'=>array(
       'create' =>array(
         'help'=>'Fetch User Friend heart',
         'callback'=>'user_friends_heart',
@@ -1200,7 +1200,6 @@ function idna_services_resources()
         'access arguments append' => FALSE,
       ),
     ),
-    // 
 
     'people_you_may_know'=>array(
       'create' =>array(
@@ -1329,6 +1328,7 @@ function idna_services_resources()
         'access arguments append' => FALSE,
       ),
     ),
+
     'set_my_id'=>array(
       'create' =>array(
         'help'=>'Services my id ของ User',
@@ -1338,6 +1338,7 @@ function idna_services_resources()
         'access arguments append' => FALSE,
       ),
     ),
+
     'token_notication'=>array(
       'create' =>array(
         'help'=>'Services Set Token notication',
@@ -1425,6 +1426,27 @@ function idna_services_resources()
         ),
       ),
     ),
+    'create_class'=>array(
+      'create' =>array(
+        'help'=>'สร้าง Class ของแต่ละ account',
+        'callback'=>'create_class',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
     'create_my_application'=>array(
       'create' =>array(
         'help'=>'idna Create My Application',
@@ -1446,7 +1468,155 @@ function idna_services_resources()
       ),
     ),
 
+    'create_my_application_follow'=>array(
+      'create' =>array(
+        'help'=>'เป้น function ที่ใช้สำหรับสร้าง follow ของ application',
+        'callback'=>'create_my_application_follow',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+    'update_my_application_follow'=>array(
+      'create' =>array(
+        'help'=>'เป้น function ที่ใช้สำหรับสร้าง follow & unfollow ของ application',
+        'callback'=>'update_my_application_follow',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+    'create_my_application_post_like'=>array(
+      'create' =>array(
+        'help'=>'เป้น function ที่ใช้สำหรับสร้าง Like ของ Post ของ application การที่เราสร้าง post like เพราะเราต้องการ item_id (Like Nid เพือ่เราจะวิ่งมา update ได้ถูกต้องที่ database)',
+        'callback'=>'create_my_application_post_like',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+    'update_my_application_post_like'=>array(
+      'create' =>array(
+        'help'=>'เป้น function ที่ใช้สำหรับแก้ไข & Update Like ของ Post ของ application การที่เราสร้าง post like เพราะเราต้องการ item_id (Like Nid เพือ่เราจะวิ่งมา update ได้ถูกต้องที่ database)',
+        'callback'=>'update_my_application_post_like',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
     // add_post
+    'add_post'=>array(
+      'create' =>array(
+        'help'=>'Add Post ในส่วนของ My Application',
+        'callback'=>'add_post',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+     'edit_post'=>array(
+      'create' =>array(
+        'help'=>'Edit Post ในส่วนของ My Application',
+        'callback'=>'edit_post',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+    'like_post'=>array(
+      'create' =>array(
+        'help'=>'Like Post ในส่วนของ My Application',
+        'callback'=>'like_post',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
+
     'AED_post'=>array(
       'create' =>array(
         'help'=>'Add Edit Delete Post ในส่วนของ My Application',
@@ -5698,11 +5868,275 @@ function create_my_application(){
   );
   $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/" . FIREBASE_MY_APPLIPATIONS_PATH . $field_entity->item_id, $data_update);
 
+
+  /*
+  เราจะวิ่งไปสร้าง center/category ด้วย
+  */ 
+  $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $category .'/'. $field_entity->item_id, $data_update);
+
   $result['result']   = TRUE;
   $result['item']     = $data_update;
   $result['item_id']  = $field_entity->item_id;
 
   return $result;
+}
+
+function create_my_application_follow(){
+  $result = array();
+
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['owner_id']) || empty($_REQUEST['app_id']) || empty($_REQUEST['friend_id'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : create_my_application_follow, parameter";
+
+    return $result;
+  }
+  /*
+    เจ้าของ application
+  */
+  $owner_id    = $_REQUEST['owner_id'];
+  /*
+  เพือนที่กด follow application
+  */
+  $friend_id    = $_REQUEST['friend_id'];
+  /*
+  id application
+  */
+  $app_id = $_REQUEST['app_id'];
+
+  /*
+    เป็นการ load my_app_follower  ทั้งหมด เพือ check ว่าเราเคยกด follow หรือไม่ ถ้าไม่ ก็ สร้าง ปกติ แต่ถ้า เคยแล้วให้  return item_id 
+  */
+    
+  $data_item = field_collection_item_load($app_id);
+  foreach ($data_item->field_my_app_follower[LANGUAGE_NONE] as $key => $value) {
+    $items = field_collection_item_load($value['value']);
+    if ($items->field_my_app_uid_follower[LANGUAGE_NONE][0]['value'] == $friend_id ) {
+      # code...
+      $result['result']   = TRUE;
+      $result['item_id']  = $value['value'];
+
+      return $result;
+      break;
+    } 
+  }
+
+
+  $profile = profile2_by_uid_load($owner_id, 'main');
+  foreach ($profile->field_my_application[LANGUAGE_NONE] as $key => $value) {
+    if ($app_id == $value['value']) {
+
+      $data = field_collection_item_load($value['value']);
+
+      // $wrapper = entity_metadata_wrapper('field_collection_item', $data);
+      //$wrapper->field_my_app_follower->value();
+
+/*
+      $result['p'] = $app_id;
+      $result['w'] = $wrapper = entity_metadata_wrapper('field_collection_item', $data);
+      $result['x'] =  $data->field_my_app_follower[LANGUAGE_NONE];
+
+      $result['y'] =  $data->field_my_app_follower;
+
+      if (!empty($data->field_my_app_follower[LANGUAGE_NONE])) {
+        foreach ($data->field_my_app_follower[LANGUAGE_NONE] as $ckey => $cvalue) {
+          $result[][$ckey] =  $cvalue;
+        }
+      }
+*/
+
+
+
+
+      $values = array();
+      $values['field_name'] = 'field_my_app_follower'; 
+      /*
+      uid friend ที่กด follow
+      */
+      $values['field_my_app_uid_follower'][LANGUAGE_NONE][0]['value'] = $friend_id;
+      $values['field_status_follow'][LANGUAGE_NONE][0]['value'] = '1';
+      // $val['field_image'][LANGUAGE_NONE][0] = (array)$file;
+
+      
+      $field_entity = entity_create('field_collection_item', $values);
+      $field_entity->setHostEntity("field_my_app_follower", $data);
+      $field_entity->save();  //  ยังมีปัญหาอยู่ ต้องแก้ใขเพราะว่าไม่ได้ return สถานะเอามาว่าสำเร็จหรือเปล่า แต่ save สำเร็จ      
+
+      /*
+      $value = array(
+        "title"     => $title,                        
+        "message"   => $detail,
+        "image_url" => substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
+        "create"    => time(),
+        "update"    => time()
+      );
+
+      $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . FIREBASE_MY_APPLIPATIONS_PATH . $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $field_entity->item_id .'/' , $value);
+
+
+      $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $data->field_my_app_category[LANGUAGE_NONE][0]['tid'] .'/'. $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $field_entity->item_id .'/' , $value);
+      */
+
+      
+
+      $result['result']   = TRUE;
+      $result['item_id']  = $field_entity->item_id;
+
+      return $result;
+      break;
+    }
+  }
+
+  $result['result']   = FALSE;
+  return $result;
+}
+
+function update_my_application_follow(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['friend_id']) || empty($_REQUEST['data']) ) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : update_my_application_follow, parameter";
+    return $result;
+  }
+
+  $friend_id = $_REQUEST['friend_id'];
+  $data      = $_REQUEST['data'];
+
+  if (array_key_exists('item_id', $data)) {
+
+      $item_id = $data['item_id'];
+      $data_item = field_collection_item_load($item_id);
+
+      if ($data_item) {
+          $wrapper = entity_metadata_wrapper('field_collection_item', $data_item);
+
+          $wrapper->field_status_follow->set($data['status']);
+          $wrapper->save();
+      }
+  }
+
+  $result['result']   = TRUE;
+  return $result;
+}
+
+function create_my_application_post_like(){
+  $result = array();
+
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['post_id']) || empty($_REQUEST['friend_id'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : create_my_application_post_like, parameter";
+
+    return $result;
+  }
+
+  $post_id    = $_REQUEST['post_id'];
+  $friend_id  = $_REQUEST['friend_id'];
+
+
+  $data_item = field_collection_item_load($post_id);
+
+  /*
+  เป็นการ load field_my_app_post_like  ทั้งหมด เพือ check ว่า friend_id เคยกด follow หรือไม่ ถ้าไม่ ก็ สร้าง ปกติ แต่ถ้า เคยแล้วให้  return item_id 
+  */
+  foreach ($data_item->field_my_app_post_like[LANGUAGE_NONE] as $key => $value) {
+    $items = field_collection_item_load($value['value']);
+    if ($items->field_friend_uid[LANGUAGE_NONE][0]['value'] == $friend_id ) {
+      # code...
+      $result['result']   = TRUE;
+      $result['item_id']  = $value['value'];
+
+      return $result;
+      break;
+    } 
+  }
+
+
+  if ($data_item) {
+      // $wrapper = entity_metadata_wrapper('field_collection_item', $data_item);
+
+      // $wrapper->field_status_follow->set($data['status']);
+      // $wrapper->save();
+
+      $values = array();
+      $values['field_name'] = 'field_my_app_post_like'; 
+      /*
+      uid friend ที่กด follow
+      */
+      $values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $friend_id;
+      $values['field_my_app_post_like_status'][LANGUAGE_NONE][0]['value'] = '1';
+      // $val['field_image'][LANGUAGE_NONE][0] = (array)$file;
+
+      
+      $field_entity = entity_create('field_collection_item', $values);
+      $field_entity->setHostEntity("field_my_app_post_like", $data_item);
+      $field_entity->save(); 
+
+      $result['result']   = TRUE;
+      $result['item_id']  = $field_entity->item_id;
+
+      return $result;
+  }
+
+  $result['result']   = TRUE;
+  return $result;
+}
+
+function update_my_application_post_like(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['friend_id']) || empty($_REQUEST['data']) ) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : update_my_application_post_like, parameter";
+    return $result;
+  }
+
+  $friend_id = $_REQUEST['friend_id'];
+  $data      = $_REQUEST['data'];
+
+  if (array_key_exists('item_id', $data)) {
+
+      $item_id = $data['item_id'];
+      $data_item = field_collection_item_load($item_id);
+
+      if ($data_item) {
+          $wrapper = entity_metadata_wrapper('field_collection_item', $data_item);
+
+          $wrapper->field_my_app_post_like_status->set($data['status']);
+          $wrapper->save();
+      }
+  }
+
+  $result['result']   = TRUE;
+  return $result;
+
 }
 
 function create_my_application_v1()
@@ -5806,6 +6240,351 @@ function create_my_application_v1()
   }
 
   $result['$_POST'] = $_POST;
+
+  return $result;
+}
+
+function add_post()
+{
+  $result = array();
+
+  // if (empty($_REQUEST['uid'])) {
+  //   $result['result'] = FALSE;
+  //   return $result;
+  // }
+
+  /*
+
+  if ($_REQUEST['is_add'] == 1) {
+    // เป็นการเพิ่มใหม่
+
+    $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+
+    foreach ($profile->field_my_application[LANGUAGE_NONE] as $key => $value) {
+        if ($_REQUEST['item_id'] == $value['value']) {
+   
+          $data = field_collection_item_load($value['value']);
+
+          $values = array();
+          $values['field_name'] = 'field_my_app_update'; 
+          $values['field_my_app_title'][LANGUAGE_NONE][0]['value'] = $_REQUEST['title'];
+          $values['field_my_app_message_udate'][LANGUAGE_NONE][0]['value'] = $_REQUEST['detail'];
+          // $val['field_image'][LANGUAGE_NONE][0] = (array)$file;
+
+          if($_POST['image'] != ""){
+
+            $image = $_POST['image'];
+
+            // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+            $binary = base64_decode($image);
+
+            //Create the directory if it does not already exist, otherwise check the permissions
+            $directory = 'public://';
+            file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+            $currentDate = date("Ymd");
+            $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+            
+            //Saves a file to the specified destination and creates a database entry.
+            $file = klovers_file_save_data($_POST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+
+            $values['field_image'][LANGUAGE_NONE][0] = (array)$file;
+          }   
+
+          $field_entity = entity_create('field_collection_item', $values);
+          $field_entity->setHostEntity("field_my_app_update", $data);
+          $field_entity->save();  //  ยังมีปัญหาอยู่ ต้องแก้ใขเพราะว่าไม่ได้ return สถานะเอามาว่าสำเร็จหรือเปล่า แต่ save สำเร็จ      
+
+          $value = array();
+          $value[$field_entity->item_id]["title"]   = $_REQUEST['title'];
+          $value[$field_entity->item_id]["message"] = $_REQUEST['detail'];
+          $value[$field_entity->item_id]["picture"] = (array)$file;
+    
+          $result['result']   = TRUE;
+          $result['post_id']  = $field_entity->item_id;
+          $result['values']   = $value;
+
+          return $result;
+          break;
+        }
+      }
+  }else if ($_REQUEST['is_add'] == 0){
+    // เป็นการแก้ไข
+    $items  = field_collection_item_load($_REQUEST['post_nid']);
+    $wrapper = entity_metadata_wrapper('field_collection_item', $items);
+
+    try {
+      //Update value
+      $wrapper->field_my_app_title->set($_REQUEST['title']);
+      $wrapper->field_my_app_message_udate->set(array(
+                                                    'value' => $_REQUEST['detail'],
+                                                    'summary' => 'This is the summary',
+                                                    'format' => 'full_html',
+                                                  ));
+      $image = $_REQUEST['image'];
+
+      // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+      $binary = base64_decode($image);
+
+      //Create the directory if it does not already exist, otherwise check the permissions
+      $directory = 'public://';
+      file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+      $currentDate = date("Ymd");
+      $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+      
+      //Saves a file to the specified destination and creates a database entry.
+      $file = klovers_file_save_data($_REQUEST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+
+      // https://www.drupal.org/node/1803286 update file image
+      // $wrapper->field_image[0]->set((array)$file);     
+      $wrapper->field_image->set((array)$file);       
+      $wrapper->save();
+
+    } catch (Exception $e) {
+      $result['error'] = $e->getMessage();
+    }
+    $result['result'] = TRUE;
+  }else if($_REQUEST['is_add'] == -1){
+    // เป็นการ Delete post
+    entity_delete_multiple('field_collection_item', array($_REQUEST['post_nid']));
+
+    $result['result'] = TRUE;
+  }
+  */
+
+  // uid=%@&app_id=%@&title=%@&detail=%@&image=@
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['app_id']) || empty($_REQUEST['title']) || empty($_REQUEST['detail']) || empty($_REQUEST['image'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : add_post, parameter";
+    return $result;
+  }
+
+  $uid    = $_REQUEST['uid'];
+  $app_id = $_REQUEST['app_id'];
+  $title  = $_REQUEST['title'];
+  $detail = $_REQUEST['detail'];
+  $image  = $_REQUEST['image'];
+
+  $profile = profile2_by_uid_load($uid, 'main');
+  foreach ($profile->field_my_application[LANGUAGE_NONE] as $key => $value) {
+    if ($app_id == $value['value']) {
+
+      $data = field_collection_item_load($value['value']);
+
+      $values = array();
+      $values['field_name'] = 'field_my_app_update'; 
+      $values['field_my_app_title'][LANGUAGE_NONE][0]['value'] = $title;
+      $values['field_my_app_message_update'][LANGUAGE_NONE][0]['value'] = $detail;
+      // $val['field_image'][LANGUAGE_NONE][0] = (array)$file;
+
+      if($image != ""){
+
+        // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+        $binary = base64_decode($image);
+
+        //Create the directory if it does not already exist, otherwise check the permissions
+        $directory = 'public://';
+        file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+        $currentDate = date("Ymd");
+        $file_name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+        
+        //Saves a file to the specified destination and creates a database entry.
+        $file = klovers_file_save_data($uid, $binary, $directory. '/' . $file_name, FILE_EXISTS_RENAME);
+        
+      }  
+
+      $image_url =  (array)$file;
+
+      $values['field_image'][LANGUAGE_NONE][0] = $image_url;
+
+      $field_entity = entity_create('field_collection_item', $values);
+      $field_entity->setHostEntity("field_my_app_update", $data);
+      $field_entity->save();  //  ยังมีปัญหาอยู่ ต้องแก้ใขเพราะว่าไม่ได้ return สถานะเอามาว่าสำเร็จหรือเปล่า แต่ save สำเร็จ      
+
+      $value = array(
+        "title"     => $title,                        
+        "message"   => $detail,
+        "image_url" => substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
+        "create"    => time(),
+        "update"    => time()
+      );
+
+      $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . FIREBASE_MY_APPLIPATIONS_PATH . $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $field_entity->item_id .'/' , $value);
+
+      /*
+      เราจะวิ่งไปสร้าง post center/category ด้วย
+      */ 
+      $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $data->field_my_app_category[LANGUAGE_NONE][0]['tid'] .'/'. $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $field_entity->item_id .'/' , $value);
+
+      $result['result']   = TRUE;
+      $result['post_id']  = $field_entity->item_id;
+      $result['values']   = $value;
+
+      return $result;
+      break;
+    }
+  }
+
+  return $result;
+}
+
+function edit_post(){
+  $result = array();
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['app_id'])  || empty($_REQUEST['category_id']) || empty($_REQUEST['post_id']) ) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : edit_post, parameter";
+    return $result;
+  }
+
+  $uid      = $_REQUEST['uid'];
+  //**
+  $app_id  = $_REQUEST['app_id'];
+  $category_id  = $_REQUEST['category_id'];
+
+  $post_id  = $_REQUEST['post_id'];
+  $title    = $_REQUEST['title'];
+  $detail   = $_REQUEST['detail'];
+  $image    = $_REQUEST['image'];
+
+  $data_item = field_collection_item_load($post_id);
+
+  if ($data_item) {
+      $wrapper = entity_metadata_wrapper('field_collection_item', $data_item);
+
+      if (strcmp($wrapper->field_my_app_title->value(), $title) != 0) {
+        $wrapper->field_my_app_title->set($title);
+        $wrapper->save();
+
+
+
+        /*
+        เราจำเป้นต้องวิ่ง ไป udpate 2 ที่ด้วยกันคือ my_application , center
+        */
+
+        $value = array(
+          "title"     => $title,
+          "update"    => time()
+        );
+
+        // #1
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . FIREBASE_MY_APPLIPATIONS_PATH . $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+
+        /*
+        เราจะวิ่งไปแก้ไข post center/category ด้วย
+        */ 
+        // #2
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $category_id .'/'. $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+      }
+
+      if (strcmp($wrapper->field_my_app_message_update->value(), $detail) != 0) {
+        $wrapper->field_my_app_message_update->set($detail);
+        $wrapper->save();
+
+
+        /*
+        เราจำเป้นต้องวิ่ง ไป udpate 2 ที่ด้วยกันคือ my_application , center
+        */
+
+        $value = array(
+          "message"     => $detail,
+          "update"    => time()
+        );
+
+        // #1
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . FIREBASE_MY_APPLIPATIONS_PATH . $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+        /*
+        เราจะวิ่งไปแก้ไข post center/category ด้วย
+        */ 
+        // #2
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $category_id .'/'. $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+      }
+
+      if ($image != "") {
+        # code...
+         // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+        $binary = base64_decode($image);
+
+        //Create the directory if it does not already exist, otherwise check the permissions
+        $directory = 'public://';
+        file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+        $currentDate = date("Ymd");
+        $file_name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+        
+        //Saves a file to the specified destination and creates a database entry.
+        $file = klovers_file_save_data($_REQUEST['uid'], $binary, $directory. '/' . $file_name, FILE_EXISTS_RENAME);
+
+        // https://www.drupal.org/node/1803286 update file image
+        // $wrapper->field_image[0]->set((array)$file);     
+
+        $image_url = (array)$file;
+
+        $wrapper->field_image->set($image_url);       
+        $wrapper->save();
+
+        
+        $result['image_url'] = substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url']));
+
+
+        /*
+        เราจำเป้นต้องวิ่ง ไป udpate 2 ที่ด้วยกันคือ my_application , center
+        */
+        $value = array(
+          "image_url" => $result['image_url'],
+          "update"    => time()
+        );
+
+
+        // #1
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . FIREBASE_MY_APPLIPATIONS_PATH . $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+        /*
+        เราจะวิ่งไปแก้ไข post center/category ด้วย
+        */ 
+        // #2
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_CENTER . $category_id .'/'. $app_id . '/' . FIREBASE_MY_APPLIPATIONS_POSTS_PATH . $post_id .'/' , $value);
+      }
+  }
+
+  $result['result']   = TRUE;
+  return $result;
+
+}
+
+function like_post(){
+
+  $result = array();
+
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['friend_id']) || empty($_REQUEST['post_id'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : like_post, parameter";
+    return $result;
+  }
 
   return $result;
 }
@@ -5919,33 +6698,27 @@ function AED_post()
   return $result;
 }
 
-function delete_post()
-{
-  $result = array();
-  $node = node_load($_POST['nid']);
-
-  $post = array();
-  // field_my_app_update
-  foreach ($node->field_my_app_update[LANGUAGE_NONE] as $key => $value) {
-    $data = field_collection_item_load($value['value']);
-
-    if($data->item_id == $_POST['nid_post']){
-      // $wrapper = entity_metadata_wrapper('field_collection_item', $data);
-
-      entity_delete_multiple('field_collection_item', array($data->item_id));
-
-      /*
-
-      $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
-      $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $_POST['uid'] . '/my-id/my-app/'. $_POST['nid'] . "/post/" . $_POST['nid_post']);
-      */
-    }
+function delete_post(){
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
   }
 
-  $result['result'] = TRUE;
-  $result['function'] = "delete_post";
-  $result['$_POST'] = $_POST;
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['app_id']) || empty($_REQUEST['post_id']) ) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : delete_post, parameter";
+    return $result;
+  }
 
+  $post_id = $_REQUEST['post_id'];
+
+  $data_item_load = field_collection_item_load($post_id);
+  $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);    
+  entity_delete_multiple('field_collection_item', array($wrapper->getIdentifier()));
+
+  $result['result'] = TRUE;
+ 
   return $result;
 }
 
@@ -6325,6 +7098,87 @@ function create_group_chat(){
   return  $result;
 }
 
+/*
+  สร้าง Class ของแต่ละ Account
+*/
+function create_class(){
+  $result = array();
+
+  global $firebase;
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['name']) || empty($_REQUEST['image'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : create_class, parameter";
+    return $result;
+  }
+
+  $uid    = $_REQUEST['uid'];
+  $name   = $_REQUEST['name'];
+  $image  = $_REQUEST['image'];
+
+  $profile = profile2_by_uid_load($uid, 'main');
+
+  $values = array();
+  $values['field_name'] = 'field_field_my_class'; 
+
+  $image_url = array();
+  if($image != ""){
+
+    // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+    $binary = base64_decode($image);
+
+    //Create the directory if it does not already exist, otherwise check the permissions
+    $directory = 'public://';
+    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+    $currentDate = date("Ymd");
+    $file_name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+    
+    //Saves a file to the specified destination and creates a database entry.
+    $file = klovers_file_save_data($uid, $binary, $directory. '/' . $file_name, FILE_EXISTS_RENAME);
+
+    // save รูป profile
+    // $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
+
+    $image_url= (array)$file;
+  }
+
+  // #1 field_class_image_profile
+  $values['field_class_image_profile'][LANGUAGE_NONE][0] = $image_url;
+  
+  // #2 field_name_group
+  $values['field_class_name'][LANGUAGE_NONE][0]['value'] = $name;
+
+   // Create the field collection entry and associate it with the profile
+  $field_entity = entity_create('field_collection_item', $values);
+  $field_entity->setHostEntity('profile2', $profile);
+  $field_entity->save();
+ 
+  // เป็น node id ของ group
+  $item_id = $field_entity->item_id;
+
+  $value = array(      
+      "create"   => time(),
+      "name"     => $name,
+      // เราจะไม่เอา path host เราจะเอาเฉพาะ ex. /sites/default/files/20171003_570645200.png
+      "image_url"=> substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
+      "status"   => 'active'
+  );
+
+  $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . PATH_CLASSS . '/' . $item_id . '/' , $value);
+
+  $result['result'] = TRUE;
+  $result['item_id']= $item_id;
+  $result['value']   = $value;
+  return  $result;
+}
+
 
 /**
  ถุกเรียกใช้ firebase เท่านั้น
@@ -6520,7 +7374,6 @@ function user_for_friend_editupdate(){
   return  $result;
 }
 
-
 /** 
  ถุกเรียกใช้ firebase เท่านั้น. delete_member_group_chat
 */
@@ -6552,7 +7405,6 @@ function delete_group_chat(){
   
   return  $result;
 }
-
 
 /** 
  ถุกเรียกใช้ firebase เท่านั้น. delete_member_group_chat

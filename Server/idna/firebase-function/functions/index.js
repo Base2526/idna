@@ -29,15 +29,25 @@ var API_URL_IDNA 	= 'http://128.199.210.45';
 var END_POINT_IDNA 	= '/api';
 var PATH_ROOT_IDNA  = 'idna';
 var PATH_USER_IDNA  = 'user'; 
+var PATH_CENTER_IDNA  = 'center'; 
 
 var PATH_UPDATE_PROFILE 			= '/update_profile';
 var PATH_UPDATE_GROUP_CHAT    		= '/update_group_chat';
 
 var PATH_USER_FOR_FRIEND_EDITUPDATE = '/user_for_friend_editupdate';
 
+var PATH_CREATE_MY_APPLICATIOM_FOLLOW = '/create_my_application_follow';
+var PATH_UPDATE_MY_APPLICATIOM_FOLLOW = '/update_my_application_follow';
+
+var PATH_CREATE_MY_APPLICATIOM_POST_LIKE = '/create_my_application_post_like';
+var PATH_UPDATE_MY_APPLICATIOM_POST_LIKE = '/update_my_application_post_like';
+
 
 var PATH_DELETE_GROUP_CHAT   		= '/delete_group_chat';
 var PATH_DELETE_MEMBER_GROUP_CHAT   = '/delete_member_group_chat';
+
+var PATH_DELETE_POST_MY_APPLICATION  = '/delete_post';
+
 // Refer : https://stackoverflow.com/questions/43486278/how-do-i-structure-cloud-functions-for-firebase-to-deploy-multiple-functions-fro
 exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/{type}/').onWrite(event => {
     
@@ -68,7 +78,7 @@ exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{
 						// เราต้อง parse value ก่อนถึงจะสามารถใช้งานได้
 						var objectValue = JSON.parse(body);
 						if (!objectValue.result) {
-							console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
+							// console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
 						}
 				});
 			}
@@ -119,7 +129,7 @@ exports.iDNA_User_for_Friend_EditUpdate = functions.database.ref(PATH_ROOT_IDNA 
     if (crnt.val() && !prev.val()) {
 		// กรณี Add
 
-		console.log('#1 : iDNA_User_Friend > Add');
+		// console.log('#1 : iDNA_User_Friend > Add');
 	}else{
 		// กรณี Edit | Update
 
@@ -133,7 +143,7 @@ exports.iDNA_User_for_Friend_EditUpdate = functions.database.ref(PATH_ROOT_IDNA 
 				// 	console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
 				// }
 
-				console.log(body);
+				// console.log(body);
 		});
 	}
 });
@@ -149,7 +159,7 @@ exports.iDNA_Group = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA
 	*/
 	if (!event.data.exists()) {
 
-		console.log(">>>> iDNA_Group");
+		// console.log(">>>> iDNA_Group");
 		return;
 	}
 
@@ -172,7 +182,7 @@ exports.iDNA_Group = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA
 				// 	console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
 				// }
 
-				console.log(body)
+				// console.log(body)
 		});
 	}
 });
@@ -193,7 +203,7 @@ exports.iDNA_Group_Chat_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PA
 			// 	console.log('#1 : iDNA Group Delete, Erorr : ' + err);
 			// }
 
-			console.log(body)
+			// console.log(body)
 	});
 });
 
@@ -212,10 +222,129 @@ exports.iDNA_Group_Chat_Member_Delete = functions.database.ref(PATH_ROOT_IDNA + 
 			// 	console.log('#1 : iDNA Group Delete, Erorr : ' + err);
 			// }
 
-			console.log(body)
+			// console.log(body)
 	});
 	
 });
+
+/*
+ กรณี ลบ Post ของ My Application
+*/
+exports.iDNA_MyApplication_Post_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/my_applications/{app_id}/posts/{post_id}/').onDelete(event => {
+	/*
+	กรณีมีการ Delete Post ของ My Application
+	*/
+
+	// console.log('กรณีมีการ Delete Post ของ My Application');
+	
+	request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_DELETE_POST_MY_APPLICATION, form: {uid:event.params.uid, app_id:event.params.app_id, post_id:event.params.post_id}, headers: headers}, function(err,httpResponse,body){ 
+			
+			// เราต้อง parse value ก่อนถึงจะสามารถใช้งานได้
+			// var objectValue = JSON.parse(body);
+			// if (!objectValue.result) {
+			// 	console.log('#1 : iDNA Group Delete, Erorr : ' + err);
+			// }
+
+			// console.log(body)
+	});
+});
+
+/*
+	เป็นการ กด follows โดยมีหลักการดังนี้
+	เนื่องจากเราต้องการ ความเร็วในการ following & unfollow เราจึงต้องวิ่งเข้า firebase โดยตรง ดังนั้นครังของการกด following จะไม่มี id field collection ที่ database
+	ดังนั้นเราต้อง เช็ดก่อนว่า มี item_id หรือเปล่าจาก tigger ถ้าไม่มีแสดงว่าเราต้องวิ่งไป สร้างแล้ว return item_id เพือมา  update โดยครั้งต้องไปเราแค้ update field status following & unfollow เท่านั้น
+*/
+exports.iDNA_MyApplication_Follow_Unfollow = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_CENTER_IDNA + '/{category_id}/{app_id}/follows/{uid}').onWrite(event => {
+    
+    /*
+	ต้องเช็กด้วยว่าเป้นการลบ ข้อมูลหรือไม่ ถ้าใช่ให้ return 
+	*/
+	if (!event.data.exists()) {
+		return;
+	}
+
+	const crnt = event.data.current;
+    const prev = event.data.previous;
+	
+	if (crnt.val() && !prev.val()) {
+		var val = event.data.current.val();
+
+		// console.log(val.owner_id);
+
+		// call api เพือไป create follow
+		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_CREATE_MY_APPLICATIOM_FOLLOW, form: {owner_id:val.owner_id, friend_id:event.params.uid, app_id:event.params.app_id}, headers: headers}, function(err,httpResponse,body){ 
+			
+			var $objectValue = JSON.parse(body);
+			
+			if ($objectValue.result) {
+				
+				//  update item_id ที่ firebase เพราะว่าถ้าเราใช้ครั้งต่อไป เช่น unfollow เราจะสามารถวิ่งไป update database ได้ถูกต้อง
+				var ref = db.ref(PATH_ROOT_IDNA);
+				ref.child(PATH_CENTER_IDNA).child(event.params.category_id).child(event.params.app_id).child('follows').child(event.params.uid).update({'item_id':$objectValue.item_id });
+			
+			}	
+		});
+	}else{
+		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_UPDATE_MY_APPLICATIOM_FOLLOW, form: {friend_id:event.params.uid, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
+			// console.log(body);
+		});
+	}
+});
+
+/*
+	เป็นการ กด Like โดยมีหลักการดังนี้
+	เนื่องจากเราต้องการ ความเร็วในการ like & unlike เราจึงต้องวิ่งเข้า firebase โดยตรง ดังนั้นครังของการกด like จะไม่มี id field collection ที่ database
+	ดังนั้นเราต้อง เช็ดก่อนว่า มี item_id หรือเปล่าจาก tigger ถ้าไม่มีแสดงว่าเราต้องวิ่งไป สร้างแล้ว return item_id เพือมา  update โดยครั้งต้องไปเราแค้ update field status like & unlike เท่านั้น
+
+	friend_id ซ: คือ id ของคนที่กด like
+*/
+exports.iDNA_MyApplication_Post_Like_Unlike = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_CENTER_IDNA + '/{category_id}/{app_id}/posts/{post_id}/likes/{friend_id}/').onWrite(event => {
+    
+    /*
+	ต้องเช็กด้วยว่าเป้นการลบ ข้อมูลหรือไม่ ถ้าใช่ให้ return 
+	*/
+	if (!event.data.exists()) {
+
+		// console.log(">>>> iDNA_MyApplication_Post_Like_Unlike");
+		return;
+	}
+
+	const crnt = event.data.current;
+    const prev = event.data.previous;
+	
+	if (crnt.val() && !prev.val()) {
+		// var val = event.data.current.val();
+		// console.log(val);
+
+		// console.log(">>>> Add iDNA_MyApplication_Post_Like_Unlike");
+		// กรณี profile user มีการ edit | Update
+
+		// call api เพือไป create follow
+		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_CREATE_MY_APPLICATIOM_POST_LIKE, form: {post_id:event.params.post_id, friend_id:event.params.friend_id}, headers: headers}, function(err,httpResponse,body){ 
+			
+			// console.log(body);
+			
+			var $objectValue = JSON.parse(body);
+			if ($objectValue.result) {
+				
+				//  update item_id ที่ firebase เพราะว่าถ้าเราใช้ครั้งต่อไป เช่น unfollow เราจะสามารถวิ่งไป update database ได้ถูกต้อง
+				var ref = db.ref(PATH_ROOT_IDNA);
+				ref.child(PATH_CENTER_IDNA).child(event.params.category_id).child(event.params.app_id).child('posts').child(event.params.post_id).child('likes').child(event.params.friend_id).update({'item_id':$objectValue.item_id });
+			
+			}	
+		});		
+
+	}else{
+		// console.log(">>>> Edit | Update PATH_UPDATE_MY_APPLICATIOM_POST_LIKE");
+		// กรณี profile user มีการ edit | Update
+		// console.log(event.data.current.val());
+		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_UPDATE_MY_APPLICATIOM_POST_LIKE, form: {friend_id:event.params.friend_id, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
+			// console.log(body);
+		});
+	}
+});
+
+
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions

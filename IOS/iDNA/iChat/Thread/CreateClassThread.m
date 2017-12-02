@@ -1,28 +1,28 @@
 //
-//  UpdatePictureGroupThread.m
-//  iChat
+//  CreateClassThread.m
+//  iDNA
 //
-//  Created by Somkid on 8/10/2560 BE.
+//  Created by Somkid on 2/12/2560 BE.
 //  Copyright © 2560 klovers.org. All rights reserved.
 //
 
-#import "UpdatePictureGroupThread.h"
+#import "CreateClassThread.h"
 #import "Configs.h"
 #import "AppConstant.h"
 
-@implementation UpdatePictureGroupThread
--(void)start :(NSString *)group_id : (UIImage *)image
-{
+@implementation CreateClassThread
+
+-(void)start: (UIImage *)image:(NSString *)name{
     //if there is a connection going on just cancel it.
     [self.connection cancel];
     
     NSMutableData *data = [[NSMutableData alloc] init];
     self.receivedData = data;
     
-    // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_GROUP ]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].CREATE_CLASS ]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    // NSLog(@"%@", [request allHTTPHeaderFields]);
     
     //set http method
     [request setHTTPMethod:@"POST"];
@@ -37,7 +37,7 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     UIDevice *deviceInfo = [UIDevice currentDevice];
-    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&group_id=%@&image=%@", [[Configs sharedInstance] getUIDU], group_id, imgString];
+    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&image=%@&name=%@", [[Configs sharedInstance] getUIDU], imgString, name];
     [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -50,6 +50,7 @@
             self.errorHandler([error description]);
         }
     }];
+    
     [postDataTask resume];
 }
 @end

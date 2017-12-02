@@ -12,7 +12,9 @@
 @implementation Utility
 
 + (UIColor *)colorDefualt{
-    return [UIColor colorWithRed:0.96 green:0.06 blue:0.31 alpha:1.0];
+    // return [UIColor colorWithRed:0.96 green:0.06 blue:0.31 alpha:1.0];
+    
+    return [UIColor colorWithRed:0.90 green:0.88 blue:0.88 alpha:1.0];
 }
 
 + (CGRect)maximumSquareFrameThatFits:(CGRect)frame;

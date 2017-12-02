@@ -43,6 +43,7 @@
         self.API_URL            = @"http://128.199.210.45";
         self.END_POINT          = @"/api";
         
+        self.FIREBASE_ROOT_PATH    = @"idna/";
         self.FIREBASE_DEFAULT_PATH = @"idna/user/";
         
         // v1.0 login by name
@@ -123,6 +124,9 @@
         self.DELETE_MY_APPLICATION  = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/delete_my_application"];
         self.UPDATE_MY_APPLICATION_PROFILE = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_my_application_profile"];
         self.AED_POST               = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/AED_post"];
+        
+        self.ADD_POST               = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/add_post"];
+        self.EDIT_POST               = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_post"];
         self.DELETE_POST            = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/delete_post"];
         
         self.COMMENT_POST           = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/comment_post"];
@@ -146,6 +150,8 @@
         self.MUTI_CHAT_INVITE_NEW_MEMBERS       = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/muti_chat_invite_new_members"];
         
         self.UPDATE_PICTURE_GROUP   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_picture_group"];
+        
+        self.CREATE_CLASS   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/create_class"];
     
         self.kBarHeight = 50.0f;
         

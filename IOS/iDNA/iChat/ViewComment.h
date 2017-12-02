@@ -10,9 +10,7 @@
 
 @interface ViewComment : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *_table;
-
-
-// @property (strong, nonatomic) NSString *application_id, *post_id, *category;
+@property (strong, nonatomic) NSString *app_id, *post_id;
 
 - (IBAction)onAddComment:(id)sender;
 @end

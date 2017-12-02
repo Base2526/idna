@@ -372,7 +372,7 @@
 -(void)UpdatePicture:(UIImage *)image{
     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
     UpdatePictureGroupThread *updatePictureGroupThread = [[UpdatePictureGroupThread alloc] init];
-    [updatePictureGroupThread setCompletionHandler:^(NSString *data) {
+    [updatePictureGroupThread setCompletionHandler:^(NSData *data) {
         
         NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
         [[Configs sharedInstance] SVProgressHUD_Dismiss];

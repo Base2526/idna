@@ -7,47 +7,47 @@
 		<key>GoogleToolboxForMac.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>JSQMessagesViewController.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>JSQSystemSoundPlayer.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>Pods-iDNA.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>Protobuf.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>SDWebImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>SWTableViewCell.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>leveldb-library.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 		<key>nanopb.xcscheme</key>
 		<dict>
 			<key>isShown</key>
-			<false/>
+			<true/>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

@@ -23,7 +23,7 @@
 
 + (Configs *)sharedInstance;
 
-@property(nonatomic) NSString* API_URL , *END_POINT, *FIREBASE_DEFAULT_PATH;
+@property(nonatomic) NSString* API_URL , *END_POINT, *FIREBASE_ROOT_PATH, *FIREBASE_DEFAULT_PATH;
 
 @property(nonatomic)NSString* USER_LOGIN;
 @property(nonatomic)NSString* USER_REGISTER;
@@ -80,6 +80,7 @@
 @property(nonatomic)NSString* DELETE_MY_APPLICATION;
 @property(nonatomic)NSString* UPDATE_MY_APPLICATION_PROFILE; // UpdateMyAppProfileThread
 @property(nonatomic)NSString* AED_POST;
+@property(nonatomic)NSString* ADD_POST;
 @property(nonatomic)NSString* EDIT_POST;
 @property(nonatomic)NSString* DELETE_POST;
 
@@ -93,6 +94,8 @@
 @property(nonatomic)NSString* GET_APP_DETAIL;
 
 @property(nonatomic)NSString* GET_PROFILES;
+
+@property(nonatomic)NSString* CREATE_CLASS;
 
 
 // Send Heart by Class

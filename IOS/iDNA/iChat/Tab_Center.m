@@ -17,13 +17,17 @@
 #import "AppConstant.h"
 #import "AppDelegate.h"
 #import "PreLogin.h"
-#import "MyApp.h"
+#import "Tab_Center_Detail.h"
 #import "MyCard.h"
 #import "HeaderTabStoreCell.h"
 #import "GetStoreThread.h"
 #import "TabStoreCell.h"
 
 #import "Utility.h"
+#import "CenterRepo.h"
+#import "Center.h"
+
+#import "KASlideShow.h"
 
 @interface Tab_Center (){
     NSMutableArray *sectionTitleArray;
@@ -34,6 +38,8 @@
     NSMutableArray * _datasource;
     
     UIPageControl* pageControl;
+    
+    CenterRepo *centerRepo;
 }
 @end
 
@@ -96,6 +102,7 @@
     
     [self._collection setBackgroundColor:[Utility colorDefualt]];
     
+    centerRepo = [[CenterRepo alloc] init];
     
     [self reloadDataCenter:nil];
     [self reloadDataCenterSlide:nil];
@@ -108,22 +115,14 @@
 -(void)viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(reloadDataCenter:)
-                                                     name:@"reloadDataCenter"
+                                                     name:@"tab_center_reloadData"
                                                    object:nil];
     
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reloadDataCenterSlide:)
-                                                 name:@"reloadDataCenterSlide"
-                                               object:nil];
-    
-
+    [self reloadDataCenter:nil];
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadDataCenter" object:nil];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadDataCenterSlide" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"tab_center_reloadData" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -141,8 +140,7 @@
 }
 */
 
--(void) managedImageSet:(HJManagedImageV*)mi
-{
+-(void) managedImageSet:(HJManagedImageV*)mi{
     mi.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
@@ -151,30 +149,37 @@
     return [sectionTitleArray count];
 }
 
+/*
+ ความกว้าง x สูง ของแต่ละ item
+ */
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return CGSizeMake(100, 120);
+}
+
 /* จำนวน item ของแต่ละ section */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
         
     @try {
-        NSArray * tmp = [data valueForKey:[sectionTitleArray objectAtIndex:section]];
+        
         switch (section) {
             case 0:
             {
                 return 0;
             }
                 break;
-    
+
             default:
             {
+                NSDictionary * tmp = [data valueForKey:[sectionTitleArray objectAtIndex:section ]];
                 if ([tmp count] == 0) {
                     return 0;
                 }else{
                     return [tmp count];
                 }
-
             }
                 break;
         }
-        
     }
     @catch (NSException * e) {
         NSLog(@"Exception: %@", e);
@@ -200,11 +205,14 @@
             return UIEdgeInsetsMake(0, 0, 0, 0);
         }
             break;
-            
-        default:
+
+        default:{
+            return UIEdgeInsetsMake(0, 5, 0, 5);
+
+        }
             break;
     }
-    return UIEdgeInsetsMake(5, 5, 5, 5);
+   return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 // ความสูงของแต่ Section header
@@ -214,13 +222,13 @@
     switch (section) {
         case 0:
         {
-            return CGSizeMake(0, 180);
+            return CGSizeMake(0, 200);
         }
             break;
-            
+
         default:{
-            
-            NSArray * tmp = [data valueForKey:[sectionTitleArray objectAtIndex:section]];
+    
+            NSDictionary * tmp = [data valueForKey:[sectionTitleArray objectAtIndex:section]];
             
             if ([tmp count] == 0) {
                 return CGSizeMake(0, 0);
@@ -230,7 +238,7 @@
         }
             break;
     }
-    return CGSizeMake(0, 30);
+//    return CGSizeMake(0, 30);
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -279,7 +287,7 @@
                 //
                 
                 
-                // headerView.backgroundColor = [UIColor clearColor];
+                headerView.backgroundColor = [UIColor blueColor];
                 
                 // KASlideshow
                 headerView.ksView.datasource = self;
@@ -293,7 +301,6 @@
                 
 //                UITapGestureRecognizer  *KASlideShowTapped   = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(KASlideShowTapped:)];
 //                [headerView.ksView addGestureRecognizer:KASlideShowTapped];
-                
                 [headerView.ksView start];
                 
                 
@@ -302,6 +309,9 @@
                 // headerView.pageControl.currentPage = 0;
                 pageControl.numberOfPages = [_datasource count];
                 pageControl.currentPage = 0;
+                
+                pageControl.pageIndicatorTintColor = [UIColor greenColor];
+                pageControl.currentPageIndicatorTintColor = [UIColor blueColor];
                 
                 reusableview = headerView;
             }
@@ -315,11 +325,12 @@
                 headerView.title.text = [sectionTitleArray objectAtIndex:indexPath.section];
                 // UIImage *headerImage = [UIImage imageNamed:@"header_banner.png"];
                 // headerView.backgroundImage.image = headerImage;
+                headerView.backgroundColor =[UIColor grayColor];
                 
                 headerView.title.textColor = [UIColor whiteColor];
 
                 
-                headerView.labelSeeAll.text = @"See All";
+                headerView.labelSeeAll.text = @"";//@"See All";
                 headerView.labelSeeAll.textColor = [UIColor whiteColor];
                 
                 reusableview = headerView;
@@ -354,13 +365,34 @@
         case 7:
         case 8:
         case 9:{
-            NSMutableArray * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
-            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
+            NSDictionary * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
+//            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
+            
+            NSArray *keys   = [_items allKeys];
+            id aKey         = [keys objectAtIndex:indexPath.row];
+            NSDictionary* anObject     = [_items objectForKey:aKey];
+            NSLog(@"");
+            // centerRepo
+            
+//            NSArray *fprofile = [centerRepo get:[sortedKeys objectAtIndex:indexPath.row]];
+//
+//
+//            NSData *data =  [[anObject objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+//
+//            if (data == nil) {
+//                return  cell;
+//            }
+//            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             
             TabStoreCell* cell = (TabStoreCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"TabStoreCell" forIndexPath:indexPath];
             
-            cell.labelName.text = [_item objectForKey:@"name"];
-                
+            if (anObject == nil) {
+                return cell;
+            }
+            
+            cell.labelName.text = [anObject objectForKey:@"name"];
+             
+             /*
             NSMutableDictionary *picture = [_item valueForKey:@"picture"];
             
             HJManagedImageV *imageV =(HJManagedImageV *)cell.hjImageV;
@@ -383,6 +415,17 @@
             }
             
             [Utility roundView:imageV onCorner:UIRectCornerAllCorners radius:5.0f];
+            */
+            
+            if ([anObject objectForKey:@"image_url"]) {
+                [cell.hjImageV clear];
+                [cell.hjImageV showLoadingWheel]; // API_URL
+                [cell.hjImageV  setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [anObject objectForKey:@"image_url"]]]];
+                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.hjImageV];
+            }else{
+                [cell.hjImageV clear];
+            }
+            
             
             return cell;
         }
@@ -405,6 +448,7 @@
         case 7:
         case 8:
         case 9:{
+            /*
             NSMutableArray * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
             NSDictionary *_item = [_items objectAtIndex:indexPath.row];
             
@@ -418,6 +462,20 @@
             // UIViewController *control = [[MyViewController alloc] initWithNibName: @"MyViewController" bundle: nil];
             UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: v];
             [self presentModalViewController: navControl animated: YES];
+            */
+            
+            NSDictionary * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
+            //            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
+            
+            NSArray *keys   = [_items allKeys];
+            id aKey         = [keys objectAtIndex:indexPath.row];
+            NSDictionary* anObject     = [_items objectForKey:aKey];
+            NSLog(@"");
+            
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            Tab_Center_Detail *tab_Center_Detail    = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Center_Detail"];
+            tab_Center_Detail.app_id   = aKey;
+            [self.navigationController pushViewController:tab_Center_Detail animated:YES];
         }
             break;
         default:
@@ -429,17 +487,85 @@
     
     NSMutableDictionary* center = [[Configs sharedInstance] loadData:_CENTER];
     
-    NSMutableDictionary *_tmp = [[NSMutableDictionary alloc] init];
-    NSMutableArray *_item1 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item2 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item3 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item4 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item5 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item6 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item7 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item8 = [[NSMutableArray alloc] init];
-    NSMutableArray *_item9 = [[NSMutableArray alloc] init];
     
+    NSMutableArray *centers = [centerRepo getCenterAll];
+    
+    
+//    NSMutableDictionary *_tmp = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *_item = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item2 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item3 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item4 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item5 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item6 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item7 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item8 = [[NSMutableDictionary alloc] init];
+//    NSMutableDictionary *_item9 = [[NSMutableDictionary alloc] init];
+    
+    for (int i=0; i<[centers count]; i++) {
+        NSArray * item = [centers objectAtIndex:i];
+        
+        NSString *item_id = [item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
+        
+        NSData *data = [[item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        switch ([item_id integerValue]) {
+            case 1:{
+                // [_item1 addObject:f];
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:1]];
+            }
+                break;
+                
+            case 2:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:2]];
+                
+            }
+                break;
+                
+            case 3:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:3]];
+            }
+                break;
+                
+            case 4:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:4]];
+            }
+                break;
+                
+            case 5:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:5]];
+            }
+                break;
+                
+            case 6:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:6]];
+            }
+                break;
+                
+            case 7:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:7]];
+            }
+                break;
+                
+            case 8:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:8]];
+            }
+                break;
+                
+            case 9:{
+                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:9]];
+            }
+                break;
+                
+            default:
+                break;
+        }
+        
+    }
+    
+    /*
     for (NSMutableDictionary* items in center) {
         if (items != (id)[NSNull null]) {
             for (NSString* key in items) {
@@ -498,18 +624,19 @@
             }
         }
     }
+    */
     
-    [_tmp setValue:_item1 forKey:[sectionTitleArray objectAtIndex:1]];
-    [_tmp setValue:_item2 forKey:[sectionTitleArray objectAtIndex:2]];
-    [_tmp setValue:_item3 forKey:[sectionTitleArray objectAtIndex:3]];
-    [_tmp setValue:_item4 forKey:[sectionTitleArray objectAtIndex:4]];
-    [_tmp setValue:_item5 forKey:[sectionTitleArray objectAtIndex:5]];
-    [_tmp setValue:_item6 forKey:[sectionTitleArray objectAtIndex:6]];
-    [_tmp setValue:_item7 forKey:[sectionTitleArray objectAtIndex:7]];
-    [_tmp setValue:_item8 forKey:[sectionTitleArray objectAtIndex:8]];
-    [_tmp setValue:_item9 forKey:[sectionTitleArray objectAtIndex:9]];
+//    [_tmp setValue:_item1 forKey:[sectionTitleArray objectAtIndex:1]];
+//    [_tmp setValue:_item2 forKey:[sectionTitleArray objectAtIndex:2]];
+//    [_tmp setValue:_item3 forKey:[sectionTitleArray objectAtIndex:3]];
+//    [_tmp setValue:_item4 forKey:[sectionTitleArray objectAtIndex:4]];
+//    [_tmp setValue:_item5 forKey:[sectionTitleArray objectAtIndex:5]];
+//    [_tmp setValue:_item6 forKey:[sectionTitleArray objectAtIndex:6]];
+//    [_tmp setValue:_item7 forKey:[sectionTitleArray objectAtIndex:7]];
+//    [_tmp setValue:_item8 forKey:[sectionTitleArray objectAtIndex:8]];
+//    [_tmp setValue:_item9 forKey:[sectionTitleArray objectAtIndex:9]];
     
-    data = _tmp;
+    data = _item;
     
     self._collection.hidden = NO;
     [self._collection reloadData];
@@ -626,6 +753,7 @@
 
 - (void) reloadDataCenterSlide:(NSNotification *) notification{
     
+    /*
     NSMutableDictionary* center_slide = [[Configs sharedInstance] loadData:_CENTER_SLIDE];
     
     _datasource = [[NSMutableArray alloc] init];
@@ -636,6 +764,15 @@
         [_datasource addObject:[NSURL URLWithString:URI]];
     }
     
+    pageControl.numberOfPages = [_datasource count];
+    */
+    
+    _datasource = [[NSMutableArray alloc] init];
+    for (int i=0; i<10; i++) {
+        NSString *URI = [NSString stringWithFormat:@"%@", @"http://128.199.210.45/sites/default/files/styles/medium/public/20171119_392291394.png?itok=WI-9DNYb"];
+        
+        [_datasource addObject:[NSURL URLWithString:URI]];
+    }
     pageControl.numberOfPages = [_datasource count];
 }
 

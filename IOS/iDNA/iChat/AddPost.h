@@ -16,11 +16,9 @@
 @property (weak, nonatomic) IBOutlet UITextField *txtTitle;
 @property (weak, nonatomic) IBOutlet UIPlaceHolderTextView *textViewMessage;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnSave;
-
-// @property (strong, nonatomic) NSString *is_add, *item_id, *post_nid, *edit_item_id;
 @property (strong, nonatomic) NSDictionary *edit_data;
 
-@property(strong, nonatomic)NSString*app_id;
+@property(strong, nonatomic)NSString*app_id, *is_edit, *post_id, *category_id;
 
 - (IBAction)onSave:(id)sender;
 - (IBAction)onClose:(id)sender;

@@ -10,9 +10,11 @@
 
 #import "Configs.h"
 #import "AppDelegate.h"
-
+#import "ManageClass.h"
 #import "UpdatePictureProfileThread.h"
 #import "UpdateMyProfileThread.h"
+
+#import "ManageClass.h"
 
 @interface MyProfile ()
 
@@ -60,6 +62,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(dismissKeyboard)];
     [self.view addGestureRecognizer:tap];
+    
 }
 
 -(void)dismissKeyboard {

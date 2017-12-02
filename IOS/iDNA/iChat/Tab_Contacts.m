@@ -567,6 +567,10 @@
                     }
                 }
                 
+                if ([f objectForKey:@"status_message"]) {
+                    cell.lblStatusMessage.text = [f objectForKey:@"status_message"];
+                }
+                
                 // UserDataUILongPressGestureRecognizer
                 UserDataUILongPressGestureRecognizer *lpgr = [[UserDataUILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
                 // NSLog(@"not access tag >%d", [(UIGestureRecognizer *)gestureRecognizer view].tag);
@@ -664,6 +668,10 @@
                     if ([[f objectForKey:@"online"] isEqualToString:@"1"]) {
                         cell.lblOnline.text = @"YES";
                     }
+                }
+                
+                if ([f objectForKey:@"status_message"]) {
+                    cell.lblStatusMessage.text = [f objectForKey:@"status_message"];
                 }
                 
                 // UserDataUILongPressGestureRecognizer
@@ -847,7 +855,7 @@
         case 1:
             return 100.0f;
         default:
-            return 180.0f;
+            return 200.0f;
     }
 }
 

@@ -20,5 +20,6 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *lblOnline;
 
+@property (weak, nonatomic) IBOutlet UILabel *lblStatusMessage;
 
 @end

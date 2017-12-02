@@ -71,6 +71,8 @@
 		605ED51E1F79558A00AD621C /* GKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED5051F79550F00AD621C /* GKImagePicker.m */; };
 		605ED51F1F79558A00AD621C /* GKResizeableCropOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED5091F79551000AD621C /* GKResizeableCropOverlayView.m */; };
 		606638BD1F81EFB80097AD62 /* CreateGroupChatThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 606638BC1F81EFB80097AD62 /* CreateGroupChatThread.m */; };
+		606CAB691FD22AC600F134B9 /* CreateClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 606CAB681FD22AC600F134B9 /* CreateClass.m */; };
+		606CAB6C1FD22DA100F134B9 /* CreateClassThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 606CAB6B1FD22DA100F134B9 /* CreateClassThread.m */; };
 		6087E6641FA0C8C400AE20E2 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6087E6631FA0C8C400AE20E2 /* MainTabBarController.m */; };
 		6087E6671FA0CB9D00AE20E2 /* RecentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6087E6661FA0CB9D00AE20E2 /* RecentViewController.m */; };
 		6087E66A1FA0CF4200AE20E2 /* Tab_Settings.m in Sources */ = {isa = PBXBuildFile; fileRef = 6087E6691FA0CF4200AE20E2 /* Tab_Settings.m */; };
@@ -93,8 +95,12 @@
 		6090A9201F89EEB4009B53AC /* ManageMultiChat.m in Sources */ = {isa = PBXBuildFile; fileRef = 6090A91F1F89EEB4009B53AC /* ManageMultiChat.m */; };
 		60988B941F85DAB700A3DD91 /* GroupInviteNewMembersThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60988B931F85DAB700A3DD91 /* GroupInviteNewMembersThread.m */; };
 		60988B971F85F6B500A3DD91 /* GroupDeleteMemberThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60988B961F85F6B500A3DD91 /* GroupDeleteMemberThread.m */; };
+		609D3AA81FC90AA800CC802F /* KASlideShow.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BEA1FC1D9A300ECC5CC /* KASlideShow.m */; };
+		609D3AAB1FC93B9300CC802F /* Tab_Center_Detail.m in Sources */ = {isa = PBXBuildFile; fileRef = 609D3AAA1FC93B9300CC802F /* Tab_Center_Detail.m */; };
+		609D3AAE1FC9507300CC802F /* Tab_Center_AppProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 609D3AAD1FC9507300CC802F /* Tab_Center_AppProfile.m */; };
 		60A3A8C81FBDD216002BC1AA /* GroupChat.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A3A8C71FBDD216002BC1AA /* GroupChat.m */; };
 		60A3A8CB1FBDD224002BC1AA /* GroupChatRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A3A8CA1FBDD224002BC1AA /* GroupChatRepo.m */; };
+		60A636141FC47E07000614BE /* EditPostThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A636131FC47E07000614BE /* EditPostThread.m */; };
 		60B370851FBA692200E72714 /* FriendProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60B370841FBA692200E72714 /* FriendProfileView.m */; };
 		60B92C751FB669A900F96698 /* AddPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 60B92C741FB669A900F96698 /* AddPost.m */; };
 		60B92C781FB66A2D00F96698 /* AddPostThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60B92C771FB66A2D00F96698 /* AddPostThread.m */; };
@@ -208,10 +214,10 @@
 		60B92D6B1FB6774900F96698 /* icon_heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D171FB6774900F96698 /* icon_heart.png */; };
 		60B92D6C1FB6774900F96698 /* icon_ground_friend.png in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D181FB6774900F96698 /* icon_ground_friend.png */; };
 		60B92D6D1FB6774900F96698 /* 001_1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D191FB6774900F96698 /* 001_1.gif */; };
+		60BFAB7B1FD0DC0C0079CB2E /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BFAB7A1FD0DC0C0079CB2E /* Comment.m */; };
+		60BFAB7E1FD0E3500079CB2E /* ManageClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BFAB7D1FD0E3500079CB2E /* ManageClass.m */; };
 		60C47BE01FC180AE00ECC5CC /* MyApplications.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BDF1FC180AE00ECC5CC /* MyApplications.m */; };
 		60C47BE31FC180C400ECC5CC /* MyApplicationsRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BE21FC180C400ECC5CC /* MyApplicationsRepo.m */; };
-		60C47BE41FC1857A00ECC5CC /* db.sql in Resources */ = {isa = PBXBuildFile; fileRef = 60FA69221FC1326100A33DD0 /* db.sql */; };
-		60C47BEB1FC1D9A300ECC5CC /* KASlideShow.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BEA1FC1D9A300ECC5CC /* KASlideShow.m */; };
 		60C47BEE1FC1DBCF00ECC5CC /* Tab_Center.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BEC1FC1DBCB00ECC5CC /* Tab_Center.m */; };
 		60C47BF21FC1DC2200ECC5CC /* RecipeCollectionHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60C47BF01FC1DC1E00ECC5CC /* RecipeCollectionHeaderView.xib */; };
 		60C47BF31FC1DC2200ECC5CC /* RecipeCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BF11FC1DC2200ECC5CC /* RecipeCollectionHeaderView.m */; };
@@ -305,6 +311,9 @@
 		60D6343B1FB5598C00AECA2B /* GetProfilesThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D6343A1FB5598C00AECA2B /* GetProfilesThread.m */; };
 		60DAB2BF1F84BF8300C93606 /* DeleteGroupChatThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DAB2BE1F84BF8300C93606 /* DeleteGroupChatThread.m */; };
 		60DE2A3C1F79605100F77FEB /* UpdatePictureProfileThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DE2A3B1F79605100F77FEB /* UpdatePictureProfileThread.m */; };
+		60E0D3EF1FC5E9780002F8B2 /* Center.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E0D3EE1FC5E9780002F8B2 /* Center.m */; };
+		60E0D3F21FC5E98E0002F8B2 /* CenterRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E0D3F11FC5E98E0002F8B2 /* CenterRepo.m */; };
+		60E0D3F41FC5EB940002F8B2 /* db.sql in Resources */ = {isa = PBXBuildFile; fileRef = 60E0D3F31FC5EB7C0002F8B2 /* db.sql */; };
 		60E4A4FA1F7F546900536B58 /* GroupTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E4A4F81F7F546900536B58 /* GroupTableViewCell.m */; };
 		60E4A4FB1F7F546900536B58 /* GroupTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60E4A4F91F7F546900536B58 /* GroupTableViewCell.xib */; };
 		60E4A4FE1F7F63D800536B58 /* GroupChatView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E4A4FD1F7F63D700536B58 /* GroupChatView.m */; };
@@ -446,6 +455,10 @@
 		605ED5191F79552600AD621C /* PLCameraSheetDoneButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "PLCameraSheetDoneButton@2x.png"; path = "GKImagePicker/GKImages/PLCameraSheetDoneButton@2x.png"; sourceTree = SOURCE_ROOT; };
 		606638BB1F81EFB80097AD62 /* CreateGroupChatThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateGroupChatThread.h; sourceTree = "<group>"; };
 		606638BC1F81EFB80097AD62 /* CreateGroupChatThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateGroupChatThread.m; sourceTree = "<group>"; };
+		606CAB671FD22AC600F134B9 /* CreateClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateClass.h; sourceTree = "<group>"; };
+		606CAB681FD22AC600F134B9 /* CreateClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateClass.m; sourceTree = "<group>"; };
+		606CAB6A1FD22DA100F134B9 /* CreateClassThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateClassThread.h; sourceTree = "<group>"; };
+		606CAB6B1FD22DA100F134B9 /* CreateClassThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateClassThread.m; sourceTree = "<group>"; };
 		6087E6621FA0C8C400AE20E2 /* MainTabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
 		6087E6631FA0C8C400AE20E2 /* MainTabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
 		6087E6651FA0CB9D00AE20E2 /* RecentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentViewController.h; sourceTree = "<group>"; };
@@ -482,10 +495,16 @@
 		60988B931F85DAB700A3DD91 /* GroupInviteNewMembersThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupInviteNewMembersThread.m; sourceTree = "<group>"; };
 		60988B951F85F6B500A3DD91 /* GroupDeleteMemberThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupDeleteMemberThread.h; sourceTree = "<group>"; };
 		60988B961F85F6B500A3DD91 /* GroupDeleteMemberThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupDeleteMemberThread.m; sourceTree = "<group>"; };
+		609D3AA91FC93B9300CC802F /* Tab_Center_Detail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tab_Center_Detail.h; sourceTree = "<group>"; };
+		609D3AAA1FC93B9300CC802F /* Tab_Center_Detail.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tab_Center_Detail.m; sourceTree = "<group>"; };
+		609D3AAC1FC9507300CC802F /* Tab_Center_AppProfile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tab_Center_AppProfile.h; sourceTree = "<group>"; };
+		609D3AAD1FC9507300CC802F /* Tab_Center_AppProfile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tab_Center_AppProfile.m; sourceTree = "<group>"; };
 		60A3A8C61FBDD216002BC1AA /* GroupChat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupChat.h; sourceTree = "<group>"; };
 		60A3A8C71FBDD216002BC1AA /* GroupChat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupChat.m; sourceTree = "<group>"; };
 		60A3A8C91FBDD224002BC1AA /* GroupChatRepo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupChatRepo.h; sourceTree = "<group>"; };
 		60A3A8CA1FBDD224002BC1AA /* GroupChatRepo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupChatRepo.m; sourceTree = "<group>"; };
+		60A636121FC47E07000614BE /* EditPostThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditPostThread.h; sourceTree = "<group>"; };
+		60A636131FC47E07000614BE /* EditPostThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditPostThread.m; sourceTree = "<group>"; };
 		60B370831FBA692200E72714 /* FriendProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendProfileView.h; sourceTree = "<group>"; };
 		60B370841FBA692200E72714 /* FriendProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendProfileView.m; sourceTree = "<group>"; };
 		60B92C731FB669A900F96698 /* AddPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddPost.h; sourceTree = "<group>"; };
@@ -623,6 +642,10 @@
 		60B92D171FB6774900F96698 /* icon_heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_heart.png; sourceTree = "<group>"; };
 		60B92D181FB6774900F96698 /* icon_ground_friend.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_ground_friend.png; sourceTree = "<group>"; };
 		60B92D191FB6774900F96698 /* 001_1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 001_1.gif; sourceTree = "<group>"; };
+		60BFAB791FD0DC0C0079CB2E /* Comment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
+		60BFAB7A1FD0DC0C0079CB2E /* Comment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
+		60BFAB7C1FD0E3500079CB2E /* ManageClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ManageClass.h; sourceTree = "<group>"; };
+		60BFAB7D1FD0E3500079CB2E /* ManageClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ManageClass.m; sourceTree = "<group>"; };
 		60C47BDE1FC180AE00ECC5CC /* MyApplications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyApplications.h; sourceTree = "<group>"; };
 		60C47BDF1FC180AE00ECC5CC /* MyApplications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyApplications.m; sourceTree = "<group>"; };
 		60C47BE11FC180C400ECC5CC /* MyApplicationsRepo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyApplicationsRepo.h; sourceTree = "<group>"; };
@@ -803,6 +826,11 @@
 		60DAB2BE1F84BF8300C93606 /* DeleteGroupChatThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeleteGroupChatThread.m; sourceTree = "<group>"; };
 		60DE2A3A1F79605100F77FEB /* UpdatePictureProfileThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UpdatePictureProfileThread.h; sourceTree = "<group>"; };
 		60DE2A3B1F79605100F77FEB /* UpdatePictureProfileThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpdatePictureProfileThread.m; sourceTree = "<group>"; };
+		60E0D3ED1FC5E9780002F8B2 /* Center.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Center.h; sourceTree = "<group>"; };
+		60E0D3EE1FC5E9780002F8B2 /* Center.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Center.m; sourceTree = "<group>"; };
+		60E0D3F01FC5E98E0002F8B2 /* CenterRepo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CenterRepo.h; sourceTree = "<group>"; };
+		60E0D3F11FC5E98E0002F8B2 /* CenterRepo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CenterRepo.m; sourceTree = "<group>"; };
+		60E0D3F31FC5EB7C0002F8B2 /* db.sql */ = {isa = PBXFileReference; lastKnownFileType = file; path = db.sql; sourceTree = "<group>"; };
 		60E4A4F71F7F546900536B58 /* GroupTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupTableViewCell.h; sourceTree = "<group>"; };
 		60E4A4F81F7F546900536B58 /* GroupTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupTableViewCell.m; sourceTree = "<group>"; };
 		60E4A4F91F7F546900536B58 /* GroupTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupTableViewCell.xib; sourceTree = "<group>"; };
@@ -823,7 +851,6 @@
 		60EFBAD61F83E81A00EA11D9 /* FriendHeaderTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		60FA691F1FBFCC7A00A33DD0 /* LogoutThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogoutThread.h; sourceTree = "<group>"; };
 		60FA69201FBFCC7A00A33DD0 /* LogoutThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogoutThread.m; sourceTree = "<group>"; };
-		60FA69221FC1326100A33DD0 /* db.sql */ = {isa = PBXFileReference; lastKnownFileType = file; path = db.sql; sourceTree = "<group>"; };
 		D09BF794CBB478AD4BB04EAA /* libPods-iDNA.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iDNA.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEFF5B62E997AD17B3F6730E /* Pods-iDNA.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iDNA.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iDNA/Pods-iDNA.debug.xcconfig"; sourceTree = "<group>"; };
 		E00F883DF5A4AC1F3F47483B /* Pods-iDNA.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iDNA.release.xcconfig"; path = "Pods/Target Support Files/Pods-iDNA/Pods-iDNA.release.xcconfig"; sourceTree = "<group>"; };
@@ -878,7 +905,7 @@
 		603BB8B51F7A543D006AC6D8 /* DB */ = {
 			isa = PBXGroup;
 			children = (
-				60FA69221FC1326100A33DD0 /* db.sql */,
+				60E0D3F31FC5EB7C0002F8B2 /* db.sql */,
 				603BB8B91F7A549D006AC6D8 /* DBManager.h */,
 				603BB8B81F7A549D006AC6D8 /* DBManager.m */,
 				603BB8BA1F7A56B5006AC6D8 /* Message.h */,
@@ -897,6 +924,10 @@
 				60C47BDF1FC180AE00ECC5CC /* MyApplications.m */,
 				60C47BE11FC180C400ECC5CC /* MyApplicationsRepo.h */,
 				60C47BE21FC180C400ECC5CC /* MyApplicationsRepo.m */,
+				60E0D3ED1FC5E9780002F8B2 /* Center.h */,
+				60E0D3EE1FC5E9780002F8B2 /* Center.m */,
+				60E0D3F01FC5E98E0002F8B2 /* CenterRepo.h */,
+				60E0D3F11FC5E98E0002F8B2 /* CenterRepo.m */,
 			);
 			path = DB;
 			sourceTree = "<group>";
@@ -1040,6 +1071,12 @@
 				60EDF3FD1FBB406F0097757A /* HideFriends.m */,
 				60EDF3FF1FBB40880097757A /* BlockFriends.h */,
 				60EDF4001FBB40880097757A /* BlockFriends.m */,
+				60BFAB791FD0DC0C0079CB2E /* Comment.h */,
+				60BFAB7A1FD0DC0C0079CB2E /* Comment.m */,
+				60BFAB7C1FD0E3500079CB2E /* ManageClass.h */,
+				60BFAB7D1FD0E3500079CB2E /* ManageClass.m */,
+				606CAB671FD22AC600F134B9 /* CreateClass.h */,
+				606CAB681FD22AC600F134B9 /* CreateClass.m */,
 			);
 			name = iDNA;
 			path = iChat;
@@ -1394,6 +1431,10 @@
 				60D633E31FB53B8A00AECA2B /* MyApp.m */,
 				60D633E51FB53C1C00AECA2B /* CategoryViewController.h */,
 				60D633E61FB53C1C00AECA2B /* CategoryViewController.m */,
+				609D3AA91FC93B9300CC802F /* Tab_Center_Detail.h */,
+				609D3AAA1FC93B9300CC802F /* Tab_Center_Detail.m */,
+				609D3AAC1FC9507300CC802F /* Tab_Center_AppProfile.h */,
+				609D3AAD1FC9507300CC802F /* Tab_Center_AppProfile.m */,
 			);
 			name = Tab;
 			sourceTree = "<group>";
@@ -1437,6 +1478,8 @@
 				60B92C941FB66C2F00F96698 /* DeletePostThread.m */,
 				60B92C761FB66A2D00F96698 /* AddPostThread.h */,
 				60B92C771FB66A2D00F96698 /* AddPostThread.m */,
+				60A636121FC47E07000614BE /* EditPostThread.h */,
+				60A636131FC47E07000614BE /* EditPostThread.m */,
 				60D634391FB5598C00AECA2B /* GetProfilesThread.h */,
 				60D6343A1FB5598C00AECA2B /* GetProfilesThread.m */,
 				60D634261FB5546E00AECA2B /* EditPhoneThread.h */,
@@ -1469,6 +1512,8 @@
 				60D633F11FB53D2400AECA2B /* CreateMyApplicationThread.m */,
 				60FA691F1FBFCC7A00A33DD0 /* LogoutThread.h */,
 				60FA69201FBFCC7A00A33DD0 /* LogoutThread.m */,
+				606CAB6A1FD22DA100F134B9 /* CreateClassThread.h */,
+				606CAB6B1FD22DA100F134B9 /* CreateClassThread.m */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -1639,7 +1684,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60C47BE41FC1857A00ECC5CC /* db.sql in Resources */,
+				60E0D3F41FC5EB940002F8B2 /* db.sql in Resources */,
 				60B92D321FB6774900F96698 /* icon_accept.png in Resources */,
 				60D634381FB5594F00AECA2B /* FollowerCell.xib in Resources */,
 				60B92D201FB6774900F96698 /* ic-phone.png in Resources */,
@@ -1842,6 +1887,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				609D3AA81FC90AA800CC802F /* KASlideShow.m in Sources */,
 				6090A9071F872919009B53AC /* MultiMembers.m in Sources */,
 				60988B971F85F6B500A3DD91 /* GroupDeleteMemberThread.m in Sources */,
 				6090A9011F8718C8009B53AC /* CreateMutiChatThread.m in Sources */,
@@ -1874,6 +1920,7 @@
 				60C47C171FC1DE8400ECC5CC /* MCCardPickerCollectionViewFlowLayout.m in Sources */,
 				605ED4E91F794F7100AD621C /* Changefriendsname.m in Sources */,
 				60C47C181FC1DE8400ECC5CC /* MCCardPickerCollectionViewController.m in Sources */,
+				60E0D3F21FC5E98E0002F8B2 /* CenterRepo.m in Sources */,
 				60D6341F1FB5525600AECA2B /* EditNameMAProfile.m in Sources */,
 				60E4A5011F7F6CE000536B58 /* GroupMembers.m in Sources */,
 				60C47C161FC1DE8400ECC5CC /* MCSampleCardCollectionViewCell.m in Sources */,
@@ -1922,11 +1969,13 @@
 				60D633FC1FB53D5F00AECA2B /* Utility.m in Sources */,
 				60C47C5B1FC1E2BE00ECC5CC /* EditEmail.m in Sources */,
 				60D633E71FB53C1C00AECA2B /* CategoryViewController.m in Sources */,
+				60BFAB7B1FD0DC0C0079CB2E /* Comment.m in Sources */,
 				60D634221FB5529400AECA2B /* ListEP.m in Sources */,
 				60B92CB01FB66EAD00F96698 /* ViewComment.m in Sources */,
 				605A8BC61F7948A700A6CB54 /* SVRadialGradientLayer.m in Sources */,
 				60C47BFE1FC1DCAC00ECC5CC /* CreateMyCard.m in Sources */,
 				603BB8B21F7A00D4006AC6D8 /* InviteFriends.m in Sources */,
+				606CAB6C1FD22DA100F134B9 /* CreateClassThread.m in Sources */,
 				605ED4EE1F794F7100AD621C /* UserDataUIAlertView.m in Sources */,
 				604A70141F791C7500807966 /* HJCircularBuffer.m in Sources */,
 				60B92C9E1FB66D1900F96698 /* CustomTableView.m in Sources */,
@@ -1945,7 +1994,6 @@
 				60E4A5041F7F6CF700536B58 /* GroupInvite.m in Sources */,
 				60C47C611FC1E35100ECC5CC /* EditFriendDisplayNameThread.m in Sources */,
 				604A70181F791C7500807966 /* HJMOHandler.m in Sources */,
-				60C47BEB1FC1D9A300ECC5CC /* KASlideShow.m in Sources */,
 				604A70191F791C7500807966 /* HJMOPolicy.m in Sources */,
 				60D634181FB551F700AECA2B /* MyAppProfileMultiCell.m in Sources */,
 				60C47C061FC1DD9400ECC5CC /* HeaderTabStoreCell.m in Sources */,
@@ -1987,6 +2035,7 @@
 				60C47BFB1FC1DC8700ECC5CC /* MyID.m in Sources */,
 				60C47BE31FC180C400ECC5CC /* MyApplicationsRepo.m in Sources */,
 				604A701B1F791C7500807966 /* HJObjManager.m in Sources */,
+				609D3AAB1FC93B9300CC802F /* Tab_Center_Detail.m in Sources */,
 				605ED4EB1F794F7100AD621C /* UserDataUILongPressGestureRecognizer.m in Sources */,
 				60C47BE01FC180AE00ECC5CC /* MyApplications.m in Sources */,
 				60D633CB1FB52A8900AECA2B /* Cell_H_TabiDNA.m in Sources */,
@@ -1994,19 +2043,24 @@
 				60C47C551FC1E19E00ECC5CC /* ListEmail.m in Sources */,
 				6087E6781FA0DBA500AE20E2 /* ViewControllerCellHeader.m in Sources */,
 				6051292B1F7980E8008CB2B9 /* TopAlignedLabel.m in Sources */,
+				609D3AAE1FC9507300CC802F /* Tab_Center_AppProfile.m in Sources */,
 				60B92CB41FB66F2900F96698 /* ViewCommentCell.m in Sources */,
+				606CAB691FD22AC600F134B9 /* CreateClass.m in Sources */,
 				60EDF4011FBB40880097757A /* BlockFriends.m in Sources */,
 				6087E6671FA0CB9D00AE20E2 /* RecentViewController.m in Sources */,
 				604A701C1F791C7500807966 /* HJWeakMutableArray.m in Sources */,
 				60D634011FB53E0D00AECA2B /* AddNewMyApplicationStatus.m in Sources */,
 				60B92CA21FB66D3900F96698 /* GetAppDetailThread.m in Sources */,
 				604A6FF81F791BCD00807966 /* AppDelegate.m in Sources */,
+				60A636141FC47E07000614BE /* EditPostThread.m in Sources */,
 				604A6FDF1F7918E700807966 /* ViewController.m in Sources */,
 				60C47C491FC1E0FB00ECC5CC /* SetMyID.m in Sources */,
 				604A6FF41F791B9100807966 /* Configs.m in Sources */,
+				60E0D3EF1FC5E9780002F8B2 /* Center.m in Sources */,
 				6087E66A1FA0CF4200AE20E2 /* Tab_Settings.m in Sources */,
 				60C47C251FC1DF9A00ECC5CC /* MyCardCell.m in Sources */,
 				60B92C981FB66C4400F96698 /* ViewPost.m in Sources */,
+				60BFAB7E1FD0E3500079CB2E /* ManageClass.m in Sources */,
 				605ED4EF1F794F7100AD621C /* Movie.m in Sources */,
 				604A6FEA1F7918E700807966 /* main.m in Sources */,
 				60D6342F1FB5555D00AECA2B /* CustomAlertView.m in Sources */,

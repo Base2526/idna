@@ -1,16 +1,16 @@
 //
-//  UpdatePictureGroupThread.h
-//  iChat
+//  CreateClassThread.h
+//  iDNA
 //
-//  Created by Somkid on 8/10/2560 BE.
+//  Created by Somkid on 2/12/2560 BE.
 //  Copyright © 2560 klovers.org. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface UpdatePictureGroupThread  : NSObject<NSURLConnectionDataDelegate>{
-    id <NSObject /*, Soap_LottoDateDelegate */> delegate;
+@interface CreateClassThread  : NSObject<NSURLConnectionDataDelegate>{
+    id <NSObject> delegate;
     
     // parse xml
     NSXMLParser *parser;
@@ -24,7 +24,7 @@
 @property (nonatomic, copy) void (^completionHandler)(NSData *);
 @property (nonatomic, copy) void (^errorHandler)(NSString *);
 
--(void)start :(NSString *)group_id : (UIImage *)image;
+-(void)start: (UIImage *)image:(NSString *)name;
 -(void)cancel;
 
 @end
