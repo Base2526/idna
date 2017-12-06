@@ -24,6 +24,8 @@
 #import "MyApplicationsRepo.h"
 #import "MyApplications.h"
 
+#import "SWRevealViewController.h"
+
 @interface Tab_iDNA ()
 {
     NSMutableArray *sectionTitleArray;
@@ -31,6 +33,11 @@
     
     MyApplicationsRepo* myAppRepo;
 }
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
+
+#define kWIDTH          UIScreen.mainScreen.bounds.size.width
 
 @end
 
@@ -40,6 +47,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        revealViewController.rightViewRevealWidth = kWIDTH;
+        revealViewController.rightViewRevealOverdraw = 0;
+        
+        [self.revealButton setTarget:revealViewController];
+        [self.revealButton setAction: @selector(revealToggle:)];
+        
+        [self.rightButton setTarget:revealViewController];
+        [self.rightButton setAction: @selector(rightRevealToggle:)];
+        
+        [self.revealViewController panGestureRecognizer];
+        [self.revealViewController tapGestureRecognizer];
+    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)

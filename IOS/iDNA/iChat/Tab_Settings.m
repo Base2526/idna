@@ -21,11 +21,19 @@
 
 #import "UserDataUIAlertView.h"
 
+#import "ManageClass.h"
+#import "SWRevealViewController.h"
+
 @interface Tab_Settings (){
     NSMutableArray *all_data;
     
     NSMutableDictionary *friends;
 }
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
+
+#define kWIDTH          UIScreen.mainScreen.bounds.size.width
 
 @end
 
@@ -36,11 +44,28 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        revealViewController.rightViewRevealWidth = kWIDTH;
+        revealViewController.rightViewRevealOverdraw = 0;
+        
+        [self.revealButton setTarget:revealViewController];
+        [self.revealButton setAction: @selector(revealToggle:)];
+        
+        [self.rightButton setTarget:revealViewController];
+        [self.rightButton setAction: @selector(rightRevealToggle:)];
+        
+        [self.revealViewController panGestureRecognizer];
+        [self.revealViewController tapGestureRecognizer];
+    }
+    
     // hide, block, logout
     
     all_data = [[NSMutableArray alloc] init];
     [all_data addObject:@"Hide"];
     [all_data addObject:@"Block"];
+    [all_data addObject:@"Manage class"];
     [all_data addObject:@"Logout"];
     
     
@@ -154,11 +179,16 @@
             }
             
             [labelName setText:[NSString stringWithFormat:@"%@ (%d)", name, count]];
-
         }
             break;
             
-        case 2:
+        case 2:{
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            
+            [labelName setText:[NSString stringWithFormat:@"%@", name]];
+        }
+            break;
+        case 3:
             // Logout
         {
             cell.accessoryType = UITableViewCellAccessoryNone;
@@ -192,6 +222,13 @@
             break;
             
         case 2:{
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            ManageClass* blockFriends = [storybrd instantiateViewControllerWithIdentifier:@"ManageClass"];
+            [self.navigationController pushViewController:blockFriends animated:YES];
+        }
+            break;
+            
+        case 3:{
             
             UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:@"Logout"
                                                        message:@"Are you sure logout?"

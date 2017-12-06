@@ -29,6 +29,8 @@
 
 #import "KASlideShow.h"
 
+#import "SWRevealViewController.h"
+
 @interface Tab_Center (){
     NSMutableArray *sectionTitleArray;
     NSMutableDictionary *data;
@@ -41,6 +43,11 @@
     
     CenterRepo *centerRepo;
 }
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
+
+#define kWIDTH          UIScreen.mainScreen.bounds.size.width
 @end
 
 @implementation Tab_Center
@@ -49,6 +56,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        revealViewController.rightViewRevealWidth = kWIDTH;
+        revealViewController.rightViewRevealOverdraw = 0;
+        
+        [self.revealButton setTarget:revealViewController];
+        [self.revealButton setAction: @selector(revealToggle:)];
+        
+        [self.rightButton setTarget:revealViewController];
+        [self.rightButton setAction: @selector(rightRevealToggle:)];
+        
+        [self.revealViewController panGestureRecognizer];
+        [self.revealViewController tapGestureRecognizer];
+    }
     
     _datasource = [[NSMutableArray alloc] init];
     
@@ -365,32 +388,33 @@
         case 7:
         case 8:
         case 9:{
-            NSDictionary * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
+            NSArray * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
 //            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
             
-            NSArray *keys   = [_items allKeys];
-            id aKey         = [keys objectAtIndex:indexPath.row];
-            NSDictionary* anObject     = [_items objectForKey:aKey];
-            NSLog(@"");
+//            NSArray *keys   = [_items allKeys];
+//            id aKey         = [keys objectAtIndex:indexPath.row];
+//            NSDictionary* anObject     = [_items objectForKey:aKey];
+//            NSLog(@"");
             // centerRepo
             
 //            NSArray *fprofile = [centerRepo get:[sortedKeys objectAtIndex:indexPath.row]];
 //
 //
-//            NSData *data =  [[anObject objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            NSArray *_item = [_items objectAtIndex:indexPath.row];
+            NSData *data =  [[_item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
 //
 //            if (data == nil) {
 //                return  cell;
 //            }
-//            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             
             TabStoreCell* cell = (TabStoreCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"TabStoreCell" forIndexPath:indexPath];
             
-            if (anObject == nil) {
-                return cell;
-            }
+//            if (anObject == nil) {
+//                return cell;
+//            }
             
-            cell.labelName.text = [anObject objectForKey:@"name"];
+            cell.labelName.text = [f objectForKey:@"name"];
              
              /*
             NSMutableDictionary *picture = [_item valueForKey:@"picture"];
@@ -417,14 +441,16 @@
             [Utility roundView:imageV onCorner:UIRectCornerAllCorners radius:5.0f];
             */
             
-            if ([anObject objectForKey:@"image_url"]) {
+            
+            if ([f objectForKey:@"image_url"]) {
                 [cell.hjImageV clear];
                 [cell.hjImageV showLoadingWheel]; // API_URL
-                [cell.hjImageV  setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [anObject objectForKey:@"image_url"]]]];
+                [cell.hjImageV  setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [f objectForKey:@"image_url"]]]];
                 [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.hjImageV];
             }else{
                 [cell.hjImageV clear];
             }
+            
             
             
             return cell;
@@ -464,6 +490,7 @@
             [self presentModalViewController: navControl animated: YES];
             */
             
+            /*
             NSDictionary * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
             //            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
             
@@ -471,10 +498,26 @@
             id aKey         = [keys objectAtIndex:indexPath.row];
             NSDictionary* anObject     = [_items objectForKey:aKey];
             NSLog(@"");
+            */
+            
+            NSArray * _items = [data valueForKey:[sectionTitleArray objectAtIndex:indexPath.section]];
+            //            NSDictionary *_item = [_items objectAtIndex:indexPath.row];
+            
+            //            NSArray *keys   = [_items allKeys];
+            //            id aKey         = [keys objectAtIndex:indexPath.row];
+            //            NSDictionary* anObject     = [_items objectForKey:aKey];
+            //            NSLog(@"");
+            // centerRepo
+            
+            //            NSArray *fprofile = [centerRepo get:[sortedKeys objectAtIndex:indexPath.row]];
+            //
+            //
+            NSArray *_item = [_items objectAtIndex:indexPath.row];
+            NSString *item_id =  [_item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
             
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             Tab_Center_Detail *tab_Center_Detail    = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Center_Detail"];
-            tab_Center_Detail.app_id   = aKey;
+            tab_Center_Detail.app_id   = item_id;
             [self.navigationController pushViewController:tab_Center_Detail animated:YES];
         }
             break;
@@ -491,71 +534,80 @@
     NSMutableArray *centers = [centerRepo getCenterAll];
     
     
-//    NSMutableDictionary *_tmp = [[NSMutableDictionary alloc] init];
+
     NSMutableDictionary *_item = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item2 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item3 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item4 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item5 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item6 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item7 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item8 = [[NSMutableDictionary alloc] init];
-//    NSMutableDictionary *_item9 = [[NSMutableDictionary alloc] init];
+    
+    NSMutableArray *_item1 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item2 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item3 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item4 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item5 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item6 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item7 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item8 = [[NSMutableArray alloc] init];
+    NSMutableArray *_item9 = [[NSMutableArray alloc] init];
     
     for (int i=0; i<[centers count]; i++) {
         NSArray * item = [centers objectAtIndex:i];
         
-        NSString *item_id = [item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
+        // NSString *item_id = [item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
         
         NSData *data = [[item objectAtIndex:[centerRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
         
         NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         
-        switch ([item_id integerValue]) {
+        switch ([[f objectForKey:@"category"] integerValue]) {
             case 1:{
-                // [_item1 addObject:f];
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:1]];
+                [_item1 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:1]];
             }
                 break;
                 
             case 2:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:2]];
-                
+                [_item2 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:2]];
             }
                 break;
                 
             case 3:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:3]];
+                [_item3 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:3]];
             }
                 break;
                 
             case 4:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:4]];
+                [_item4 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:4]];
             }
                 break;
                 
             case 5:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:5]];
+                [_item5 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:5]];
             }
                 break;
                 
             case 6:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:6]];
+                [_item6 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:6]];
             }
                 break;
                 
             case 7:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:7]];
+                [_item7 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:7]];
             }
                 break;
                 
             case 8:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:8]];
+                [_item8 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:8]];
             }
                 break;
                 
             case 9:{
-                [_item setObject:f forKey:[sectionTitleArray objectAtIndex:9]];
+                [_item8 addObject:item];
+                // [_item setObject:f forKey:[sectionTitleArray objectAtIndex:9]];
             }
                 break;
                 
@@ -626,15 +678,15 @@
     }
     */
     
-//    [_tmp setValue:_item1 forKey:[sectionTitleArray objectAtIndex:1]];
-//    [_tmp setValue:_item2 forKey:[sectionTitleArray objectAtIndex:2]];
-//    [_tmp setValue:_item3 forKey:[sectionTitleArray objectAtIndex:3]];
-//    [_tmp setValue:_item4 forKey:[sectionTitleArray objectAtIndex:4]];
-//    [_tmp setValue:_item5 forKey:[sectionTitleArray objectAtIndex:5]];
-//    [_tmp setValue:_item6 forKey:[sectionTitleArray objectAtIndex:6]];
-//    [_tmp setValue:_item7 forKey:[sectionTitleArray objectAtIndex:7]];
-//    [_tmp setValue:_item8 forKey:[sectionTitleArray objectAtIndex:8]];
-//    [_tmp setValue:_item9 forKey:[sectionTitleArray objectAtIndex:9]];
+    [_item setValue:_item1 forKey:[sectionTitleArray objectAtIndex:1]];
+    [_item setValue:_item2 forKey:[sectionTitleArray objectAtIndex:2]];
+    [_item setValue:_item3 forKey:[sectionTitleArray objectAtIndex:3]];
+    [_item setValue:_item4 forKey:[sectionTitleArray objectAtIndex:4]];
+    [_item setValue:_item5 forKey:[sectionTitleArray objectAtIndex:5]];
+    [_item setValue:_item6 forKey:[sectionTitleArray objectAtIndex:6]];
+    [_item setValue:_item7 forKey:[sectionTitleArray objectAtIndex:7]];
+    [_item setValue:_item8 forKey:[sectionTitleArray objectAtIndex:8]];
+    [_item setValue:_item9 forKey:[sectionTitleArray objectAtIndex:9]];
     
     data = _item;
     

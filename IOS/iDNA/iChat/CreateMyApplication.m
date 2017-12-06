@@ -18,7 +18,7 @@
 #import "Utility.h"
 
 @interface CreateMyApplication (){
-    NSArray *all_data;
+    NSMutableArray *all_data;
     NSString *name, *indexCategory, *textCategory;
     
     UIImage *imgPhoto;
@@ -43,8 +43,9 @@
 
     name = @"";
     textCategory = @"";
-    all_data = @[@"display_name", @"category"];
-    
+    all_data = [[NSMutableArray alloc] init];//@[@"display_name", @"category"];
+    [all_data addObject:@"display_name"];
+    [all_data addObject:@"category"];
     
 //    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
 //    [self.view addGestureRecognizer:gestureRecognizer];
@@ -204,7 +205,6 @@
             
         case 1:
         {
-
             cell = [tableView dequeueReusableCellWithIdentifier:@"Cell-Category" forIndexPath:indexPath];
             
             UILabel *labelCategory = (UILabel *)[cell viewWithTag:10];
@@ -213,6 +213,24 @@
                 [labelCategory setText:@"Select Category"];
             }else{
                 [labelCategory setText:textCategory];
+                
+                
+                
+            }
+        }
+            break;
+            
+        case 2:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:@"Cell-Subcategory" forIndexPath:indexPath];
+            
+            UILabel *labelCategory = (UILabel *)[cell viewWithTag:10];
+            
+            if ([textCategory isEqualToString:@""]) {
+                [labelCategory setText:@"Select Subcategory"];
+            }else{
+                [labelCategory setText:textCategory];
+            
             }
         }
             break;
@@ -267,6 +285,12 @@
     NSDictionary* userInfo = notification.userInfo;
     indexCategory = (NSString*)userInfo[@"index"];
     textCategory = (NSString*)userInfo[@"value"];
+    
+    if([all_data count] == 3){
+        [all_data replaceObjectAtIndex:2 withObject:@"sub_category"];
+    }else{
+        [all_data insertObject:@"sub_category" atIndex:2];
+    }
     
     [self reloadData];
 }

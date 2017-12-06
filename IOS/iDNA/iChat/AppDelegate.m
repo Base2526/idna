@@ -19,6 +19,10 @@
 
 #import "Center.h"
 #import "CenterRepo.h"
+#import "Classs.h"
+#import "ClasssRepo.h"
+
+#import "SWRevealViewController.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -166,8 +170,10 @@
         [self.window makeKeyAndVisible];
         
     }else{
-        MainTabBarController *mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
+        // MainTabBarController *mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
     
+        SWRevealViewController*mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"SWRevealViewController"];
+        
         self.window.rootViewController = mainTabBarController;
         [self.window makeKeyAndVisible];
     }
@@ -865,48 +871,52 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     ////////////////////////////////////////////  Groups  /////////////////////////////////////////////////
     
     ////////////////////////////////////////////  Classs  /////////////////////////////////////////////////
+    
+    
     [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
         
-        /*
-        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-        if ([groupChatRepo get:snapshot.key] == nil){
+        ClasssRepo *classsRepo = [[ClasssRepo alloc] init];
+        if ([classsRepo get:snapshot.key] == nil){
             
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id = snapshot.key;
+            Classs *class = [[Classs alloc] init];
+            class.item_id = snapshot.key;
             
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            
+            class.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             
             NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.create    = [timeStampObj stringValue];
-            groupChat.update    = [timeStampObj stringValue];
+            class.create    = [timeStampObj stringValue];
+            class.update    = [timeStampObj stringValue];
             
-            BOOL sv = [groupChatRepo insert:groupChat];
-            
+            BOOL sv = [classsRepo insert:class];
+            NSLog(@"");
         }else{
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id = snapshot.key;
+            Classs *classs = [[Classs alloc] init];
+            classs.item_id = snapshot.key;
             
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            classs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             
             
             NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.create    = [timeStampObj stringValue];
-            groupChat.update    = [timeStampObj stringValue];
+            classs.create    = [timeStampObj stringValue];
+            classs.update    = [timeStampObj stringValue];
             
-            BOOL sv = [groupChatRepo update:groupChat];
+            BOOL sv = [classsRepo update:classs];
+            NSLog(@"");
         }
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
-        */
+        // ClasssRepo *classRepo = [[ClasssRepo alloc] init];
+        NSMutableArray * l = [classsRepo getClasssAll];
+        NSLog(@"");
+        
+        // [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
     }];
     
     [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {

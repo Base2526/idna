@@ -13,6 +13,7 @@
 
 #import "Tab_Center.h"
 #import "Tab_Settings.h"
+#import "Tab_Home.h"
 
 @interface MainTabBarController ()<UITabBarControllerDelegate, UITabBarDelegate, UITabBarControllerDelegate>{
     NSMutableArray *childObservers;
@@ -29,6 +30,11 @@
     
     childObservers = [[NSMutableArray alloc] init];
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    Tab_Home *tabBarHome =[storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+    tabBarHome.title = @"Home";
+    UINavigationController* homeNavController = [[UINavigationController alloc] initWithRootViewController:tabBarHome];
+    homeNavController.navigationBar.topItem.title = @"Home";
     
     Tab_Contacts *tabBarContacts =[storybrd instantiateViewControllerWithIdentifier:@"Tab_Contacts"];
     tabBarContacts.title = @"Contacts";
@@ -56,7 +62,7 @@
     UINavigationController* settingsNavController = [[UINavigationController alloc] initWithRootViewController:tabBarSettings];
     settingsNavController.navigationBar.topItem.title = @"Settings";
     
-    NSArray *controllers = @[heartNavController, recentNavController, iDNANavController, centerNavController, settingsNavController];
+    NSArray *controllers = @[homeNavController, heartNavController /*, recentNavController*/, iDNANavController, centerNavController, settingsNavController];
     [self setViewControllers:controllers animated:YES];
 }
 

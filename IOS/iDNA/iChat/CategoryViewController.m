@@ -42,7 +42,7 @@
     
     all_data = [[Configs sharedInstance] loadData:_CATEGORY_APPLICATION];
     
-    if ([all_data count] == 0){
+    // if ([all_data count] == 0){
         ApplicationCategoryThread *categoryThread = [[ApplicationCategoryThread alloc] init];
         [categoryThread setCompletionHandler:^(NSString * data) {
         
@@ -74,12 +74,12 @@
         }];
     
         [categoryThread start];
-    }else{
-        sortedKeys = [[all_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
-        
-        [activityIndicator stopAnimating];
-        [activityIndicator removeFromSuperview];
-    }
+//    }else{
+//        sortedKeys = [[all_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
+//
+//        [activityIndicator stopAnimating];
+//        [activityIndicator removeFromSuperview];
+//    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -134,18 +134,18 @@
     [text setText:[anObject objectForKey:@"name"]];
     
     
-    NSDictionary *field_tags_image= [anObject objectForKey:@"field_tags_image"];
-    if ([field_tags_image count] > 0) {
+    NSString *field_image= [anObject objectForKey:@"field_image"];
+    if (![field_image isEqualToString:@""]) {
         
-        NSDictionary *tags_image =  [anObject objectForKey:@"field_tags_image"][@"und"][0];
-        NSLog(@"%@", [tags_image objectForKey:@"filename"]);
-        
-        NSString *url = [[NSString stringWithFormat:@"%@/sites/default/files/%@", [Configs sharedInstance].API_URL, [tags_image objectForKey:@"filename"]] stringByAddingPercentEscapesUsingEncoding:
-                         NSUTF8StringEncoding];
+//        NSDictionary *tags_image =  [anObject objectForKey:@"field_image"];
+//        NSLog(@"%@", [tags_image objectForKey:@"filename"]);
+//
+//        NSString *url = [[NSString stringWithFormat:@"%@/sites/default/files/%@", [Configs sharedInstance].API_URL, [tags_image objectForKey:@"filename"]] stringByAddingPercentEscapesUsingEncoding:
+//                         NSUTF8StringEncoding];
         
         [im clear];
         [im showLoadingWheel];
-        [im setUrl:[NSURL URLWithString:url]];
+        [im setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,field_image]]];
 
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:im ];
     }

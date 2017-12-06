@@ -266,11 +266,13 @@ exports.iDNA_MyApplication_Follow_Unfollow = functions.database.ref(PATH_ROOT_ID
 	const crnt = event.data.current;
     const prev = event.data.previous;
 	
+
+	var val = event.data.current.val();
+
+	var ref = db.ref(PATH_ROOT_IDNA);
+
 	if (crnt.val() && !prev.val()) {
-		var val = event.data.current.val();
-
-		// console.log(val.owner_id);
-
+		
 		// call api เพือไป create follow
 		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_CREATE_MY_APPLICATIOM_FOLLOW, form: {owner_id:val.owner_id, friend_id:event.params.uid, app_id:event.params.app_id}, headers: headers}, function(err,httpResponse,body){ 
 			
@@ -279,12 +281,32 @@ exports.iDNA_MyApplication_Follow_Unfollow = functions.database.ref(PATH_ROOT_ID
 			if ($objectValue.result) {
 				
 				//  update item_id ที่ firebase เพราะว่าถ้าเราใช้ครั้งต่อไป เช่น unfollow เราจะสามารถวิ่งไป update database ได้ถูกต้อง
-				var ref = db.ref(PATH_ROOT_IDNA);
+				
 				ref.child(PATH_CENTER_IDNA).child(event.params.category_id).child(event.params.app_id).child('follows').child(event.params.uid).update({'item_id':$objectValue.item_id });
 			
+
+				// var $objectValue = JSON.parse(body);// 
+				// idna/user/{uid}/my_applications/{item_id}/followers/{friend_id}/{status=[0,1]}
+
+				// console.log('owner_id :' + $objectValue.owner_id + ", friend_id : " + event.params.uid);
+
+				/*
+var PATH_ROOT_IDNA  = 'idna';
+var PATH_USER_IDNA  = 'user'; 
+				*/
+				ref.child(PATH_USER_IDNA).child(val.owner_id).child('my_applications').child(event.params.app_id).child('followers').child(event.params.uid).update({'status': '1'});
 			}	
 		});
 	}else{
+
+		// item_id
+		console.log('item_id : ' + val.item_id + ', owner_id : ' + val.owner_id + ', friend_id : ' + event.params.uid + ', status : ' + val.status);
+
+		// 
+		// idna/user/{val.owner_id}/my_applications/{app_id}/followers/{event.params.uid}/{status=[0,1]}
+
+		ref.child(PATH_USER_IDNA).child(val.owner_id).child('my_applications').child(event.params.app_id).child('followers').child(event.params.uid).update({'status': val.status});
+
 		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_UPDATE_MY_APPLICATIOM_FOLLOW, form: {friend_id:event.params.uid, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
 			// console.log(body);
 		});

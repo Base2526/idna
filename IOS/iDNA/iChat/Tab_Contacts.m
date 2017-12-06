@@ -29,6 +29,8 @@
 #import "GroupChatRepo.h"
 #import "GroupChat.h"
 
+#import "SWRevealViewController.h"
+
 #define __count 5
 
 @interface Tab_Contacts ()<UITableViewDataSource, UITableViewDelegate>{
@@ -39,6 +41,11 @@
     
     FriendProfileRepo *friendPRepo;
 }
+
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
+
+#define kWIDTH          UIScreen.mainScreen.bounds.size.width
 @end
 
 @implementation Tab_Contacts
@@ -47,6 +54,22 @@
 #pragma mark - View Life Cycle
 - (void)viewDidLoad{
     [super viewDidLoad];
+    
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        revealViewController.rightViewRevealWidth = kWIDTH;
+        revealViewController.rightViewRevealOverdraw = 0;
+        
+        [self.revealButton setTarget:revealViewController];
+        [self.revealButton setAction: @selector(revealToggle:)];
+        
+        [self.rightButton setTarget:revealViewController];
+        [self.rightButton setAction: @selector(rightRevealToggle:)];
+        
+        [self.revealViewController panGestureRecognizer];
+        [self.revealViewController tapGestureRecognizer];
+    }
     
     ref = [[FIRDatabase database] reference];
     all_data = [[NSMutableDictionary alloc] init];
@@ -1230,12 +1253,10 @@
                         }
                     }
                     
-                    
                     // กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
                     if (flag) {
                         NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/hide/", child]: @"1"};
                         [ref updateChildValues:childUpdates];
-                        
                         
                         [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
                     }
