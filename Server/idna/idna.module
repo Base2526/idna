@@ -2644,18 +2644,6 @@ function application_category(){
   $result['result']  = TRUE;
   $result['data']    = taxonomy_get_tree_nested(taxonomy_vocabulary_machine_name_load("tags_category_application")->vid);
 
-  // $lists  = taxonomy_get_tree_nested(taxonomy_vocabulary_machine_name_load("tags_category_application")->vid);
-
-  // $values = array();
-  // foreach ($lists as $key => $value) {
-  //   $values[$key] = $value;
-  // }
-
-  // $result['terms'] = entity_load('taxonomy_term', FALSE, array('vid' => 2))[25]->[5]  (null)  @"field_tags_image" : 1 key/value pair  ;
-  // 
-
-  // $result['terms'] = entity_load('taxonomy_term', FALSE, array('vid' => 2))[25]->field_tags_image[LANGUAGE_NONE][0];
-
   return $result;
 }
 
@@ -2666,6 +2654,8 @@ function application_category(){
  *
  * @return array
  *   Array of taxonomy objects (and their parents and children)
+ *
+ *  เป็น function ดึง parent -> child แล้วเราเพิ่มส่วน get field image  ด้วย
  */
 function taxonomy_get_tree_nested($vid, $parent = 0, $max_depth = NULL, $load_entities = FALSE) {
   $tree = taxonomy_get_tree($vid, $parent, $max_depth, $load_entities);
@@ -2685,7 +2675,7 @@ function taxonomy_get_tree_nested($vid, $parent = 0, $max_depth = NULL, $load_en
 
       $term->field_image = substr(file_create_url(entity_load('taxonomy_term', FALSE, array('vid' => $vid))[$tid]->field_tags_image[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
 
-      
+
       if (isset($list[$ptid])) {
         // This term's parent tid exists; add the term to its children array
         $list[$ptid]->children[$tid] = $term;

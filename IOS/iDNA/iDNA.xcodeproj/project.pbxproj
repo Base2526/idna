@@ -551,6 +551,7 @@
 		60A3A8CA1FBDD224002BC1AA /* GroupChatRepo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupChatRepo.m; sourceTree = "<group>"; };
 		60A636121FC47E07000614BE /* EditPostThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditPostThread.h; sourceTree = "<group>"; };
 		60A636131FC47E07000614BE /* EditPostThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditPostThread.m; sourceTree = "<group>"; };
+		60B256121FDA20A7000BA144 /* iDNA.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = iDNA.entitlements; path = iChat/iDNA.entitlements; sourceTree = SOURCE_ROOT; };
 		60B370831FBA692200E72714 /* FriendProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendProfileView.h; sourceTree = "<group>"; };
 		60B370841FBA692200E72714 /* FriendProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendProfileView.m; sourceTree = "<group>"; };
 		60B92C731FB669A900F96698 /* AddPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddPost.h; sourceTree = "<group>"; };
@@ -1005,6 +1006,7 @@
 		604A6FD91F7918E700807966 /* iDNA */ = {
 			isa = PBXGroup;
 			children = (
+				60B256121FDA20A7000BA144 /* iDNA.entitlements */,
 				60C679581FB7C67700077098 /* Info */,
 				60D633C41FB526AF00AECA2B /* Tab */,
 				6087E66E1FA0DB3800AE20E2 /* Images */,
@@ -1737,6 +1739,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.Push = {
+								enabled = 1;
+							};
 						};
 					};
 				};
@@ -2296,17 +2301,18 @@
 			baseConfigurationReference = DEFF5B62E997AD17B3F6730E /* Pods-iDNA.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iChat/iDNA.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 32ENZ344NK;
 				INFOPLIST_FILE = iChat/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = heart.idna;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5f4caaef-1927-4c41-b491-184c91af2ae9";
+				PROVISIONING_PROFILE = "56d2166e-8b4c-4a21-9a49-3a6bad4a2f32";
 				PROVISIONING_PROFILE_SPECIFIER = Distribution_heart.idna;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -2315,18 +2321,19 @@
 			baseConfigurationReference = E00F883DF5A4AC1F3F47483B /* Pods-iDNA.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iChat/iDNA.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Klovers Company Limited (32ENZ344NK)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Klovers Company Limited (32ENZ344NK)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 32ENZ344NK;
 				INFOPLIST_FILE = iChat/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = heart.idna;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "5f4caaef-1927-4c41-b491-184c91af2ae9";
+				PROVISIONING_PROFILE = "56d2166e-8b4c-4a21-9a49-3a6bad4a2f32";
 				PROVISIONING_PROFILE_SPECIFIER = Distribution_heart.idna;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
