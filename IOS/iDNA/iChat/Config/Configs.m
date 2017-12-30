@@ -47,12 +47,12 @@
         self.FIREBASE_DEFAULT_PATH = @"idna/user/";
         
         // v1.0 login by name
-        self.USER_LOGIN         = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/user/login"];
+        self.USER_LOGIN         = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/login"];
 
         self.USER_REGISTER      = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/user/register"];
         // user/request_new_password.json
         self.USER_REQUEST_NEW_PASSWORD = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/user/request_new_password"];
-        self.USER_LOGOUT        = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/idna_user_logout_1"];
+        self.USER_LOGOUT        = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/logout"];
         self.USER_FORGOT_PASSWORD = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/user_forgot_password"];
         
         
@@ -97,6 +97,8 @@
         self.EDIT_DISPLAY_NAME      = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_display_name"];
         self.EDIT_FRIEND_DISPLAY_NAME = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_friend_display_name"];
         self.UPDATE_PICTURE_PROFILE = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_picture_profile"];
+        
+        self.UPDATE_PICTURE_BG      = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_picture_bg"];
         self.EDIT_PHONE             = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_phone_v1_0"];
         self.EDIT_MULTI_PHONE       = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_multi_phone"];
         self.EDIT_MULTI_EMAIL       = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_multi_email"];
@@ -407,6 +409,8 @@
     [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@", snapshot.value);
         
+        
+        /*
         [self saveData:_DATA :snapshot.value];
         
         NSLog(@"%@", [self loadData:_DATA]);
@@ -462,9 +466,8 @@
                     NSLog(@"");
                     
                 }
-                /*
-                 จะออกก็ต่อเมือดึงข้อมูลเสด ถึงคนสุดท้ายเท่านั้น
-                 */
+                
+                // จะออกก็ต่อเมือดึงข้อมูลเสด ถึงคนสุดท้ายเท่านั้น
                 if (friends.count == count) {
                     for (FIRDatabaseReference *ref in childObservers) {
                         [ref removeAllObservers];
@@ -477,6 +480,7 @@
                 }
             }];
         }
+         */
     }];
 }
 

@@ -300,8 +300,8 @@
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         
         EditDisplayName* v = segue.destinationViewController;
-        v.name = [profile objectForKey:@"display_name"];
-        v.isfriend = @"0";
+        // v.name = [profile objectForKey:@"display_name"];
+        // v.isfriend = @"0";
         
     }else if ([segue.identifier isEqualToString:@"MyQRCode"]) {
     

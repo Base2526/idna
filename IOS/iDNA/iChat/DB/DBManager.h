@@ -17,4 +17,9 @@
 -(instancetype) initWithDatabaseFileName:(NSString *)dbFileNane;
 -(NSArray *)loadDataFromDBWithQuery:(NSString *)query;   //  select query.
 -(void)executeQuery:(NSString *)query;          //  insert, update, delete queries.
+
+/*
+ แสดงรายชื่อตารางทั้งหมด database
+ */
+-(NSMutableArray *)fetchTableNames;
 @end

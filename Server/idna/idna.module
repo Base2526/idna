@@ -400,93 +400,92 @@ function idna_user_insert(&$edit, $account, $category) {
     }
   }else{
 
-    // เกิดจากเราใช้ระบบหลังบ้านเราสร้างขึ้น
-    // $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
+      try {
+    
+        // เกิดจากเราใช้ระบบหลังบ้านเราสร้างขึ้น
+        // $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
 
-    generatorQRCode($account, "ios", BI_IOS_IDNA);
+        generatorQRCode($account, "ios", BI_IOS_IDNA);
 
-    $profile = profile2_by_uid_load($account->uid, 'main');
+        $profile = profile2_by_uid_load($account->uid, 'main');
 
-    $image_url_android_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna_andr[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+        $image_url_android_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna_andr[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
 
-    $image_url_ios_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+        $image_url_ios_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
 
-    // add profile ให้กับ user
-    $values = array("profiles"=>array(
-                        "name"            => $account->name,
-                        "mail"            => $account->mail,
-                        "udid"            => 'auto-udid',
-                        "platform"        => 'auto-platform',
-                        "bundleidentifier"=> 'auto-bundleidentifier',
-                        "version"         => 'auto-version',
-                        "image_url_android_qrcode" => $image_url_android_qrcode,
-                        "image_url_ios_qrcode" => $image_url_ios_qrcode,
-                        "create"          => time(),
-                        "update"          => time()
-                      ));
-        
-    $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/', $values);
+        // add profile ให้กับ user
+        $values = array("profiles"=>array(
+                            "name"            => $account->name,
+                            "mail"            => $account->mail,
+                            "udid"            => 'auto-udid',
+                            "platform"        => 'auto-platform',
+                            "bundleidentifier"=> 'auto-bundleidentifier',
+                            "version"         => 'auto-version',
+                            "image_url_android_qrcode" => $image_url_android_qrcode,
+                            "image_url_ios_qrcode" => $image_url_ios_qrcode,
+                            "create"          => time(),
+                            "update"          => time()
+                          ));
+            
+        $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/', $values);
 
-    // Check is Friend ?, if is not is add friend 
-    foreach (load_user() as $friend_id => $value){
-      if (strcasecmp($account->uid, $friend_id) != 0) {
+        // Check is Friend ?, if is not is add friend 
+        foreach (load_user() as $friend_id => $value){
+          if (strcasecmp($account->uid, $friend_id) != 0) {
 
-        $chat_id = generateRandomString(DEFUALT_LENGTH_CHAT_ID);
+            $chat_id = generateRandomString(DEFUALT_LENGTH_CHAT_ID);
 
-        /*
-        เป็นการเพือนให้ตัวเรา
-        */
-        $user_profile = profile2_by_uid_load($account->uid, 'main');
+            // เป็นการเพือนให้ตัวเรา
+            $user_profile = profile2_by_uid_load($account->uid, 'main');
 
-        $friend_values = array();
-        $friend_values['field_name'] = 'field_profile_friends'; // field collection name
+            $friend_values = array();
+            $friend_values['field_name'] = 'field_profile_friends'; // field collection name
 
-        $friend_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $friend_id;
-        $friend_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
-        $friend_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = 10;
-      
-        $field_entity = entity_create('field_collection_item', $friend_values);
-        $field_entity->setHostEntity('profile2', $user_profile);
-        $field_entity->save();
+            $friend_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $friend_id;
+            $friend_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
+            $friend_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = 10;
+          
+            $field_entity = entity_create('field_collection_item', $friend_values);
+            $field_entity->setHostEntity('profile2', $user_profile);
+            $field_entity->save();
 
-        $values = array(
-          "status"       => 'friend',
-          "chat_id"      => $chat_id,
-          "item_id"      => $field_entity->item_id,
-          "create"       => time()
-        );
-        $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/friends/' . $friend_id . "/", $values);
-        
+            $values = array(
+              "status"       => 'friend',
+              "chat_id"      => $chat_id,
+              "item_id"      => $field_entity->item_id,
+              "create"       => time()
+            );
+            $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/friends/' . $friend_id . "/", $values);
+            
 
-        /*
-        เป็นการเพิ่มตัวเรา  ให้เพือน
-        */
+            // เป็นการเพิ่มตัวเรา  ให้เพือน
+            $friend_profile = profile2_by_uid_load($friend_id, 'main');
 
-        $friend_profile = profile2_by_uid_load($friend_id, 'main');
+            $user_values = array();
+            $user_values['field_name'] = 'field_profile_friends'; // field collection name
 
-        $user_values = array();
-        $user_values['field_name'] = 'field_profile_friends'; // field collection name
+            $user_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $account->uid;
+            $user_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
+            $user_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = 10;
+          
+            $field_entity = entity_create('field_collection_item', $user_values);
+            $field_entity->setHostEntity('profile2', $friend_profile);
+            $field_entity->save();
 
-        $user_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $account->uid;
-        $user_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
-        $user_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = 10;
-      
-        $field_entity = entity_create('field_collection_item', $user_values);
-        $field_entity->setHostEntity('profile2', $friend_profile);
-        $field_entity->save();
-
-        $values = array(
-          "status"       => 'friend',
-          "chat_id"      => $chat_id,
-          "item_id"      => $field_entity->item_id,
-          "create"       => time()
-        );
-        $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $friend_id . '/friends/' . $account->uid . "/", $values);
-        
+            $values = array(
+              "status"       => 'friend',
+              "chat_id"      => $chat_id,
+              "item_id"      => $field_entity->item_id,
+              "create"       => time()
+            );
+            $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $friend_id . '/friends/' . $account->uid . "/", $values);
+            
+          }
+        }  
+        // end foreach
+      } catch (Exception $e) {
+          watchdog(TAG, 'Caught exception: %message', array('%message' => $e->getMessage()), WATCHDOG_INFO);
       }
-    }  
-    // end foreach
-
   }
 }
 
@@ -1019,10 +1018,19 @@ function idna_services_resources()
 {
   $services = array(
     // 
-    'idna_user_logout_1'=>array(
+    'login'=>array(
+      'create' =>array(
+        'help'=>'Services : Login',
+        'callback'=>'login',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+      ),
+    ),
+    'logout'=>array(
       'create' =>array(
         'help'=>'Services User Logout',
-        'callback'=>'idna_user_logout_1',
+        'callback'=>'logout',
         'access callback' => 'user_access',
         'access arguments' => array('access content'),
         'access arguments append' => FALSE,
@@ -1381,6 +1389,26 @@ function idna_services_resources()
       'create' =>array(
         'help'=>'idna Update Profile',
         'callback'=>'update_picture_profile',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+    'update_picture_bg'=>array(
+      'create' =>array(
+        'help'=>'idna Update Profile BG',
+        'callback'=>'update_picture_bg',
         'access callback' => 'user_access',
         'access arguments' => array('access content'),
         'access arguments append' => FALSE,
@@ -2183,12 +2211,12 @@ function _klovers_upload_file()
 /**
  * Implements hook_services_resources_alter().
  */
-function idna_services_resources_alter(&$resources, &$endpoint) {
-  // Override the normal user login callback.
-  if (isset($resources['user']['actions']['login']['callback'])) {
-    $resources['user']['actions']['login']['callback'] = 'idna_services_login';
-  }
-}
+// function idna_services_resources_alter(&$resources, &$endpoint) {
+//   // Override the normal user login callback.
+//   if (isset($resources['user']['actions']['login']['callback'])) {
+//     $resources['user']['actions']['login']['callback'] = 'idna_services_login';
+//   }
+// }
 
 /**
  * Replacement callback for the Services user login resource. Optionally use the email address to login.
@@ -2196,24 +2224,24 @@ function idna_services_resources_alter(&$resources, &$endpoint) {
  * @see _user_resource_login().        
  * @see https://drupal.org/node/1431724
  */
-function idna_services_login() {
+// function idna_services_login() {
 
-  if (valid_email_address($_REQUEST['username'])){
-    $account = user_load_by_mail($_REQUEST['username']);
-    $username = $account->name;
-  } else {
-    $username = $username_email;
-  }
+//   if (valid_email_address($_REQUEST['username'])){
+//     $account = user_load_by_mail($_REQUEST['username']);
+//     $username = $account->name;
+//   } else {
+//     $username = $username_email;
+//   }
   
-  //Pass through to the existing services callback
-  module_load_include('inc', 'services', 'resources/user_resource');
+//   //Pass through to the existing services callback
+//   module_load_include('inc', 'services', 'resources/user_resource');
 
-  $result['result']   = TRUE;
-  $result['data']     = _user_resource_login($username, $_REQUEST['password']);
-  return $result;
-}
+//   $result['result']   = TRUE;
+//   $result['data']     = _user_resource_login($username, $_REQUEST['password']);
+//   return $result;
+// }
 
-function idna_user_logout_1()
+function logout()
 {
   $result = array();
 
@@ -2226,7 +2254,7 @@ function idna_user_logout_1()
 
   if (empty($_REQUEST['uid'])) {
     $result['result'] = FALSE;
-    $result['message']  = "function : idna_user_logout_1, parameter";
+    $result['message']  = "function : logout, parameter";
     return $result;
   }
 
@@ -2234,7 +2262,7 @@ function idna_user_logout_1()
 
   $uid = $_REQUEST['uid'];
 
-  $profile = profile2_by_uid_load($uid, 'main');
+  // $profile = profile2_by_uid_load($uid, 'main');
 
   /*
   $field_collection_item_values = array();
@@ -2262,9 +2290,26 @@ function idna_user_logout_1()
 	// Destroy the current session.
 	// module_invoke_all('user_logout', $profile);
 
-  drupal_session_destroy_uid($uid);
+  $user=user_load($uid);
 
-  module_invoke_all('user_logout', $profile);
+  // watchdog(TAG, 'TEST : %account', array('%account'=> serialize($profile)), WATCHDOG_INFO);
+  watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+
+  // drupal_session_destroy_uid($uid);
+  // module_invoke_all('user_logout', $profile);
+
+  $original_session_state = drupal_save_session();
+  drupal_save_session(TRUE);
+
+  // Destroy the current session.
+  module_invoke_all('user_logout', $user);
+  session_destroy();
+
+  // Load the anonymous user.
+  // $user = drupal_anonymous_user();
+  drupal_anonymous_user();
+
+  drupal_save_session($original_session_state);
 
 	// session_destroy();
   /*
@@ -2277,6 +2322,30 @@ function idna_user_logout_1()
 	$result['result'] = TRUE;
 
 	return $result;
+}
+
+function login(){
+  $result = array();
+
+  if (!check_header()) {
+    # code...
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['name']) || empty($_REQUEST['pass'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : login, parameter";
+    return $result;
+  }
+  
+  module_load_include('inc', 'services', 'resources/user_resource');
+
+  $result['result']   = TRUE;
+  $result['data']     = _user_resource_login($_POST['name'], $_POST['pass']);
+
+  return $result;
 }
 
 function annmousu(){
@@ -5662,6 +5731,65 @@ function update_picture_profile(){
   return $result;
 }
 
+function update_picture_bg(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : update_picture_bg, parameter";
+    return $result;
+  }
+
+  global $firebase;
+
+  $uid   = $_REQUEST['uid'];
+  $image = $_REQUEST['image'];
+
+  $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+
+  if($image != ""){
+
+    // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+    $binary = base64_decode($image);
+
+    //Create the directory if it does not already exist, otherwise check the permissions
+    $directory = 'public://';
+    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+    $currentDate = date("Ymd");
+    $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+    
+    //Saves a file to the specified destination and creates a database entry.
+    $file = klovers_file_save_data($_POST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+
+    // save รูป profile
+    $profile->field_picture_bg[LANGUAGE_NONE][0] = (array)$file;
+  }
+
+  profile2_save($profile);
+
+  
+  // url image profile 
+  $url = substr(file_create_url($profile->field_picture_bg[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+
+  // Firebase : update image url profile
+  $data_update = array(
+      "bg_url"  =>$url
+  );
+  $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/", $data_update);
+  // Firebase : update image url profile
+
+  $result['result'] = TRUE;  
+  $result['url'] = $url;
+  return $result;
+}
+
 /*
   เป็น function ที่ใช้ update profile ที่โดนเรียกใช้ cloud function firebase
   โดยใช้ Update
@@ -5957,14 +6085,61 @@ function create_my_application_follow(){
     เจ้าของ application
   */
   $owner_id    = $_REQUEST['owner_id'];
+
   /*
   เพือนที่กด follow application
   */
   $friend_id    = $_REQUEST['friend_id'];
+
   /*
   id application
   */
   $app_id = $_REQUEST['app_id'];
+
+
+  /*
+    เพิ่มเติม
+    เราต้องวิ่งไปเพิ่ม following ของ friend_id ด้วย
+  */ 
+  $friend_profile = profile2_by_uid_load($friend_id, 'main');
+
+  $flag = false;
+  if(isset($friend_profile->field_following)){
+    foreach ($friend_profile->field_following[LANGUAGE_NONE] as $key => $value) {
+      $items = field_collection_item_load($value['value']);
+      if ($items->field_id_my_app_following[LANGUAGE_NONE][0]['value'] == $app_id ) {
+        $flag = true;
+        break;
+      }
+    }
+  }
+  
+  if (!$flag) {
+    $values = array();
+    $values['field_name'] = 'field_following'; 
+
+    // #1 field_class_image_profile
+    $values['field_id_my_app_following'][LANGUAGE_NONE][0]['value'] = $app_id;
+  
+    // #2 field_name_group
+    $values['field_status_following'][LANGUAGE_NONE][0]['value'] = "1";
+
+    // Create the field collection entry and associate it with the profile
+    $field_entity = entity_create('field_collection_item', $values);
+    $field_entity->setHostEntity('profile2', $friend_profile);
+    $field_entity->save();
+
+
+    $data_update = array(
+      "item_id"    => $field_entity->item_id,
+      "status"     => "1",
+      "create"     => time(),
+      "update"     => time()
+    );
+    $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $friend_id ."/" . PATH_FOLLOWING ."/". $app_id, $data_update);
+  }
+
+  // เพิ่มเติม
 
   /*
     เป็นการ load my_app_follower  ทั้งหมด เพือ check ว่าเราเคยกด follow หรือไม่ ถ้าไม่ ก็ สร้าง ปกติ แต่ถ้า เคยแล้วให้  return item_id 
@@ -6062,14 +6237,83 @@ function update_my_application_follow(){
     return $result;
   }
 
-  if (empty($_REQUEST['friend_id']) || empty($_REQUEST['data']) ) {
+  if (empty($_REQUEST['friend_id']) || empty($_REQUEST['app_id']) || empty($_REQUEST['data']) ) {
     $result['result'] = FALSE;
     $result['message']  = "function : update_my_application_follow, parameter";
     return $result;
   }
 
+  global $firebase;
+
   $friend_id = $_REQUEST['friend_id'];
   $data      = $_REQUEST['data'];
+
+   /*
+  id application
+  */
+  $app_id = $_REQUEST['app_id'];
+
+ /*
+    เพิ่มเติม
+    เราต้องวิ่งไปเพิ่ม following ของ friend_id ด้วย
+  */ 
+  $friend_profile = profile2_by_uid_load($friend_id, 'main');
+
+  $flag = false;
+
+  if(isset($friend_profile->field_following)){
+    foreach ($friend_profile->field_following[LANGUAGE_NONE] as $key => $value) {
+      $items = field_collection_item_load($value['value']);
+      if ($items->field_id_my_app_following[LANGUAGE_NONE][0]['value'] == $app_id ) {
+
+        $wrapper = entity_metadata_wrapper('field_collection_item', $items);
+        $wrapper->field_status_following->set($data['status']);        
+        $wrapper->save();
+
+        $data_update = array(
+          "item_id"    => $items->item_id,
+          "status"     => $data['status'],
+          "update"     => time()
+        );
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $friend_id ."/" . PATH_FOLLOWING ."/". $app_id, $data_update);
+
+
+        $flag = true;
+        break;
+      }
+    }
+  }
+  
+  if (!$flag) {
+    $values = array();
+    $values['field_name'] = 'field_following'; 
+
+    // #1 field_class_image_profile
+    $values['field_id_my_app_following'][LANGUAGE_NONE][0]['value'] = $app_id;
+  
+    // #2 field_name_group
+    $values['field_status_following'][LANGUAGE_NONE][0]['value'] = "1";
+
+    // Create the field collection entry and associate it with the profile
+    $field_entity = entity_create('field_collection_item', $values);
+    $field_entity->setHostEntity('profile2', $friend_profile);
+    $field_entity->save();
+
+
+    $data_update = array(
+      "item_id"    => $field_entity->item_id,
+      "status"     => "1",
+      "create"     => time(),
+      "update"     => time()
+    );
+    $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $friend_id ."/" . PATH_FOLLOWING . $app_id, $data_update);
+  }
+  /*
+  เพิ่มเติม
+  */
+
+
+
 
   if (array_key_exists('item_id', $data)) {
 

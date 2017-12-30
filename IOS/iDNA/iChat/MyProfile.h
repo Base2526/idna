@@ -16,19 +16,27 @@
 
 #import "TopAlignedLabel.h"
 
-@interface MyProfile : UIViewController<GKImagePickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface MyProfile : UIViewController<GKImagePickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
 
 @property (nonatomic, strong) GKImagePicker *imagePicker;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
+/*
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageV;
 @property (weak, nonatomic) IBOutlet UITextField *txtFName;
 //@property (weak, nonatomic) IBOutlet UITextField *txtFEmail;
 @property (weak, nonatomic) IBOutlet TopAlignedLabel *lblEmail;
+
+
 @property (weak, nonatomic) IBOutlet UITextField *txtFStatus;
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageV_QRCode;
+@property (weak, nonatomic) IBOutlet HJManagedImageV *imageV_bg;
 
 @property (strong, nonatomic) FIRDatabaseReference *ref;
 
 - (IBAction)onSave:(id)sender;
+*/
 @end

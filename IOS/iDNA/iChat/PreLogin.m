@@ -57,8 +57,16 @@
         
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
-        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
         
+        NSObject* obj= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+        
+        if ([obj isKindOfClass:[NSArray class]]) {
+            
+            NSArray *objArray = (NSArray *)obj;
+            NSString* text = [objArray objectAtIndex:0];
+        }
+        
+        NSDictionary *jsonDict = (NSDictionary *)obj;
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
             
             NSMutableDictionary *idata  = jsonDict[@"data"];

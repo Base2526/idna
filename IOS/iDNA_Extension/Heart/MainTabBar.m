@@ -91,13 +91,13 @@
     heartNavController.visibleViewController.navigationItem.rightBarButtonItem = searchItem;
     
 
-    TabBarDNA *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"TabBarDNA"];
-    tarBarHome.title = @"iDNA";
+    // TabBarDNA *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"TabBarDNA"];
+    // tarBarHome.title = @"iDNA";
     //[tarBarHome.tabBarItem setImage:[UIImage imageNamed:@"ic-dna.png"]];
     // UINavigationController* homeNavController = [[UINavigationController alloc] initWithRootViewController:tarBarHome];
 
-    // MXScrollViewController *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"MXiDNAScrollViewController"];
-    // tarBarHome.title = @"iDNA";
+     MXScrollViewController *tarBarHome =[storybrd instantiateViewControllerWithIdentifier:@"MXiDNAScrollViewController"];
+     tarBarHome.title = @"iDNA x";
     
     UIImage *ic_idna = [UIImage imageNamed:@"ic_idna"];
     [tarBarHome.tabBarItem setImage:ic_idna];

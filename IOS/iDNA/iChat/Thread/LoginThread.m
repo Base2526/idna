@@ -34,13 +34,17 @@
     
     
     // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
+    /*
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@?udid=%@&platform=ios&bundleidentifier=%@&version=%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGIN, [[Configs sharedInstance] getUniqueDeviceIdentifierAsString], [[Configs sharedInstance] getBundleIdentifier], [[Configs sharedInstance] getVersionApplication] ]];
+     */
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGIN]];
     
-    
-    NSLog(@">%@", [[Configs sharedInstance] getUniqueDeviceIdentifierAsString]);
+    // NSLog(@">%@", [[Configs sharedInstance] getUniqueDeviceIdentifierAsString]);
     
     //initialize a request from url
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[url standardizedURL]];
+    // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[url standardizedURL]];
+    
+    NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
     //set http method
     [request setHTTPMethod:@"POST"];
@@ -59,8 +63,10 @@
     
     //set request content type we MUST set this value.
     // [request setValue:@"application/x-www-form-urlencoded; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+     // [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+     // [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     // [request setValue:@"aAs9B_vHJ86yf5gjvXbFRfrPPBHV9ENHFIu8riaI7wM" forHTTPHeaderField:@"X-CSRF-Token"];
     
     //set post data of request
@@ -71,7 +77,7 @@
                             @"password": password};
      */
     
-    /* v1.1 */
+    /* v1.1
     NSDictionary* dict = @{ @"username_email": username,
                             @"password": password};
     
@@ -87,59 +93,42 @@
     
     //start the connection
     [connection start];
+    */
     
-}
-
-- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [self.receivedData setLength:0];
-}
-
-/*
- this method might be calling more than one times according to incoming data size
- */
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data{
-    [self.receivedData appendData:data];
-}
-/*
- if there is an error occured, this method will be called by connection
- */
--(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
+    NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
     
-    NSLog(@"%@" , error);
+    [dataToSend appendFormat:@"name=%@&pass=%@", username, password];
+    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
     
-    if (self.errorHandler) {
-        self.errorHandler([error description]);
-    }
-}
-
-/*
- if data is successfully received, this method will be called by connection
- */
--(void)connectionDidFinishLoading:(NSURLConnection *)connection{
+    /*
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request
+                                                               fromData:data completionHandler:^(NSData *data,NSURLResponse *response,NSError *error) {
+                                                                   
+                                                                   if (error == nil) {
+                                                                       self.completionHandler(data);
+                                                                   }else{
+                                                                       self.errorHandler([error description]);
+                                                                   }
+                                                               }];
     
-    //initialize convert the received data to string with UTF8 encoding
-    NSString *htmlSTR = [[NSString alloc] initWithData:self.receivedData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@" , htmlSTR);
-
-//    NSError *error = nil;
-//    id object = [NSJSONSerialization
-//                 JSONObjectWithData:self.receivedData
-//                 options:0
-//                 error:&error];
-//    
-//    if(error) { /* JSON was malformed, act appropriately here */ }
-//    if([object isKindOfClass:[NSDictionary class]]){
-//        NSDictionary *results = object;
-//        NSLog(@"%@",[results objectForKey:@"status"]);
-//        NSLog(@"%@",[results objectForKey:@"output"]);
-//    }else{
-//        NSLog(@"there is not an JSON object");
-//    }
-   
-    if (self.completionHandler) {
-        self.completionHandler(self.receivedData);
-    }
+    // 5
+    [uploadTask resume];
+    */
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if (error == nil) {
+            self.completionHandler(data);
+        }else{
+            self.errorHandler([error description]);
+        }
+    }];
+    
+    [postDataTask resume];
 }
 @end
 

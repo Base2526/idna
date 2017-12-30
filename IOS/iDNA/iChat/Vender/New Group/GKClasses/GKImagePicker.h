@@ -19,6 +19,7 @@
 @property (nonatomic, strong, readonly) UIImagePickerController *imagePickerController;
 @property (nonatomic, assign) BOOL resizeableCropArea;
 
+@property (nonatomic, assign) NSString *_tag;
 @end
 
 

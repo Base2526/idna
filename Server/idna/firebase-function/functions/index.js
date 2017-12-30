@@ -307,7 +307,7 @@ var PATH_USER_IDNA  = 'user';
 
 		ref.child(PATH_USER_IDNA).child(val.owner_id).child('my_applications').child(event.params.app_id).child('followers').child(event.params.uid).update({'status': val.status});
 
-		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_UPDATE_MY_APPLICATIOM_FOLLOW, form: {friend_id:event.params.uid, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
+		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_UPDATE_MY_APPLICATIOM_FOLLOW, form: {friend_id:event.params.uid, app_id:event.params.app_id, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
 			// console.log(body);
 		});
 	}

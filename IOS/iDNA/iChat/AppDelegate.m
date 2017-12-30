@@ -16,13 +16,19 @@
 
 #import "MyApplicationsRepo.h"
 #import "MyApplications.h"
-
 #import "Center.h"
 #import "CenterRepo.h"
 #import "Classs.h"
 #import "ClasssRepo.h"
 
-#import "SWRevealViewController.h"
+#import "Following.h"
+#import "FollowingRepo.h"
+
+#import "MainViewController.h"
+
+#import "MainTabBarController.h"
+
+#import "ProfilesRepo.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -172,13 +178,49 @@
     }else{
         // MainTabBarController *mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
     
-        SWRevealViewController*mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"SWRevealViewController"];
+//        SWRevealViewController*mainTabBarController = [storyboard instantiateViewControllerWithIdentifier:@"SWRevealViewController"];
+//
+//        self.window.rootViewController = mainTabBarController;
+//        [self.window makeKeyAndVisible];
         
-        self.window.rootViewController = mainTabBarController;
+        
+//        MainViewController *mainViewController = [storyboard instantiateInitialViewController];
+//        mainViewController.rootViewController = navigationController;
+//        [mainViewController setupWithType:indexPath.row];
+//
+//        UIWindow *window = UIApplication.sharedApplication.delegate.window;
+//        window.rootViewController = mainViewController;
+        
+        // MainViewController
+        
+        UINavigationController *navigationController = [storyboard instantiateViewControllerWithIdentifier:@"NavigationController"];
+        [navigationController setViewControllers:@[[storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"]]];
+        
+        /*
+        MainViewController*mainView = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];
+        
+        self.window.rootViewController = mainView;
+        [self.window makeKeyAndVisible];
+         */
+        
+        MainTabBarController *mainTabBar = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
+        
+        MainViewController *mainViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];;//[storyboard instantiateInitialViewController];
+        mainViewController.rootViewController = mainTabBar;
+        [mainViewController setupWithType:1];
+        
+        // UIWindow *window = UIApplication.sharedApplication.delegate.window;
+        self.window.rootViewController = mainViewController;
+        
         [self.window makeKeyAndVisible];
     }
     //------>
     
+    
+    //  แสดงรายชื่อตารางทั้งหมด database
+    DBManager * db = [[DBManager alloc] init];
+    NSLog(@"แสดงรายชื่อตารางทั้งหมด database : %@",[db fetchTableNames]);
+    //  แสดงรายชื่อตารางทั้งหมด database
     
     return YES;
 }
@@ -462,7 +504,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snap.value options:0 error:&err];
                 friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                 
-                
                 NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                 friendProfile.create    = [timeStampObj stringValue];
@@ -607,7 +648,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             
             BOOL sv = [myAppRepo insert:myApp];
 
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_reloadData" object:self userInfo:@{}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA" object:self userInfo:@{}];
         }
     }];
     
@@ -624,7 +665,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         BOOL sv = [myAppRepo update:myApp];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_reloadData" object:self userInfo:@{}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA" object:self userInfo:@{}];
     }];
     
     [[[ref child:child] child:@"my_applications"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -632,7 +673,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         MyApplicationsRepo *myAppRepo = [[MyApplicationsRepo alloc] init];
         [myAppRepo deleteMyApplication:snapshot.key];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_reloadData" object:self userInfo:@{}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA" object:self userInfo:@{}];
     }];
     
     ////////////////////////////////////////////  MY Applications  /////////////////////////////////////////////////
@@ -654,8 +695,75 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 //        
 //        [childObserver_Friends addObject:[ref child:child]];
 
-        if ([snapshot.key isEqualToString:@"profiles"] || [snapshot.key isEqualToString:@"friends"]) {
+        /*if ([snapshot.key isEqualToString:@"profiles"] || [snapshot.key isEqualToString:@"friends"]) {
             
+            
+            NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+            NSLog(@"");
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                //load your data here.
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //update UI in main thread.
+                    
+                    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+                    [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
+                    [newDict removeObjectForKey:snapshot.key];
+                    
+                    [newDict setObject:snapshot.value forKey:snapshot.key];
+                    
+                    [[Configs sharedInstance] saveData:_DATA :newDict];
+                    
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+                    
+                });
+            });
+            
+         }*/
+        if ([snapshot.key isEqualToString:@"profiles"]) {
+            
+            /*
+             NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+             NSLog(@"");
+             dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                 //load your data here.
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     //update UI in main thread.
+                     
+                     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+                     [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
+                     [newDict removeObjectForKey:snapshot.key];
+                     
+                     [newDict setObject:snapshot.value forKey:snapshot.key];
+                     
+                     [[Configs sharedInstance] saveData:_DATA :newDict];
+                     
+                     
+                     [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+                     
+                 });
+             });
+            */
+            
+            ProfilesRepo*profileRepo = [[ProfilesRepo alloc] init];
+            
+            NSArray *profile = [profileRepo get];
+            NSLog(@"");
+            /*
+            MyApplications *myApp = [[MyApplications alloc] init];
+            myApp.app_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            BOOL sv = [myAppRepo update:myApp];
+            */
+             
+        }else if ([snapshot.key isEqualToString:@"friends"]) {
+            
+            
+            NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+            NSLog(@"");
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                 //load your data here.
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -871,8 +979,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     ////////////////////////////////////////////  Groups  /////////////////////////////////////////////////
     
     ////////////////////////////////////////////  Classs  /////////////////////////////////////////////////
-    
-    
     [[[ref child:child] child:@"classs"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
@@ -966,6 +1072,96 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     }];
     
     ////////////////////////////////////////////  Classs  /////////////////////////////////////////////////
+    
+    
+    ////////////////////////////////////////////  Following  /////////////////////////////////////////////////
+    [[[ref child:child] child:@"following"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+        FollowingRepo *followingRepo = [[FollowingRepo alloc] init];
+        if ([followingRepo get:snapshot.key] == nil){
+            
+            Following *following = [[Following alloc] init];
+            following.item_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            following.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            following.create    = [timeStampObj stringValue];
+            following.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [followingRepo insert:following];
+            NSLog(@"");
+        }else{
+            Following *following = [[Following alloc] init];
+            following.item_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            following.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            following.create    = [timeStampObj stringValue];
+            following.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [followingRepo update:following];
+            NSLog(@"");
+        }
+        
+        // ClasssRepo *classRepo = [[ClasssRepo alloc] init];
+        NSMutableArray * l = [followingRepo getFollowingAll];
+        NSLog(@"");
+        
+        // [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+    }];
+    
+    [[[ref child:child] child:@"following"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        
+         NSLog(@"%@-%@", snapshot.key, snapshot.value);
+         NSLog(@"");
+         
+         FollowingRepo *followingRepo = [[FollowingRepo alloc] init];
+         Following *following = [[Following alloc] init];
+         following.item_id = snapshot.key;
+         
+         NSError * err;
+         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+         following.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+         
+         
+         NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+         NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+         following.update    = [timeStampObj stringValue];
+         
+         BOOL sv = [followingRepo update:following];
+         
+         // [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+    }];
+    
+    [[[ref child:child] child:@"following"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot){
+        
+        NSLog(@"%@-%@", snapshot.key, snapshot.value);
+        NSLog(@"");
+        
+         NSLog(@"%@-%@", snapshot.key, snapshot.value);
+         NSLog(@"");
+         
+         FollowingRepo *followingRepo = [[FollowingRepo alloc] init];
+         
+         if ([followingRepo get:snapshot.key] != nil) {
+             [followingRepo deleteFollowing:snapshot.key];
+         
+             // [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+         }
+    }];
+    
+    ////////////////////////////////////////////  Following  /////////////////////////////////////////////////
     
     
     ////////////////////////////////////////////  Center  /////////////////////////////////////////////////

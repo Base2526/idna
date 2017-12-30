@@ -9,10 +9,22 @@
 #import <UIKit/UIKit.h>
 #import "HJManagedImageV.h"
 
+
 @interface Tab_Home : UIViewController
 
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageProfile;
 @property (weak, nonatomic) IBOutlet UILabel *labelName;
-- (IBAction)onAddFriend:(id)sender;
+@property (weak, nonatomic) IBOutlet UILabel *labelEmail;
+
+@property (weak, nonatomic) IBOutlet HJManagedImageV *imageV_qrcode;
+
+@property (weak, nonatomic) IBOutlet HJManagedImageV *imageBG;
+
+@property (weak, nonatomic) IBOutlet UIImageView *imageV_edit;
+
+
 - (IBAction)onSettings:(id)sender;
+- (IBAction)onClose:(id)sender;
+
+
 @end

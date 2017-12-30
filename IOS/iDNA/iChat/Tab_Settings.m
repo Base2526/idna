@@ -22,7 +22,8 @@
 #import "UserDataUIAlertView.h"
 
 #import "ManageClass.h"
-#import "SWRevealViewController.h"
+#import "CreateGroup.h"
+// #import "SWRevealViewController.h"
 
 @interface Tab_Settings (){
     NSMutableArray *all_data;
@@ -44,6 +45,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    /*
     SWRevealViewController *revealViewController = self.revealViewController;
     if ( revealViewController )
     {
@@ -59,6 +61,7 @@
         [self.revealViewController panGestureRecognizer];
         [self.revealViewController tapGestureRecognizer];
     }
+    */
     
     // hide, block, logout
     
@@ -66,6 +69,7 @@
     [all_data addObject:@"Hide"];
     [all_data addObject:@"Block"];
     [all_data addObject:@"Manage class"];
+    [all_data addObject:@"Create Group"];
     [all_data addObject:@"Logout"];
     
     
@@ -188,7 +192,13 @@
             [labelName setText:[NSString stringWithFormat:@"%@", name]];
         }
             break;
-        case 3:
+        case 3:{
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            
+            [labelName setText:[NSString stringWithFormat:@"%@", name]];
+        }
+            break;
+        case 4:
             // Logout
         {
             cell.accessoryType = UITableViewCellAccessoryNone;
@@ -229,6 +239,13 @@
             break;
             
         case 3:{
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            CreateGroup* createGroup = [storybrd instantiateViewControllerWithIdentifier:@"CreateGroup"];
+            [self.navigationController pushViewController:createGroup animated:YES];
+        }
+            break;
+        
+        case 4:{
             
             UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:@"Logout"
                                                        message:@"Are you sure logout?"

@@ -29,7 +29,7 @@
 #import "GroupChatRepo.h"
 #import "GroupChat.h"
 
-#import "SWRevealViewController.h"
+#import "Tab_Home.h"
 
 #define __count 5
 
@@ -55,6 +55,7 @@
 - (void)viewDidLoad{
     [super viewDidLoad];
     
+    /*
     SWRevealViewController *revealViewController = self.revealViewController;
     if ( revealViewController )
     {
@@ -70,6 +71,7 @@
         [self.revealViewController panGestureRecognizer];
         [self.revealViewController tapGestureRecognizer];
     }
+    */
     
     ref = [[FIRDatabase database] reference];
     all_data = [[NSMutableDictionary alloc] init];
@@ -1410,11 +1412,19 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    /*
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     if (indexPath.section == 0) {
         MyProfile* profile = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
         [self.navigationController pushViewController:profile animated:YES];
     }
+    */
+    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+    UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+    navTabHome.navigationBar.topItem.title = @"My Profile";
+    [self presentViewController:navTabHome animated:YES completion:nil];
 }
 
 - (void)alertView:(UserDataUIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

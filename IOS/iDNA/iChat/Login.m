@@ -95,13 +95,13 @@
         [SVProgressHUD showErrorWithStatus:@"Email is Empty."];
     }else if([strPassword isEqualToString:@""]){
         [SVProgressHUD showErrorWithStatus:@"Password is Empty."];
-    }else if(![[Configs sharedInstance] NSStringIsValidEmail:strEmail]){
+    }/*else if(![[Configs sharedInstance] NSStringIsValidEmail:strEmail]){
         [SVProgressHUD showErrorWithStatus:@"Email is Invalid."];
-    }else{
+    }*/else{
          [SVProgressHUD showWithStatus:@"Login"];
         
          LoginThread *lThread = [[LoginThread alloc] init];
-         [lThread setCompletionHandler:^(NSString * str) {
+         [lThread setCompletionHandler:^(NSData * str) {
          
              NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:str  options:kNilOptions error:nil];
          
@@ -223,8 +223,8 @@
     [[Configs sharedInstance] SVProgressHUD_Dismiss];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"synchronizeData" object:nil];
     
-    NSDictionary *dict =  @{@"function" : @"reset"};
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ManageTabBar" object:nil userInfo:dict];
+    // NSDictionary *dict =  @{@"function" : @"reset"};
+    // [[NSNotificationCenter defaultCenter] postNotificationName:@"ManageTabBar" object:nil userInfo:dict];
     [self dismissViewControllerAnimated:YES completion:nil];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];

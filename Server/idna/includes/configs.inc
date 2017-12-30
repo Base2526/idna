@@ -35,6 +35,7 @@
 
 	define("PATH_GROUPS", "groups");
 	define("PATH_CLASSS", "classs");
+	define("PATH_FOLLOWING", "following");
 
 
 	// Bundle Identifier  

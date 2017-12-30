@@ -29,7 +29,7 @@
 
 #import "KASlideShow.h"
 
-#import "SWRevealViewController.h"
+// #import "SWRevealViewController.h"
 
 @interface Tab_Center (){
     NSMutableArray *sectionTitleArray;
@@ -57,6 +57,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    /*
     SWRevealViewController *revealViewController = self.revealViewController;
     if ( revealViewController )
     {
@@ -72,6 +73,7 @@
         [self.revealViewController panGestureRecognizer];
         [self.revealViewController tapGestureRecognizer];
     }
+     */
     
     _datasource = [[NSMutableArray alloc] init];
     

@@ -20,14 +20,25 @@
 @end
 
 @implementation EditDisplayName
-@synthesize isfriend;
+@synthesize uid, ref;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    ref = [[FIRDatabase database] reference];
 
     self.btnSave.enabled = NO;
     self.textFieldName.delegate = self;
-    [self.textFieldName setText:self.name];
+    // [self.textFieldName setText:self.name];
+    
+    if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
+        // แสดงว่าเป้น User
+        NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+        [self.textFieldName setText:[profiles objectForKey:@"name"]];
+    }else{
+        // แสดงว่าเป้น Friend
+        
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -71,7 +82,9 @@
         
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update."];
         
-        if ([self.isfriend isEqualToString:@"0"]) {
+        
+        if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
+            /*
             EditDisplayNameThread *eThread = [[EditDisplayNameThread alloc] init];
             [eThread setCompletionHandler:^(NSString *data) {
                 
@@ -79,7 +92,10 @@
                 
                 NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
                 if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                    [self.navigationController popViewControllerAnimated:YES];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    });
                 }
             }];
             
@@ -90,14 +106,50 @@
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
             }];
             [eThread start:strName];
-        }else if([self.isfriend isEqualToString:@"1"]){
+            */
+            
+            [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
+            
+            NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+            
+            NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
+            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+            [newProfiles addEntriesFromDictionary:profiles];
+            [newProfiles removeObjectForKey:@"name"];
+            [newProfiles setValue:strName forKey:@"name"];
+            
+            NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
+            [newData addEntriesFromDictionary:data];
+            [newData removeObjectForKey:@"profiles"];
+            
+            [newData setObject:newProfiles forKey:@"profiles"];
+            
+            [[Configs sharedInstance] saveData:_DATA :newData];
+            
+            NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+            NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
+            
+            [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+                if (error == nil) {
+                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:NO];
+                    });
+                }else{
+                }
+            }];
+        }else {
+            /*
             EditFriendDisplayNameThread *eThread = [[EditFriendDisplayNameThread alloc] init];
             [eThread setCompletionHandler:^(NSString *data) {
                 [[Configs sharedInstance] SVProgressHUD_Dismiss];
                 
                 NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
                 if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                    [self.navigationController popViewControllerAnimated:YES];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    });
                 }
             }];
             
@@ -108,7 +160,8 @@
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
             }];
 
-            [eThread start:self.uid_friend: strName];
+            [eThread start:self.uid: strName];
+            */
         }
     }
 }

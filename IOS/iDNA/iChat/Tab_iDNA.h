@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface Tab_iDNA  : UIViewController<UICollectionViewDelegate, UICollectionViewDataSource>
-@property (weak, nonatomic) IBOutlet UICollectionView *_collection;
-@property (strong, nonatomic) NSUserDefaults *preferences;
+@interface Tab_iDNA  : UIViewController
 
 @end

@@ -49,6 +49,8 @@
 
 @property(nonatomic)NSString* UPDATE_PICTURE_PROFILE;
 
+@property(nonatomic)NSString* UPDATE_PICTURE_BG;
+
 @property(nonatomic)NSString* CREATE_GROUP_CHAT;
 @property(nonatomic)NSString* DELETE_GROUP_CHAT;
 @property(nonatomic)NSString* GROUP_INVITE_NEW_MEMBERS;
@@ -109,6 +111,7 @@
 
 // ความสูงของ navigationBar
 @property(nonatomic) CGFloat navigationBarHeight;
+
 
 
 // เวลาที่เรายอมให้ connect service

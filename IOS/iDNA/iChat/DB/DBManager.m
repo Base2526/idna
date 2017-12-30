@@ -21,7 +21,6 @@
 
 @end
 
-
 @implementation DBManager
 -(id) init{
     self = [super init];
@@ -81,6 +80,67 @@
             NSLog(@"%@", [error localizedDescription]);
         }
     }
+}
+
+-(NSMutableArray *)fetchTableNames{
+    //  Create a sqlite object.
+    sqlite3 *sqlite3Database;
+    
+    
+    //  Set the database file path.
+    NSString *databasePath = [self.documentsDirectory stringByAppendingPathComponent:self.databaseFileName];
+    
+    
+    //  Deleting all previous data from arrays.
+    
+    //  Initialize the results array.
+    if (self.arrQueryResults != nil)
+    {
+        [self.arrQueryResults removeAllObjects];
+        self.arrQueryResults = nil;
+    }
+    self.arrQueryResults = [[NSMutableArray alloc] init];
+    
+    
+    //  Initialize the column names array.
+    if (self.arrColumnNames != nil)
+    {
+        [self.arrColumnNames removeAllObjects];
+        self.arrColumnNames = nil;
+    }
+    self.arrColumnNames = [[NSMutableArray alloc] init];
+    
+    
+    //  Open the database with result.
+    int openDatabaseResult = sqlite3_open([databasePath UTF8String], &sqlite3Database);
+    
+    //  Open the database
+    if (openDatabaseResult == SQLITE_OK)
+    {
+        sqlite3_stmt* statement;
+        NSString *query = @"SELECT name FROM sqlite_master WHERE type=\'table\'";
+        int retVal = sqlite3_prepare_v2(sqlite3Database,
+                                    [query UTF8String],
+                                    -1,
+                                    &statement,
+                                    NULL);
+    
+        NSMutableArray *selectedRecords = [NSMutableArray array];
+        if ( retVal == SQLITE_OK )
+        {
+            while(sqlite3_step(statement) == SQLITE_ROW )
+            {
+                NSString *value = [NSString stringWithCString:(const char *)sqlite3_column_text(statement, 0)
+                                                 encoding:NSUTF8StringEncoding];
+                [selectedRecords addObject:value];
+            }
+        }
+    
+        sqlite3_clear_bindings(statement);
+        sqlite3_finalize(statement);
+        return selectedRecords;
+    }
+    return nil;
 }
 
 -(void)runQuery:(const char *)query isQueryExecutable:(BOOL)queryExecutable
