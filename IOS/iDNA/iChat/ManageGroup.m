@@ -80,7 +80,7 @@
     self.title = [NSString stringWithFormat:@"Manage Group(%d)", [members count] ];
     NSLog(@"");
     
-    [self.btnManageMembers setTitle:[NSString stringWithFormat:@"Manage Group(%d)", [members count] ] forState:UIControlStateNormal];
+    [self.btnManageMembers setTitle:[NSString stringWithFormat:@"Manage Members(%d)", [members count] ] forState:UIControlStateNormal];
 }
 /*
 #pragma mark - Navigation
@@ -324,39 +324,17 @@
                         //NSString* parent = ref.parent.key;
                         
                         // จะได้ Group id
-                        NSString* group_id = [ref key];
+                        NSString* key = [ref key];
                         
                         // NSMutableDictionary *groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
                         
                         /*
                          เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
                          */
-                        if ([groupChatRepo get:group_id]) {
-                            
-                            /*
-                             Update group ของ groups
-                             */
-                            /*
-                            NSMutableDictionary *newGroups = [[NSMutableDictionary alloc] init];
-                            [newGroups addEntriesFromDictionary:groups];
-                            [newGroups removeObjectForKey:key];
-                             */
-                            
-                            /*
-                             Update groups ของ DATA
-                             */
-                            /*
-                            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-                            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-                            [newDict removeObjectForKey:@"groups"];
-                            [newDict setObject:groups forKey:@"groups"];
-                            
-                            [[Configs sharedInstance] saveData:_DATA :newDict];
-                            */
-                            
-                            [groupChatRepo deleteGroup:group_id];
-                        
+                        if ([groupChatRepo get:key] != nil){
+                            BOOL sv = [groupChatRepo deleteGroup:key];
                         }
+                        
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self.navigationController popViewControllerAnimated:YES];
                         });

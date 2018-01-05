@@ -13,17 +13,21 @@
 #import "CustomAlertView.h"
 #import "EditPhoneThread.h"
 
+#import "ProfilesRepo.h"
+
 @interface ListPhone (){
     NSMutableArray *fieldSelected;
     NSMutableDictionary *phones;
     // NSMutableArray *childObservers;
     
-    // NSMutableDictionary *profile;
+     NSMutableDictionary *profiles;
+    
+    ProfilesRepo*profilesRepo;
 }
 @end
 
 @implementation ListPhone
-
+@synthesize ref;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -140,6 +144,9 @@
         [self reloadData];
     }];
     */
+    
+    ref         = [[FIRDatabase database] reference];
+    profilesRepo = [[ProfilesRepo alloc] init];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -147,6 +154,9 @@
                                              selector:@selector(reloadData:)
                                                  name:@"reloadData"
                                                object:nil];
+    
+  
+    
     [self reloadData:nil];
 }
 
@@ -293,7 +303,7 @@
                 [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
                 
                 EditPhoneThread *dThread = [[EditPhoneThread alloc] init];
-                [dThread setCompletionHandler:^(NSString *data) {
+                [dThread setCompletionHandler:^(NSData *data) {
                     
                     NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
                     
@@ -326,7 +336,35 @@
                         [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
                         */
                         
-                        [self reloadData: nil];
+                        NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
+                        
+                        if ([phones objectForKey:jsonDict[@"item_id"]]) {
+                            
+                            // [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                            [phones removeObjectForKey:jsonDict[@"item_id"]];
+                            
+                            NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                            [newProfile addEntriesFromDictionary:profiles];
+                            [newProfile removeObjectForKey:@"phones"];
+                            [newProfile setObject:phones forKey:@"phones"];
+                            
+                            NSArray *profile = [profilesRepo get];
+                            
+                            Profiles *pf = [[Profiles alloc] init];
+                            NSError * err;
+                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                            pf.update    = [timeStampObj stringValue];
+                            
+                            BOOL sv = [profilesRepo update:pf];
+                        }
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            // code here
+                            [self reloadData:nil];
+                        });
                         
                     }else{
                         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
@@ -349,27 +387,17 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    if([[[Configs sharedInstance] loadData:_DATA] objectForKey:@"phones"]){
-        phones = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"phones"];
-        if ([phones count] > 0) {
-            self._table.hidden = NO;
-            self.emptyMessage.hidden = YES;
-            
-            /*
-            NSArray *sortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                if ([[obj1 valueForKey:@"item_id"] integerValue] < [[obj2 valueForKey:@"item_id"] integerValue]) {
-                    return (NSComparisonResult)NSOrderedDescending;
-                }
-                if ([[obj1 valueForKey:@"item_id"] integerValue] > [[obj2 valueForKey:@"item_id"] integerValue]) {
-                    return (NSComparisonResult)NSOrderedAscending;
-                }
-                return (NSComparisonResult)NSOrderedSame;
-            }];
-             */
-        }
-    }else{
-        phones = [[NSMutableDictionary alloc] init];
+    NSArray *pf = [profilesRepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    if ([profiles objectForKey:@"phones"]) {
+        phones = [profiles objectForKey:@"phones"];
         
+        self._table.hidden = NO;
+        self.emptyMessage.hidden = YES;
+    }else{
         self._table.hidden = YES;
         self.emptyMessage.hidden = NO;
     }

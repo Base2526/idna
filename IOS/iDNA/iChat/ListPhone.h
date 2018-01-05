@@ -15,4 +15,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *_table;
 @property (weak, nonatomic) IBOutlet UILabel *emptyMessage;
 
+@property (strong, nonatomic) FIRDatabaseReference *ref;
+
 @end

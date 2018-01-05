@@ -13,6 +13,6 @@
 
 @interface ListEmail : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *_table;
+@property (strong, nonatomic) FIRDatabaseReference *ref;
 
-// @property (strong, nonatomic) FIRDatabaseReference *ref;
 @end

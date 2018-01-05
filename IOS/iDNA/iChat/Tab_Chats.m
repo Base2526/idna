@@ -7,6 +7,7 @@
 //
 
 #import "Tab_Chats.h"
+#import "ChatViewController.h"
 
 @interface Tab_Chats ()
 
@@ -48,7 +49,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return  10;
+    return  3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -57,5 +58,12 @@
     return cell;
 }
 
-
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ChatViewController *cV = [storybrd instantiateViewControllerWithIdentifier:@"ChatViewController"];
+    cV.type      = @"private";
+    [self.navigationController pushViewController:cV animated:YES];
+    
+    [self.tableView reloadData];
+}
 @end

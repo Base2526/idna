@@ -26,7 +26,7 @@
 @property (nonatomic, strong) NSURLConnection *connection;
 @property (retain, nonatomic) NSMutableData *receivedData;
 
-@property (nonatomic, copy) void (^completionHandler)(NSString *);
+@property (nonatomic, copy) void (^completionHandler)(NSData *);
 @property (nonatomic, copy) void (^errorHandler)(NSString *);
 
 -(void)start:(NSString *) fction: (NSString *)item_id : (NSString *)number;

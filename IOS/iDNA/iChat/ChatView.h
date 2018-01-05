@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <JSQMessagesViewController/JSQMessages.h>
+// #import <JSQMessagesViewController/JSQMessages.h>
 
 @import Firebase;
 @import FirebaseMessaging;
 @import FirebaseDatabase;
 
-@interface ChatView : JSQMessagesViewController
+@interface ChatView : UIViewController
 
 @property (strong, nonatomic) FIRDatabaseReference *ref;
 

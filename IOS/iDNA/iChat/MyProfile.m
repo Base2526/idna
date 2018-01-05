@@ -22,8 +22,20 @@
 
 #import "EditDisplayName.h"
 
-@interface MyProfile ()
+#import "Profiles.h"
+#import "ProfilesRepo.h"
 
+#import "EditStatusMessage.h"
+#import "EditAddress.h"
+#import "ListPhone.h"
+#import "ListEmail.h"
+#import "Gender.h"
+#import "Birthday.h"
+
+@interface MyProfile (){
+    NSMutableDictionary *profiles;
+    ProfilesRepo *profileRepo;
+}
 @end
 
 @implementation MyProfile
@@ -34,6 +46,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    profileRepo = [[ProfilesRepo alloc] init];
     
     /*
     ref = [[FIRDatabase database] reference];
@@ -98,7 +112,7 @@
 }
 
 -(void) viewWillAppear:(BOOL)animated{
-    [self.tableView reloadData];
+    [self reloadData:nil];
 }
 
 -(void)dismissKeyboard {
@@ -108,6 +122,15 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    NSArray *pf = [profileRepo get];
+    NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+
+    [self.tableView reloadData];
 }
 
 /*
@@ -422,7 +445,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 10;
+    return 11;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -436,7 +459,6 @@
             UILabel *label1         = [cell viewWithTag:10];
             HJManagedImageV *imageV = [cell viewWithTag:11];
             
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
             if ([profiles objectForKey:@"image_url"]) {
                 [imageV clear];
                 [imageV showLoadingWheel];
@@ -459,7 +481,7 @@
             
             [label1 setText:@"ชื่อ :"];
             
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+            // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
             
             [label2 setText:[profiles objectForKey:@"name"]];
             NSLog(@"");
@@ -468,24 +490,48 @@
         }
              break;
             
-        case 2:
+            // Status message
+        case 2:{
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"ข้อความ :"];
+            
+            // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+            
+            if ([profiles objectForKey:@"status_message"]) {
+                [label2 setText:[profiles objectForKey:@"status_message"]];
+            }else{
+                [label2 setText:[profiles objectForKey:@"-"]];
+            }
+            
+            NSLog(@"");
+            return cell;
+        }
+            break;
+        case 3:
         {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_address"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
-            UILabel *topLabel = [cell viewWithTag:11];
-            [topLabel setText:@"555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"];
-            
-            
-            topLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            topLabel.numberOfLines = 0;
-            [topLabel sizeToFit];
+            UITextView *textAddress = [cell viewWithTag:10];
+                    
+            if ([profiles objectForKey:@"address"]) {
+                [textAddress setText:[profiles objectForKey:@"address"]];
+            }else{
+                [textAddress setText:[profiles objectForKey:@"-"]];
+            }
             
             return cell;
         }
             break;
             
-        case 3:{
+        case 4:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -493,10 +539,23 @@
             UILabel *label2 = [cell viewWithTag:11];
             
             [label1 setText:@"Emails :"];
+            
+//            NSArray *pf = [profilesRepo get];
+//            NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+//
+//            profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            if ([profiles objectForKey:@"mails"]) {
+                NSDictionary *mails = [profiles objectForKey:@"mails"];
+                label2.text =[NSString stringWithFormat:@"%d", [mails count]]  ;
+            }else{
+                label2.text = @"not email";
+            }
+            
             return cell;
         }
             
-        case 4:{
+        case 5:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -504,6 +563,13 @@
             UILabel *label2 = [cell viewWithTag:11];
             
             [label1 setText:@"Phones :"];
+            
+            if ([profiles objectForKey:@"phones"]) {
+                NSDictionary *phones = [profiles objectForKey:@"phones"];
+                label2.text = [NSString stringWithFormat:@"%d", [phones count]];
+            }else{
+                label2.text = @"not phones";
+            }
             
             return cell;
         }
@@ -521,7 +587,7 @@
 //            return cell;
 //        }
             
-        case 5:{
+        case 6:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_picture_profile"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -530,7 +596,7 @@
             
             [label1 setText:@"BG :"];
             
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+            // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
             if ([profiles objectForKey:@"bg_url"]) {
                 [imageV clear];
                 [imageV showLoadingWheel];
@@ -542,19 +608,6 @@
             return cell;
         }
             
-        case 6:{
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            
-            UILabel *label1 = [cell viewWithTag:10];
-            UILabel *label2 = [cell viewWithTag:11];
-            
-            [label1 setText:@"Gender :"];
-            [label2 setText:@""];
-            
-            return cell;
-        }
-            
         case 7:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -562,8 +615,20 @@
             UILabel *label1 = [cell viewWithTag:10];
             UILabel *label2 = [cell viewWithTag:11];
             
-            [label1 setText:@"Age :"];
-            [label2 setText:@""];
+            [label1 setText:@"Gender :"];
+            
+            if ([profiles objectForKey:@"gender"]) {
+                
+                NSDictionary* gd = [[Configs sharedInstance] loadData:_GENDER];
+                // NSString* key = [sortedKeys objectAtIndex:indexPath.row];
+                id anObject = [gd objectForKey:[profiles objectForKey:@"gender"]];
+                
+                // [labelName setText:[anObject objectForKey:@"name"]];
+                [label2 setText:[anObject objectForKey:@"name"]];
+            }else{
+                [label2 setText:@""];
+            }
+            
             
             return cell;
         }
@@ -575,8 +640,17 @@
             UILabel *label1 = [cell viewWithTag:10];
             UILabel *label2 = [cell viewWithTag:11];
             
-            [label1 setText:@"School :"];
+            [label1 setText:@"Age :"];
             [label2 setText:@""];
+            
+            if ([profiles objectForKey:@"birthday"]) {
+                // selectedIndex = [profiles objectForKey:@"birthday"];
+                
+                NSTimeInterval timestamp = [[profiles objectForKey:@"birthday"] doubleValue];
+                NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSince1970:timestamp];
+                
+                label2.text = [[self getDateFormatter]  stringFromDate:lastUpdate];
+            }
             
             return cell;
         }
@@ -588,8 +662,33 @@
             UILabel *label1 = [cell viewWithTag:10];
             UILabel *label2 = [cell viewWithTag:11];
             
-            [label1 setText:@"Company :"];
+            [label1 setText:@"School :"];
             [label2 setText:@""];
+            
+            if ([profiles objectForKey:@"school"]) {
+                [label2 setText:[profiles objectForKey:@"school"]];
+            }else{
+                [label2 setText:@""];
+            }
+            
+            return cell;
+        }
+            
+        case 10:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Company :"];
+            // [label2 setText:@""];
+            
+            if ([profiles objectForKey:@"company"]) {
+                [label2 setText:[profiles objectForKey:@"company"]];
+            }else{
+                [label2 setText:@""];
+            }
             
             return cell;
         }
@@ -621,13 +720,55 @@
             
         case 1:{
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
             EditDisplayName* editName = [storybrd instantiateViewControllerWithIdentifier:@"EditDisplayName"];
             editName.uid = [[Configs sharedInstance] getUIDU];
             [self.navigationController pushViewController:editName animated:YES];
         }
             break;
             
+        case 2:{
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            EditStatusMessage* editStatusMessage = [storybrd instantiateViewControllerWithIdentifier:@"EditStatusMessage"];
+            
+            if ([profiles objectForKey:@"status_message"]) {
+                editStatusMessage.message = [profiles objectForKey:@"status_message"];
+            }else{
+                editStatusMessage.message = @"";
+            }
+            [self.navigationController pushViewController:editStatusMessage animated:YES];
+        }
+            break;
+            
+        case 3:{
+            // NSLog(@"Address");
+
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];
+            editAddress.type = @"address";
+            [self.navigationController pushViewController:editAddress animated:YES];
+        }
+            break;
+            
+        case 4:{
+            // Email
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            ListEmail *v = [storybrd instantiateViewControllerWithIdentifier:@"ListEmail"];
+            [self.navigationController pushViewController:v animated:YES];
+        }
+            break;
+            
         case 5:{
+            // Phone
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            ListPhone *v = [storybrd instantiateViewControllerWithIdentifier:@"ListPhone"];
+            [self.navigationController pushViewController:v animated:YES];
+        }
+            break;
+        
+        case 6:{
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                                      delegate:self
                                                             cancelButtonTitle:@"Cancel"
@@ -636,6 +777,43 @@
             
             actionSheet.tag = 102;
             [actionSheet showInView:self.view];
+        }
+            break;
+            
+        case 7:{
+            // Gender
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            Gender *v = [storybrd instantiateViewControllerWithIdentifier:@"Gender"];
+            [self.navigationController pushViewController:v animated:YES];
+        }
+            break;
+            
+        case 8:{
+            // Birthday
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            Birthday *v = [storybrd instantiateViewControllerWithIdentifier:@"Birthday"];
+            [self.navigationController pushViewController:v animated:YES];
+        }
+            break;
+            
+            
+        case 9:{
+            // School
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];
+            editAddress.type = @"school";
+            [self.navigationController pushViewController:editAddress animated:YES];
+        }
+            break;
+            
+        case 10:{
+            // Company
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];
+            editAddress.type = @"company";
+            [self.navigationController pushViewController:editAddress animated:YES];
         }
             break;
             
@@ -760,35 +938,28 @@
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            NSArray *pf = [profileRepo get];
+            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
             
-            /*
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // code here
-                [imageV clear];
-                [imageV showLoadingWheel];
-                [imageV setUrl:[NSURL URLWithString:jsonDict[@"url"]]];
-                
-                [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,jsonDict[@"url"]]]];
-                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
-            });
-            */
-            // [self updateURI:jsonDict[@"url"]];
+            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
-            [profiles setValue:jsonDict[@"url"] forKey:@"image_url"];
+            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+            [newProfiles addEntriesFromDictionary:profiles];
+            [newProfiles removeObjectForKey:@"image_url"];
+            [newProfiles setValue:jsonDict[@"url"] forKey:@"image_url"];
             
-            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-            // เราต้อง addEntriesFromDictionary ก่อน ถึงจะสามารถลบได้ แ้วค่อย update ข้อมูล
-            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-            //  ลบข้อมูล key profiles ออกไป
-            [newDict removeObjectForKey:@"profiles"];
+            Profiles *pfs = [[Profiles alloc] init];
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            pfs.update    = [timeStampObj stringValue];
             
-            [newDict setObject:profiles forKey:@"profiles"];
-            
-            [[Configs sharedInstance] saveData:_DATA :newDict];
+            BOOL sv = [profileRepo update:pfs];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
+                [self reloadData:nil];
             });
         }
         [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
@@ -810,20 +981,7 @@
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            
             /*
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // code here
-                [imageV_bg clear];
-                [imageV_bg showLoadingWheel];
-                [imageV_bg setUrl:[NSURL URLWithString:jsonDict[@"url"]]];
-                
-                [imageV_bg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,jsonDict[@"url"]]]];
-                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV_bg ];
-            });
-            */
-            // [self updateURI:jsonDict[@"url"]];
-            
             NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
             [profiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
             
@@ -836,9 +994,30 @@
             [newDict setObject:profiles forKey:@"profiles"];
             
             [[Configs sharedInstance] saveData:_DATA :newDict];
+            */
+            
+            NSArray *pf = [profileRepo get];
+            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+            [newProfiles addEntriesFromDictionary:profiles];
+            [newProfiles removeObjectForKey:@"bg_url"];
+            [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
+            
+            Profiles *pfs = [[Profiles alloc] init];
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            pfs.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [profileRepo update:pfs];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView reloadData];
+                [self reloadData:nil];
             });
         }
         [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
@@ -848,6 +1027,15 @@
         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
     }];
     [updateBGThread start:image];
+}
+
+-(NSDateFormatter *)getDateFormatter{
+    NSDateFormatter __autoreleasing *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setTimeZone:[NSTimeZone systemTimeZone]];
+    [dateFormat setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+    dateFormat.dateStyle = NSDateFormatterMediumStyle;
+    
+    return dateFormat;
 }
 
 @end

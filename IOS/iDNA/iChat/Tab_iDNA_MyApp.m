@@ -85,8 +85,10 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)
-                                                 name:@"Tab_iDNA_reloadData"
+                                                 name:@"Tab_iDNA_MyApp_reloadData"
                                                object:nil];
+    
+    
     
     /*
      #1 Register: Cell Header คือส่วนหัวของ Tab idna
@@ -176,6 +178,7 @@
     NSMutableArray *allMyApp = [myAppRepo getMyApplicationAll];
     [_DNA setValue:allMyApp forKey:[sectionTitleArray objectAtIndex:0]];
     
+    /*
     if ([[[Configs sharedInstance] loadData:_EXTERNAL] objectForKey:@"following"]) {
         NSMutableArray *following = [[NSMutableArray alloc] init];
         
@@ -185,7 +188,6 @@
             if ([value isKindOfClass:[NSDictionary class]]) {
                 if ([value objectForKey:@"item_id"]) {
                     if ([[value objectForKey:@"status"] isEqualToString:@"1"]) {
-                        NSLog(@"");
                         [following addObject:value];
                     }
                 }
@@ -207,7 +209,9 @@
     }else{
         [_DNA setValue:[[NSArray alloc] init] forKey:[sectionTitleArray objectAtIndex:1]];
     }
+     */
     
+    [DNA removeAllObjects];
     DNA = _DNA;
     
     [self._collection reloadData];

@@ -11,6 +11,6 @@
 @interface SubcategoryViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *_table;
 
-@property (strong, nonatomic) NSString *category;
+@property (strong, nonatomic) NSString *category, *subcategory;
 
 @end

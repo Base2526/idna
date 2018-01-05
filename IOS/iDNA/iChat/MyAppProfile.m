@@ -44,7 +44,7 @@
 @implementation MyAppProfile
 @synthesize isOwner;
 @synthesize data;
- @synthesize app_id;
+@synthesize app_id;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -54,9 +54,9 @@
     
     // fieldSelected = [NSMutableArray array];
     if (isOwner) {
-        all_data = @[@"Cell-Name", @"Cell-Category", @"Cell-Email", @"Cell-Phone"/*, @"Cell-Status"*/, @"Cell-Delete"];
+        all_data = @[@"Cell-Name", @"Cell-Category", @"Cell-Subcategory", @"Cell-Email", @"Cell-Phone"/*, @"Cell-Status"*/, @"Cell-Delete"];
     }else{
-        all_data = @[@"Cell-Name", @"Cell-Category", @"Cell-Email", @"Cell-Phone"];
+        all_data = @[@"Cell-Name", @"Cell-Category", @"Cell-Subcategory", @"Cell-Email", @"Cell-Phone"];
     }
     
     [self._table registerNib:[UINib nibWithNibName:@"MyAppProfileMultiCell" bundle:nil] forCellReuseIdentifier:@"MyAppProfileMultiCell"];
@@ -299,7 +299,28 @@
         }
             break;
             
-        case 2:
+        case 2:{
+            // Cell-Subcategory
+            NSData *data =  [[myApp objectAtIndex:[myAppRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSDictionary* category = [category_application objectForKey:[f objectForKey:@"category"]];
+            
+            NSDictionary* children = [category objectForKey:@"children"];
+            
+            UILabel *label = (UILabel *)[cell viewWithTag:10];
+            if ([f objectForKey:@"subcategory"]) {
+                NSDictionary* subcategory = [children objectForKey:[f objectForKey:@"subcategory"]];
+                
+                label.text = [subcategory objectForKey:@"name"];//[self.data objectForKey:@"category"];
+                
+            }else{
+                label.text = @"Not select";
+            }
+        }
+            break;
+            
+        case 3:
         {
             
 //            NSDictionary *emails = [[center objectAtIndex:[[data objectForKey:@"category"] integerValue]] objectForKey:item_id];
@@ -325,7 +346,7 @@
         }
             break;
             
-        case 3:
+        case 4:
         {
 
 //            NSDictionary *phones = [[center objectAtIndex:[[data objectForKey:@"category"] integerValue]] objectForKey:item_id];
@@ -349,7 +370,7 @@
             return cell;
         }
             break;
-        case 4:{
+        case 5:{
             cell.accessoryType = UITableViewCellAccessoryNone;
             // cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }

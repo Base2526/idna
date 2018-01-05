@@ -140,12 +140,12 @@
         messageBackgroundView.frame = CGRectMake(60,TOP_MARGIN+30 - 12, 140,140);
         self.AvatarImageView.frame=CGRectMake(5,10+TOP_MARGIN, 50, 50);
         _messageImageView.frame=CGRectMake(0.5,0.5, 139,  139);
-        _messageImageView.image=[UIImage imageNamed:@"ProfilePic"];
+        _messageImageView.image=[UIImage imageNamed:@"ProfilePic.png"];
     }else
     {
         messageBackgroundView.frame = CGRectMake( self.frame.size.width-200,TOP_MARGIN+20,140,140);
         self.AvatarImageView.frame=CGRectMake( self.frame.size.width-55,10+TOP_MARGIN, 50, 50);
-         _messageImageView.image=[UIImage imageNamed:@"scene"];
+         _messageImageView.image=[UIImage imageNamed:@"scene.png"];
     }
     _messageImageView.frame=CGRectMake(0.5,0.5, 139,  139);
     

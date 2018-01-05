@@ -13,13 +13,17 @@
 #import "GKImagePicker.h"
 #import "FieldDisplayMyApplication.h"
 #import "CreateMyApplicationThread.h"
+#import "SubcategoryViewController.h"
 #import "Configs.h"
 #import "MyApp.h"
 #import "Utility.h"
 
+#import "MyApplicationsRepo.h"
+#import "MyApplications.h"
+
 @interface CreateMyApplication (){
     NSMutableArray *all_data;
-    NSString *name, *indexCategory, *textCategory;
+    NSString *name, *indexCategory, *textCategory, *indexSubcategory, *textSubcategory;
     
     UIImage *imgPhoto;
 }
@@ -43,6 +47,8 @@
 
     name = @"";
     textCategory = @"";
+    
+    textSubcategory = @"";
     all_data = [[NSMutableArray alloc] init];//@[@"display_name", @"category"];
     [all_data addObject:@"display_name"];
     [all_data addObject:@"category"];
@@ -89,6 +95,17 @@
         v.photo     = imgPhoto;
         v.name      = name;
         v.category  = indexCategory;
+    }else if([segue.identifier isEqualToString:@"select_subcategory"]){
+        NSLog(@"");
+        
+//        SubcategoryViewController
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(selectSubcategory:)
+                                                     name:@"selectSubcategory" object:nil];
+        
+        SubcategoryViewController* v = segue.destinationViewController;
+        v.category = indexCategory;
+        v.subcategory = indexSubcategory;
     }
 }
 
@@ -180,7 +197,6 @@
     return view;
 }
 
-
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
         
@@ -213,9 +229,7 @@
                 [labelCategory setText:@"Select Category"];
             }else{
                 [labelCategory setText:textCategory];
-                
-                
-                
+        
             }
         }
             break;
@@ -226,12 +240,24 @@
             
             UILabel *labelCategory = (UILabel *)[cell viewWithTag:10];
             
-            if ([textCategory isEqualToString:@""]) {
+            if ([textSubcategory isEqualToString:@""]) {
                 [labelCategory setText:@"Select Subcategory"];
             }else{
-                [labelCategory setText:textCategory];
-            
+                [labelCategory setText:textSubcategory];
+
             }
+            
+            /*
+             UserDataUILongPressGestureRecognizer *lpgr = [[UserDataUILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+             // NSLog(@"not access tag >%d", [(UIGestureRecognizer *)gestureRecognizer view].tag);
+             
+             
+             lpgr.userData = indexPath;
+             // lpgr.minimumPressDuration = 1.0; //seconds
+             [cell addGestureRecognizer:lpgr];
+             */
+            UIGestureRecognizer *lpgr = [[UIGestureRecognizer alloc] initWithTarget:self action:@selector(handlePress:)];
+            [cell addGestureRecognizer:lpgr];
         }
             break;
             
@@ -286,11 +312,32 @@
     indexCategory = (NSString*)userInfo[@"index"];
     textCategory = (NSString*)userInfo[@"value"];
     
-    if([all_data count] == 3){
-        [all_data replaceObjectAtIndex:2 withObject:@"sub_category"];
-    }else{
-        [all_data insertObject:@"sub_category" atIndex:2];
+//    if([all_data count] == 3){
+//        [all_data replaceObjectAtIndex:2 withObject:@"sub_category"];
+//    }else{
+   
+//    }
+    
+    /*
+     all_data = [[Configs sharedInstance] loadData:_CATEGORY_APPLICATION];
+     */
+    
+    if ([all_data count] == 3) {
+        [all_data removeObjectAtIndex:2];
     }
+    [all_data insertObject:@"sub_category" atIndex:2];
+    
+    textSubcategory = @"";
+    indexSubcategory = nil;
+    
+    [self reloadData];
+}
+
+-(void)selectSubcategory:(NSNotification *)notification{
+    NSDictionary* userInfo = notification.userInfo;
+    indexSubcategory = (NSString*)userInfo[@"index"];
+    textSubcategory  = (NSString*)userInfo[@"value"];
+    NSLog(@"selectSubcategory");
     
     [self reloadData];
 }
@@ -457,9 +504,26 @@
             
             */
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-            });
+            MyApplicationsRepo *myAppRepo = [[MyApplicationsRepo alloc] init];
+            if([myAppRepo get:jsonDict[@"item_id"]]== nil){
+                MyApplications *myApp = [[MyApplications alloc] init];
+                myApp.app_id = jsonDict[@"item_id"];
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:jsonDict[@"item"] options:0 error:&err];
+                myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                myApp.create    = [timeStampObj stringValue];
+                myApp.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [myAppRepo insert:myApp];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_MyApp_reloadData" object:self userInfo:@{}];
+            }
+            
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }else{
             /*
              email นี้มีการ register แล้ว
@@ -470,6 +534,7 @@
     [createAppThread setErrorHandler:^(NSString * error) {
         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
     }];
-    [createAppThread start:imgPhoto :name :indexCategory];
+    [createAppThread start:imgPhoto :name :indexCategory: indexSubcategory];
 }
+
 @end

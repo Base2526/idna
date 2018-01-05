@@ -15,10 +15,10 @@
 @interface ChatView ()
 
 @property (strong, nonatomic) NSMutableArray *messages;
-@property (strong, nonatomic) JSQMessagesBubbleImage *incomingBubble;
-@property (strong, nonatomic) JSQMessagesBubbleImage *outgoingBubble;
-@property (strong, nonatomic) JSQMessagesAvatarImage *incomingAvatar;
-@property (strong, nonatomic) JSQMessagesAvatarImage *outgoingAvatar;
+//@property (strong, nonatomic) JSQMessagesBubbleImage *incomingBubble;
+//@property (strong, nonatomic) JSQMessagesBubbleImage *outgoingBubble;
+//@property (strong, nonatomic) JSQMessagesAvatarImage *incomingAvatar;
+//@property (strong, nonatomic) JSQMessagesAvatarImage *outgoingAvatar;
 
 @property (strong, nonatomic) MessageRepo *msRepo;
 @end
@@ -31,6 +31,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    /*
     // 自分の senderId, senderDisplayName を設定
     self.senderId = @"user1";
     self.senderDisplayName = @"classmethod";
@@ -55,27 +56,18 @@
                                              selector:@selector(reloadData:)
                                                  name:@"ChatView_reloadData"
                                                object:nil];
+    */
     
 }
 
+/*
 -(void)reloadData:(NSNotification *) notification{
     
     [self.messages removeAllObjects];
     
     NSMutableArray *all_message = [msRepo getMessageByChatId:[friend objectForKey:@"chat_id"]];
     
-    /*
-     JSQMessage *message1 = [JSQMessage messageWithSenderId:@"user1"
-     displayName:@"underscore"
-     text:@"Hello"];
-     
-     [self.messages addObject:message1];
-     
-     JSQMessage *message2 = [JSQMessage messageWithSenderId:@"user2"
-     displayName:@"underscore"
-     text:@"Hello2"];
-     [self.messages addObject:message2];
-     */
+    
     
     
     NSInteger ichat_id = [msRepo.dbManager.arrColumnNames indexOfObject:@"chat_id"];
@@ -86,35 +78,12 @@
     for (int i = 0; i < [all_message count]; i++) {
         // NSArray *item = all_message[i];
         
-        NSString*text = [[all_message objectAtIndex:i] objectAtIndex:itext];
-        NSString*sender_id = [[all_message objectAtIndex:i] objectAtIndex:isender_id];
+        NSArray * _value = [all_message objectAtIndex:i];
+        NSString*text = [_value objectAtIndex:itext];
+        NSString*sender_id = [_value objectAtIndex:isender_id];
         
         NSLog(@"");
-        /*
-         Message* m =[[Message alloc] init];
-         m.chat_id  = item[1];
-         m.object_id  = item[2];
-         m.text  = item[3];
-         m.type  = item[4];
-         m.sender_id  = item[5];
-         m.receive_id  = item[6];
-         m.status  = item[7];
-         m.reader  = item[8];
-         m.create  = item[9];
-         m.update  = item[10];
-         
-         JSQMessage *message1 = nil;
-         if ([[[Configs sharedInstance] getUIDU] isEqualToString:m.sender_id]) {
-         message1 = [JSQMessage messageWithSenderId:@"user1"
-         displayName:@"underscore"
-         text:m.text];
-         }else{
-         message1 = [JSQMessage messageWithSenderId:@"user2"
-         displayName:@"underscore"
-         text:m.text];
-         }
-         [self.messages addObject:message1];
-         */
+ 
         
         JSQMessage *message1 = nil;
         if ([[[Configs sharedInstance] getUIDU] isEqualToString:sender_id]) {
@@ -146,31 +115,7 @@
 
 - (void)didFinishMessageTimer:(NSTimer*)timer
 {
-    /*
-    // 効果音を再生する
-    [JSQSystemSoundPlayer jsq_playMessageSentSound];
-    // 新しいメッセージデータを追加する
-    JSQMessage *message = [JSQMessage messageWithSenderId:@"user2"
-                                              displayName:@"underscore"
-                                                     text:@"Hello"];
-    [self.messages addObject:message];
-    // メッセージの受信処理を完了する (画面上にメッセージが表示される)
-    [self finishReceivingMessageAnimated:YES];
-    
-    
-    NSDictionary *_message = @{
-                               @"sender_id" : [friend objectForKey:@"friend_id"],
-                               @"create": [FIRServerValue timestamp],
-                               @"text": @"Hello",
-                               @"type": @"private"};
-    
-    NSString *ccmessage = [NSString stringWithFormat:@"toonchat_message/%@/", [friend objectForKey:@"chat_id"]];
-    
-    // [[[[_ref child:@"users"] child:user.uid] child:@"username"] setValue:username];
-//    [[[ref child:ccmessage] childByAutoId] setValue:_message withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-//        NSLog(@"");
-//    }];
-     */
+ 
 }
 
 #pragma mark - JSQMessagesViewController
@@ -195,20 +140,7 @@
     [self receiveAutoMessage];
     
     
-    /*
-     m.chat_id   = snapshot.ref.parent.key;
-     m.object_id = snapshot.key;
-     
-     
-     m.text      = [value objectForKey:@"text"];
-     m.type      = [value objectForKey:@"type"];
-     m.sender_id = [value objectForKey:@"sender_id"];
-     m.receive_id = [value objectForKey:@"receive_id"];
-     m.status    = [value objectForKey:@"status"];
-     m.create    = [value objectForKey:@"create"];
-     m.update    = [value objectForKey:@"update"];
-     
-     */
+ 
     
     NSString *ccmessage = [NSString stringWithFormat:@"toonchat_message/%@/", [friend objectForKey:@"chat_id"]];
     NSString *object_id = [[ref child:ccmessage] childByAutoId].key;
@@ -254,41 +186,8 @@
             
             if(item != nil){
                 
-                /*
-                Message* m =[[Message alloc] init];
-                m.chat_id  = item[1];
-                m.object_id  = item[2];
-                m.text  = item[3];
-                m.type  = item[4];
-                m.sender_id  = item[5];
-                m.receive_id  = item[6];
-                // m.status  = item[7];
-                m.reader  = item[8];
-                m.create  = item[9];
-                m.update  = item[10];
-                
-                if (error == nil) {
-                    m.status  = @"send_success";
-                }else{
-                    // error
-                    m.status  = @"resend";
-                }
-                BOOL us = [meRepo update:m];
-                */
-                
-                /*
-                 @"chat_id":m.chat_id,
-                 @"object_id":m.object_id,
-                 @"text": m.text,
-                 
-                 @"type": m.type,
-                 @"sender_id" : m.sender_id,
-                 @"receive_id" : m.receive_id,
-                 @"status" : @"send", // สถานะการส่ง  sending(กำลังส่ง), resend(ส่งไม่สำเร็จ), send_success(ส่งสำเร็จ)
-                 @"reader" : @{}, // จะเก็บ uid ของผู้เปิดอ่าน
-                 @"create": [FIRServerValue timestamp],
-                 @"update": [FIRServerValue timestamp]
-                 */
+ 
+
                 
                 NSInteger ichat_id = [msRepo.dbManager.arrColumnNames indexOfObject:@"chat_id"];
                 NSInteger iobject_id = [msRepo.dbManager.arrColumnNames indexOfObject:@"object_id"];
@@ -374,5 +273,6 @@
     // changeFN.friend_id = [item objectForKey:@"friend_id"];
     [self.navigationController pushViewController:inviteF animated:YES];
 }
+ */
 @end
 

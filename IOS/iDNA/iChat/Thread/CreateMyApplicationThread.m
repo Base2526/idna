@@ -17,7 +17,7 @@
 
 @implementation CreateMyApplicationThread
 
--(void)start: (UIImage*) photo: (NSString *)name : (NSString *)category
+-(void)start: (UIImage*) photo: (NSString *)name : (NSString *)category :(NSString *)subcategory
 {
     //if there is a connection going on just cancel it.
     [self.connection cancel];
@@ -49,7 +49,7 @@
     UIDevice *deviceInfo = [UIDevice currentDevice];
     NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
     
-    [dataToSend appendFormat:@"uid=%@&name=%@&category=%@&image=%@&", [[Configs sharedInstance] getUIDU], name, category, imgString];
+    [dataToSend appendFormat:@"uid=%@&name=%@&category=%@&subcategory=%@&image=%@&", [[Configs sharedInstance] getUIDU], name, category, subcategory, imgString];
     
     // http://stackoverflow.com/questions/13676893/passing-array-to-php-using-post-from-ios
     // NSMutableString *bodyStr = [NSMutableString string];

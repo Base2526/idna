@@ -15,6 +15,21 @@
 #import "AppDelegate.h"
 #import "FriendProfileRepo.h"
 
+#import "Profiles.h"
+#import "ProfilesRepo.h"
+
+#import "Friends.h"
+#import "FriendsRepo.h"
+
+#import "MyApplications.h"
+#import "MyApplicationsRepo.h"
+
+#import "Following.h"
+#import "FollowingRepo.h"
+
+#import "Classs.h"
+#import "ClasssRepo.h"
+
 //#define IDIOM
 //#define IPAD     UIUserInterfaceIdiomPad
 
@@ -154,6 +169,8 @@
         self.UPDATE_PICTURE_GROUP   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_picture_group"];
         
         self.CREATE_CLASS   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/create_class"];
+        
+        self.GET_GENDER   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/get_gender"];
     
         self.kBarHeight = 50.0f;
         
@@ -393,11 +410,9 @@
 }
 
 /*
- จะ Sync ข้อมูลใหม่ทุกครั่งที่ login
+ จะ Sync ข้อมูลใหม่ทุกครั่งที่ login โดยจะดึงข้อมูลทั้งหมดจะ firebase ของ user login
  */
--(void)synchronizeData
-{
-    
+-(void)synchronizeData{
     NSMutableArray *childObservers = [[NSMutableArray alloc] init];
     
     FIRDatabaseReference *ref = [[FIRDatabase database] reference];
@@ -407,46 +422,151 @@
     NSString *child = [NSString stringWithFormat:@"%@%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     
     [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-        NSLog(@"%@", snapshot.value);
-        
-        
-        /*
-        [self saveData:_DATA :snapshot.value];
-        
-        NSLog(@"%@", [self loadData:_DATA]);
+        // NSLog(@"%@", snapshot.value);
         
         [childObservers addObject:[ref child:child]];
         
-        // ดึงข้อมูล profile friends all
-        NSMutableDictionary *friends = [[self loadData:_DATA] objectForKey:@"friends"];
+        NSMutableDictionary *value = snapshot.value;
         
-        if (friends == nil) {
+        // #1 ส่วนของ profiles user
+        NSMutableDictionary *profiles = [value objectForKey:@"profiles"];
+        
+        ProfilesRepo *profileRepo = [[ProfilesRepo alloc] init];
+        Profiles *pf = [[Profiles alloc] init];
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:profiles options:0 error:&err];
+        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        pf.create    = [timeStampObj stringValue];
+        pf.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [profileRepo insert:pf];
+        // #1 ส่วนของ profiles user
+        
+        // #2 ส่วนของ my_applications
+        if ([value objectForKey:@"my_applications"] != nil) {
+            NSDictionary *my_applications = [value objectForKey:@"my_applications"];
+         
+            MyApplicationsRepo *myAppRepo = [[MyApplicationsRepo alloc] init];
+            for (NSString* key in my_applications) {
+                NSDictionary* val = [my_applications objectForKey:key];
+                
+                MyApplications *myApp = [[MyApplications alloc] init];
+                myApp.app_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:val options:0 error:&err];
+                myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                myApp.create    = [timeStampObj stringValue];
+                myApp.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [myAppRepo insert:myApp];
+            }
+        }
+        // #2 ส่วนของ my_applications
+        
+        // #3 ส่วนของ following
+        if ([value objectForKey:@"following"] != nil) {
+            NSDictionary *following = [value objectForKey:@"following"];
+            
+            FollowingRepo *followingRepo = [[FollowingRepo alloc] init];
+            for (NSString* key in following) {
+                NSDictionary* val = [following objectForKey:key];
+                
+                Following *fw = [[Following alloc] init];
+                fw.item_id = key;
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:val options:0 error:&err];
+                fw.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                fw.create    = [timeStampObj stringValue];
+                fw.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [followingRepo insert:fw];
+            }
+        }
+        // #3 ส่วนของ following
+        
+        // #4 ส่วนของ classs
+        if ([value objectForKey:@"classs"] != nil) {
+            NSDictionary *classs = [value objectForKey:@"classs"];
+            
+            ClasssRepo *classsRepo = [[ClasssRepo alloc] init];
+            for (NSString* key in classs) {
+                NSDictionary* val = [classs objectForKey:key];
+                
+                Classs *cs = [[Classs alloc] init];
+                cs.item_id = key;
+                
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+                cs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                cs.create    = [timeStampObj stringValue];
+                cs.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [classsRepo insert:cs];
+            }
+        }
+        // #4 ส่วนของ classs
+        
+        // #5 ส่วนข้อมูลของ friends & profile friend
+        /*
+         กรณีไม่มีเพือนเราจะออกจะเกิดกรณีนี้เมือ พึงสมัครมาครั้งแรก
+         */
+        if ([value objectForKey:@"friends"] == nil) {
             [[NSNotificationCenter defaultCenter] postNotificationName:@"synchronizeData" object:self userInfo:@{}];
             return;
         }
         
+        FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+        NSMutableDictionary *friends = [value objectForKey:@"friends"];
+        
         __block int count = 0;
         for (NSString* key in friends) {
+            NSDictionary* val = [friends objectForKey:key];
+
+            Friends *friend = [[Friends alloc] init];
+            friend.friend_id = key;
             
-        
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:val options:0 error:&err];
+            friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            friend.create    = [timeStampObj stringValue];
+            friend.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [friendsRepo insert:friend];
+            
             NSString *fchild = [NSString stringWithFormat:@"%@%@/profiles", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], key];
             [[ref child:fchild] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-                
                 
                 NSString* parent = snapshot.ref.parent.key;
                 NSLog(@"%@, %@, %@", parent, snapshot.key, snapshot.value);
                 
                 count++;
-
+                
                 [childObservers addObject:[ref child:fchild]];
                 
                 // [[(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] setObject:snapshot.value forKey:parent];
                 
                 // [self saveData:parent :snapshot.value];
                 
-                FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
-        
-                if (![friendPRepo check:parent]) {
+                FriendProfileRepo *friendProfileRepo = [[FriendProfileRepo alloc] init];
+                
+                if (![friendProfileRepo check:parent]) {
                     FriendProfile *friendProfile = [[FriendProfile alloc] init];
                     friendProfile.friend_id = parent;
                     
@@ -459,28 +579,25 @@
                     friendProfile.create    = [timeStampObj stringValue];
                     friendProfile.update    = [timeStampObj stringValue];
                     
-                    BOOL sv = [friendPRepo insert:friendProfile];
-                    
-                    NSArray *fprofileAll = [friendPRepo getFriendProfileAll];
-                    
-                    NSLog(@"");
-                    
+                    BOOL sv = [friendProfileRepo insert:friendProfile];
                 }
                 
-                // จะออกก็ต่อเมือดึงข้อมูลเสด ถึงคนสุดท้ายเท่านั้น
+                // จะออกก็ต่อเมือดึงข้อมูล ถึงคนสุดท้ายเท่านั้น
                 if (friends.count == count) {
                     for (FIRDatabaseReference *ref in childObservers) {
                         [ref removeAllObservers];
                     }
                     
-                    
                     // [[Configs sharedInstance] saveData:_PROFILE_FRIENDS :[(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile]];
-                
+                    NSArray *friendAll = [friendsRepo getFriendsAll];
+                    NSArray *fprofileAll = [friendProfileRepo getFriendProfileAll];
+                    
                     [[NSNotificationCenter defaultCenter] postNotificationName:@"synchronizeData" object:self userInfo:@{}];
                 }
             }];
         }
-         */
+        
+        // #5 ส่วนข้อมูลของ friends & profile friend
     }];
 }
 
@@ -568,8 +685,4 @@
 }];
 
  */
-
-
-
-
 @end

@@ -36,13 +36,13 @@
     [activityIndicator startAnimating];
     [self.view addSubview:activityIndicator];
     
-    all_data = [[NSDictionary alloc] init];
+    // all_data = [[NSDictionary alloc] init];
     
     // [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
     
     all_data = [[Configs sharedInstance] loadData:_CATEGORY_APPLICATION];
     
-    // if ([all_data count] == 0){
+    if ([all_data count] == 0){
         ApplicationCategoryThread *categoryThread = [[ApplicationCategoryThread alloc] init];
         [categoryThread setCompletionHandler:^(NSString * data) {
         
@@ -74,12 +74,12 @@
         }];
     
         [categoryThread start];
-//    }else{
-//        sortedKeys = [[all_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
-//
-//        [activityIndicator stopAnimating];
-//        [activityIndicator removeFromSuperview];
-//    }
+    }else{
+        sortedKeys = [[all_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
+
+        [activityIndicator stopAnimating];
+        [activityIndicator removeFromSuperview];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

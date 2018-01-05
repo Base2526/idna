@@ -13,6 +13,7 @@
 #import "CreateGroupChatThread.h"
 
 #import "FriendProfileRepo.h"
+#import "FriendsRepo.h"
 
 @interface CreateGroup (){
     // NSMutableDictionary *friends;
@@ -45,7 +46,7 @@
     ImageVGroup.userInteractionEnabled = YES;
     [ImageVGroup addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectImage:)]];
     
-    
+    /*
     for (NSString* key in friends) {
         NSDictionary* value = [friends objectForKey:key];
         
@@ -74,6 +75,41 @@
                 
                 friends = newFriends;
             }
+        }
+    }
+    */
+    
+    
+    
+    /// -------->
+    
+    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    NSMutableArray * fs = [friendsRepo getFriendsAll];
+    
+    friends = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < [fs count]; i++) {
+        NSArray *val =  [fs objectAtIndex:i];
+        
+        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        Boolean flag = true;
+        if ([friend objectForKey:@"hide"]) {
+            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                flag = false;
+            }
+        }
+        if ([friend objectForKey:@"block"]) {
+            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                flag = false;
+            }
+        }
+        
+        if (flag) {
+            [friends setObject:friend forKey:friend_id];
         }
     }
 }
@@ -124,11 +160,7 @@
     NSString* key = [keys objectAtIndex:indexPath.row];
     NSMutableDictionary* item = [friends objectForKey:key];
     
-    
-    
-    
     NSArray *fprofile = [friendPRepo get:key];
-    
     
     NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     

@@ -9,13 +9,15 @@
 #import "Tab_Home.h"
 #import "Configs.h"
 #import "AppDelegate.h"
-// #import "SWRevealViewController.h"
 #import "UserDataUIAlertView.h"
 #import "AddByID.h"
 #import "MyProfile.h"
+#import "Profiles.h"
+#import "ProfilesRepo.h"
 
 @interface Tab_Home (){
-    
+    ProfilesRepo* profilesRepo;
+    NSMutableDictionary *profile;
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
@@ -24,11 +26,13 @@
 @end
 
 @implementation Tab_Home
-@synthesize imageProfile, labelName, labelEmail, imageBG, imageV_edit, imageV_qrcode;
+@synthesize imageProfile, labelName, labelEmail, imageBG, imageV_edit, imageV_qrcode, labelSMessage;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    
+    profilesRepo = [[ProfilesRepo alloc] init];
     /*
     SWRevealViewController *revealViewController = self.revealViewController;
     if ( revealViewController )
@@ -62,7 +66,30 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     
-    NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+    NSArray *pf = [profilesRepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profile = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    /*
+    NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+    [newProfiles addEntriesFromDictionary:profiles];
+    [newProfiles removeObjectForKey:@"bg_url"];
+    [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
+    
+    Profiles *pfs = [[Profiles alloc] init];
+    NSError * err;
+    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+    pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    pfs.update    = [timeStampObj stringValue];
+    
+    BOOL sv = [profilesRepo update:[[pf objectAtIndex: [profileRepo.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue] :pfs];
+    
+    */
+    
+    // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
  
     // #1 profile
     // NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
@@ -70,41 +97,39 @@
     // NSDictionary *profiles = [data objectForKey:@"profiles"];
     // NSLog(@"");
     
-    NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
-    if ([profiles objectForKey:@"image_url"]) {
+    // NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
+    if ([profile objectForKey:@"image_url"]) {
         [imageProfile clear];
         [imageProfile showLoadingWheel];
-        [imageProfile setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profiles objectForKey:@"image_url"]]]];
+        [imageProfile setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageProfile];
     }else{}
     
-    labelName.text = [NSString stringWithFormat:@"Name : %@", [profiles objectForKey:@"name"]];
-    labelEmail.text = [NSString stringWithFormat:@"Email : %@", [profiles objectForKey:@"mail"]];
+    labelName.text = [NSString stringWithFormat:@"Name : %@", [profile objectForKey:@"name"]];
+    labelEmail.text = [NSString stringWithFormat:@"Email : %@", [profile objectForKey:@"mail"]];
+    
+    if ([profile objectForKey:@"status_message"]) {
+        labelSMessage.text = [NSString stringWithFormat:@"SM : %@", [profile objectForKey:@"status_message"]];
+    }else{
+        labelSMessage.text = @"SM :";
+    }
     
     // BG
-    if ([profiles objectForKey:@"bg_url"]) {
+    if ([profile objectForKey:@"bg_url"]) {
         
         imageBG.callbackOnSetImage = (id)self;
         [imageBG clear];
         [imageBG showLoadingWheel];
-        [imageBG setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profiles objectForKey:@"bg_url"]]]];
+        [imageBG setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"bg_url"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageBG];
     }else{}
     
-    
-//    [imageBG clear];
-//    [imageBG showLoadingWheel];
-//    // [imageBG setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profiles objectForKey:@"image_url"]]]];
-//    [imageBG setImage:[UIImage imageNamed:@"man7.jpg"]];
-//    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageBG];
-    
-    if ([profiles objectForKey:@"image_url_ios_qrcode"]) {
+    if ([profile objectForKey:@"image_url_ios_qrcode"]) {
         [imageV_qrcode clear];
         [imageV_qrcode showLoadingWheel];
-        [imageV_qrcode setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profiles objectForKey:@"image_url_ios_qrcode"]]]];
+        [imageV_qrcode setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url_ios_qrcode"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV_qrcode ];
     }
-    
     
     UITapGestureRecognizer *singleFingerTap =
     [[UITapGestureRecognizer alloc] initWithTarget:self

@@ -84,7 +84,7 @@
     UINavigationController* settingsNavController = [[UINavigationController alloc] initWithRootViewController:tabBarSettings];
     settingsNavController.navigationBar.topItem.title = @"Settings";
     
-    NSArray *controllers = @[mxNavController, heartNavController /*, recentNavController*/, chatsNavController, myNavController , iDNANavController, settingsNavController];
+    NSArray *controllers = @[/*mxNavController,*/ heartNavController /*, recentNavController*/, chatsNavController /*, myNavController*/, iDNANavController, settingsNavController];
     [self setViewControllers:controllers animated:YES];
 }
 

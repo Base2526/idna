@@ -74,7 +74,7 @@
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
         
         EditEmailThread *editPhone = [[EditEmailThread alloc] init];
-        [editPhone setCompletionHandler:^(NSString *data) {
+        [editPhone setCompletionHandler:^(NSData *data) {
             [[Configs sharedInstance] SVProgressHUD_Dismiss];
             
             NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];

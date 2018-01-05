@@ -227,9 +227,11 @@
     // [[NSNotificationCenter defaultCenter] postNotificationName:@"ManageTabBar" object:nil userInfo:dict];
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    MainTabBarController *tabBar = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
-    [self presentViewController:tabBar animated:YES completion:nil];
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//    MainTabBarController *tabBar = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
+//    [self presentViewController:tabBar animated:YES completion:nil];
+    
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] initMainView];
 }
 
 @end

@@ -13,6 +13,8 @@
 
 #import "Utility.h"
 
+#import "AppDelegate.h"
+
 @import Firebase;
 @import FirebaseMessaging;
 @import FirebaseDatabase;
@@ -98,6 +100,8 @@
 @property(nonatomic)NSString* GET_PROFILES;
 
 @property(nonatomic)NSString* CREATE_CLASS;
+
+@property(nonatomic)NSString* GET_GENDER;
 
 
 // Send Heart by Class
@@ -187,7 +191,6 @@
 -(void)SVProgressHUD_ShowSuccessWithStatus:(NSString *)message;
 -(void)SVProgressHUD_ShowErrorWithStatus:(NSString *)message;
 -(void)SVProgressHUD_Dismiss;
-
 
 
 

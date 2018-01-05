@@ -19,7 +19,7 @@
     return self;
 }
 
--(NSArray *)get:(NSString *)item_id{
+-(NSArray *)get{
     //  Create a query
     NSString *query = [NSString stringWithFormat:@"select * from profiles;"];
     
@@ -50,11 +50,27 @@
     }
 }
 
-- (BOOL) update:(int)id :(Profiles *)data{
+- (BOOL) update:(Profiles *)data{
+    NSArray *profile = [self get];
+    
     //  แสดงว่ามีให้ทำการ udpate
-    NSString *query = [NSString stringWithFormat:@"UPDATE profiles set 'data'='%@' WHERE id='%@';", data.data, id];
+    NSString *query = [NSString stringWithFormat:@"UPDATE profiles set 'data'='%@', 'update'='%@' WHERE id='%d';", data.data, data.update, [[profile objectAtIndex: [self.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue]];
     
     //  Execute the query.
+    [self.dbManager executeQuery:query];
+    
+    //  If the query was succesfully executed then pop the view controller.
+    if (self.dbManager.affectedRows != 0) {
+        NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+        return true;
+    }else{
+        NSLog(@"Could not execute the query");
+        return false;
+    }
+}
+
+- (BOOL) delete{
+    NSString *query = [NSString stringWithFormat:@"DELETE from profiles"];
     [self.dbManager executeQuery:query];
     
     //  If the query was succesfully executed then pop the view controller.

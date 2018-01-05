@@ -25,13 +25,16 @@
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].EDIT_MULTI_PHONE]];
     
     //initialize a request from url
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
+    // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
+    
+    NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
     //set http method
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     
+    /*
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     UIDevice *deviceInfo = [UIDevice currentDevice];
@@ -45,59 +48,24 @@
     
     //start the connection
     [connection start];
+    */
     
+    NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
+    
+    [dataToSend appendFormat:@"uid=%@&fction=%@&item_id=%@&number=%@", [[Configs sharedInstance] getUIDU], fction, item_id, number];
+    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if (error == nil) {
+            self.completionHandler(data);
+        }else{
+            self.errorHandler([error description]);
+        }
+    }];
+    
+    [postDataTask resume];
 }
-
-- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [self.receivedData setLength:0];
-}
-
-/*
- this method might be calling more than one times according to incoming data size
- */
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data{
-    [self.receivedData appendData:data];
-}
-/*
- if there is an error occured, this method will be called by connection
- */
--(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
-    
-    NSLog(@"%@" , error);
-    
-    if (self.errorHandler) {
-        self.errorHandler([error description]);
-    }
-}
-
-/*
- if data is successfully received, this method will be called by connection
- */
--(void)connectionDidFinishLoading:(NSURLConnection *)connection{
-    
-    //initialize convert the received data to string with UTF8 encoding
-    NSString *htmlSTR = [[NSString alloc] initWithData:self.receivedData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@" , htmlSTR);
-    
-    //    NSError *error = nil;
-    //    id object = [NSJSONSerialization
-    //                 JSONObjectWithData:self.receivedData
-    //                 options:0
-    //                 error:&error];
-    //
-    //    if(error) { /* JSON was malformed, act appropriately here */ }
-    //    if([object isKindOfClass:[NSDictionary class]]){
-    //        NSDictionary *results = object;
-    //        NSLog(@"%@",[results objectForKey:@"status"]);
-    //        NSLog(@"%@",[results objectForKey:@"output"]);
-    //    }else{
-    //        NSLog(@"there is not an JSON object");
-    //    }
-    
-    if (self.completionHandler) {
-        self.completionHandler(self.receivedData);
-    }
-}
-
 @end

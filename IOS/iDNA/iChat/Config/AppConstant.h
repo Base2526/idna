@@ -36,7 +36,8 @@
 
 // #define     _USER_MY_ID             @"user_my_id"     // เก็บ my id ของ user  โดยรวมถึง my card, my application
 
-#define     _CATEGORY_APPLICATION   @"category_application" 
+#define     _CATEGORY_APPLICATION   @"category_application"
+#define     _GENDER                 @"gender" 
 
 
 #define     _DATA                   @"data"

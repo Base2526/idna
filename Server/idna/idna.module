@@ -1073,6 +1073,15 @@ function idna_services_resources()
         'access arguments append' => FALSE,
       ),
     ),
+    'get_gender'=>array(
+      'create' =>array(
+        'help'=>'Services ดึง Category ของ Gender',
+        'callback'=>'get_gender',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+      ),
+    ),
     'delete_my_application'=>array(
       'create' =>array(
         'help'=>'Services ลบ My Application',
@@ -2712,6 +2721,24 @@ function application_category(){
 
   $result['result']  = TRUE;
   $result['data']    = taxonomy_get_tree_nested(taxonomy_vocabulary_machine_name_load("tags_category_application")->vid);
+
+  return $result;
+}
+
+/**
+  function get gender
+*/
+function get_gender(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+  $result['result']  = TRUE;
+  $result['data']    = taxonomy_get_tree_nested(taxonomy_vocabulary_machine_name_load("gender")->vid);
 
   return $result;
 }
@@ -4711,11 +4738,18 @@ function edit_multi_phone()
   $result = array();
 
 
-  if (empty($_POST['fction']) || empty($_POST['uid'])) {
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
 
+  if (empty($_POST['fction']) || empty($_POST['uid'])) {
     $result['result'] = FALSE;
     return $result;
   }
+
+  global $firebase;
 
   //  v1.1 support multi phone
   // fction เป็นตัวบอกว่า เพิ่ม, แก้ไข, ลบ*/
@@ -4741,13 +4775,15 @@ function edit_multi_phone()
         // #3 
         $flag = TRUE;
         // check is phone number duplicat
-        foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
-            $data_item_load = field_collection_item_load($value['value']);
-            if($data_item_load->field_phone_number[LANGUAGE_NONE][0]['value'] == $_POST['number']){
-              
-              $flag = FALSE;
-              break;
-            }
+        if(isset($profile->field_profile_multi_phone)){
+          foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
+              $data_item_load = field_collection_item_load($value['value']);
+              if($data_item_load->field_phone_number[LANGUAGE_NONE][0]['value'] == $_POST['number']){
+                
+                $flag = FALSE;
+                break;
+              }
+          }
         }
 
         if ($flag) {
@@ -4776,10 +4812,23 @@ function edit_multi_phone()
           $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/phones/' . $field_entity->item_id, $value);
           */
 
+          $value = array(
+            "name"      => $_POST['number'],
+            "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
+            "enabled"   => "1",  // เปิด หรือ ปิดการใช้
+            "create"    => time(),
+            "update"    => time()
+          );
+          // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid, $data);
+
+          // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
+
+          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $field_entity->item_id, $value);
+
           $result['result']  = TRUE;
           $result['is_edit']  = FALSE;
           $result['item_id'] = $field_entity->item_id;
-          $result['data']    = $value;
+          $result['item']    = $value;
         }else{
           $result['result'] = FALSE;
           $result['message'] = "Duplicate";
@@ -4821,10 +4870,22 @@ function edit_multi_phone()
             $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/phones/' . $data_item_load->item_id, $value);
             */
 
+            $value = array(
+              "name"      => $_POST['number'],
+              "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
+              "enabled"   => "1",  // เปิด หรือ ปิดการใช้
+              "update"    => time()
+            );
+          // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid, $data);
+
+          // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
+
+            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $data_item_load->item_id, $value);
+
             $result['result']   = TRUE;
             $result['is_edit']  = TRUE;
             $result['item_id']  = $data_item_load->item_id;
-            $result['data']     = $value;
+            $result['item']     = $value;
 
             return $result;
             break;
@@ -4849,11 +4910,8 @@ function edit_multi_phone()
           if($data_item_load->item_id == $_POST['item_id']){
             entity_delete_multiple('field_collection_item', array($data_item_load->item_id));
 
-            /*
-            $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
-            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/phones/' . $data_item_load->item_id);
-            */
-
+            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $data_item_load->item_id);
+            
             $result['result']   = TRUE;
             $result['item_id']  = $data_item_load->item_id;
             return $result;
@@ -4871,15 +4929,40 @@ function edit_multi_phone()
   return  $result;
 }
 
+/*
+if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : update_picture_profile, parameter";
+    return $result;
+  }
+
+  global $firebase;
+
+  $uid   = $_REQUEST['uid'];
+  $image = $_REQUEST['image'];
+*/
 function edit_multi_email()
 {
   $result = array();
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
   if (empty($_POST['fction']) || empty($_POST['uid'])) {
     $result['result'] = FALSE;
     return $result;
   }
 
-  // $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
+  global $firebase;
 
   switch ($_POST['fction']) {
     case 'add':
@@ -4893,14 +4976,19 @@ function edit_multi_email()
 
         // #3 
         $flag = TRUE;
+        
         // check is phone number duplicat
-        foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
-            $data_item_load = field_collection_item_load($value['value']);
-            if($data_item_load->field_email_text[LANGUAGE_NONE][0]['value'] == $_POST['email']){
-              
-              $flag = FALSE;
-              break;
-            }
+        // if(isset($items->field_my_app_update)){
+
+        if(isset($profile->field_profile_multi_email)){
+          foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
+              $data_item_load = field_collection_item_load($value['value']);
+              if($data_item_load->field_email_text[LANGUAGE_NONE][0]['value'] == $_POST['email']){
+                
+                $flag = FALSE;
+                break;
+              }
+          }
         }
 
         if ($flag) {
@@ -4926,10 +5014,12 @@ function edit_multi_email()
 
           // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
 
+          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $field_entity->item_id, $value);
+
           $result['result']  = TRUE;
           $result['is_edit'] = FALSE;
           $result['item_id'] = $field_entity->item_id;
-          $result['data']    = $value;
+          $result['item']    = $value;
         }else{
           $result['result'] = FALSE;
           $result['message'] = "Duplicate Email number";
@@ -4967,10 +5057,12 @@ function edit_multi_email()
 
             // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $data_item_load->item_id, $value);
 
+            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $data_item_load->item_id, $value);
+
             $result['result']  = TRUE;
             $result['is_edit'] = TRUE;
             $result['item_id'] = $data_item_load->item_id;
-            $result['data']    = $value;
+            $result['item']    = $value;
             return $result;
             break;
           }
@@ -4992,7 +5084,7 @@ function edit_multi_email()
           if($data_item_load->item_id == $_POST['item_id']){
             entity_delete_multiple('field_collection_item', array($data_item_load->item_id));
 
-            // $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $data_item_load->item_id);
+            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $data_item_load->item_id);
 
             $result['result'] = TRUE;
             $result['item_id'] = $data_item_load->item_id;
@@ -5844,6 +5936,56 @@ function update_profile(){
     }
   }
 
+  // address
+  if (array_key_exists('address', $data)) {
+    if (strcmp($profile->field_profile_address[LANGUAGE_NONE][0]['value'], $data['address']) != 0) {
+      # code...
+      $profile->field_profile_address[LANGUAGE_NONE][0]['value'] = $data['address'];
+
+      $check++;
+    }
+  }
+
+  // gender 
+  if (array_key_exists('gender', $data)) {
+    if (strcmp($profile->field_profile_gender[LANGUAGE_NONE][0]['tid'], $data['gender']) != 0) {
+      # code...
+      $profile->field_profile_gender[LANGUAGE_NONE][0]['tid'] = $data['gender'];
+
+      $check++;
+    }
+  }
+
+  // field_profile_school
+  if (array_key_exists('school', $data)) {
+    if (strcmp($profile->field_profile_school[LANGUAGE_NONE][0]['value'], $data['school']) != 0) {
+      # code...
+      $profile->field_profile_school[LANGUAGE_NONE][0]['value'] = $data['school'];
+
+      $check++;
+    }
+  }
+
+  // field_profile_company
+  if (array_key_exists('company', $data)) {
+    if (strcmp($profile->field_profile_company[LANGUAGE_NONE][0]['value'], $data['company']) != 0) {
+      # code...
+      $profile->field_profile_company[LANGUAGE_NONE][0]['value'] = $data['company'];
+
+      $check++;
+    }
+  }
+
+  // birthday
+  if (array_key_exists('birthday', $data)) {
+    if (strcmp($profile->field_profile_birthday[LANGUAGE_NONE][0]['value'], $data['birthday']) != 0) {
+      # code...
+      $profile->field_profile_birthday[LANGUAGE_NONE][0]['value'] = $data['birthday'];
+
+      $check++;
+    }
+  }
+
   /*
     เราจะ udpate database ก็ต่อเมือมีการ udpate ข้อมูลเท่านั้น
   */ 
@@ -5973,7 +6115,7 @@ function create_my_application(){
     return $result;
   }
 
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['name']) || empty($_REQUEST['image']) || empty($_REQUEST['category'])) {
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['name']) || empty($_REQUEST['image']) || empty($_REQUEST['category']) || empty($_REQUEST['subcategory'])) {
     $result['result'] = FALSE;
     $result['message']  = "function : create_my_application, parameter";
     return $result;
@@ -5983,6 +6125,7 @@ function create_my_application(){
   $name     = $_REQUEST['name'];
   $image    = $_REQUEST['image'];
   $category = $_REQUEST['category'];
+  $subcategory = $_REQUEST['subcategory'];
 
   $node = new stdClass();
   $node->title = $name;
@@ -6021,6 +6164,8 @@ function create_my_application(){
 
   $val['field_my_app_name'][LANGUAGE_NONE][0]['value']    = $name;
   $val['field_my_app_category'][LANGUAGE_NONE][0]['tid']  = $category;
+  $val['field_my_app_subcategoty'][LANGUAGE_NONE][0]['tid']  = $subcategory;
+
   $val['field_image'][LANGUAGE_NONE][0]                   = $image_url;
   
 
@@ -6045,6 +6190,7 @@ function create_my_application(){
       "owner_id"   => $uid,
       "name"       => $name,
       "category"   => $category,
+      "subcategory"   => $subcategory,
       "image_url"  => substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
       "create"     => time(),
       "update"     => time()

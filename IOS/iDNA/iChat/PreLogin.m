@@ -13,6 +13,8 @@
 #import "Configs.h"
 #import "MainTabBarController.h"
 
+#import "MainViewController.h"
+
 @interface PreLogin ()
 @end
 
@@ -133,9 +135,6 @@
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    MainTabBarController *tabBar = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
-    [self presentViewController:tabBar animated:YES completion:nil];
-    NSLog(@"");
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] initMainView];
 }
 @end

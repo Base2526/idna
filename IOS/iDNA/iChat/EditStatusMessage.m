@@ -13,11 +13,16 @@
 // #import "SVProgressHUD.h"
 #import "AppConstant.h"
 
-@interface EditStatusMessage ()
+#import "ProfilesRepo.h"
 
+@interface EditStatusMessage ()
+{
+    ProfilesRepo *profilesRepo;
+}
 @end
 
 @implementation EditStatusMessage
+@synthesize ref;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -26,6 +31,9 @@
     [self.textFieldMessage setText:self.message];
     self.btnSave.enabled = NO;
     self.textFieldMessage.delegate = self;
+    
+    ref         = [[FIRDatabase database] reference];
+    profilesRepo = [[ProfilesRepo alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -66,28 +74,46 @@
     if ([strName isEqualToString:@""]) {
         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Empty."];
     }else {
-        
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
         
-        EditStatusMessageThread *eThread = [[EditStatusMessageThread alloc] init];
-        [eThread setCompletionHandler:^(NSString *data) {
-            
-            [[Configs sharedInstance] SVProgressHUD_Dismiss];
-            
-            NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-            
-            if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            
-            }
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
+        NSArray *pf = [profilesRepo get];
+        NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
         
-        [eThread setErrorHandler:^(NSString *error) {
-            [[Configs sharedInstance] SVProgressHUD_Dismiss];
-            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
+        NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+        [newProfiles addEntriesFromDictionary:profiles];
+        
+        if ([newProfiles objectForKey:@"status_message"]) {
+            [newProfiles removeObjectForKey:@"status_message"];
+        }
+        
+        [newProfiles setValue:strName forKey:@"status_message"];
+        
+        Profiles *pfs = [[Profiles alloc] init];
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+        pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        pfs.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [profilesRepo update:pfs];
+        
+        NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
+        
+        [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
             
+            [[Configs sharedInstance] SVProgressHUD_Dismiss];
+            if (error == nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:NO];
+                });
+            }else{
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update name."];
+            }
         }];
-        [eThread start:strName];
     }
 }
 @end

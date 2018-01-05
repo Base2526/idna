@@ -31,6 +31,13 @@
 
 #import "Tab_Home.h"
 
+#import "FriendsRepo.h"
+
+#import "ProfilesRepo.h"
+#import "AddFriend.h"
+
+#import "ChatViewController.h"
+
 #define __count 5
 
 @interface Tab_Contacts ()<UITableViewDataSource, UITableViewDelegate>{
@@ -191,10 +198,11 @@
     
     [all_data removeAllObjects];
     
-    NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-    NSMutableDictionary *friends = [data objectForKey:@"friends"];
+    // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+    // NSMutableDictionary *friends = [data objectForKey:@"friends"];
     
     // #1 profile
+    /*
     NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
     [all_data setValue:nil forKey:@"profiles"];
     if ([data objectForKey:@"profiles"]) {
@@ -203,33 +211,44 @@
         
         // self.title = [NSString stringWithFormat:@"CONTACTS-%@", [Configs sharedInstance].getUIDU] ;
     }
+    */
+    
+    ProfilesRepo *profilesRepo = [[ProfilesRepo alloc] init];
+    NSArray *pf = [profilesRepo get];
+    
+    NSDictionary* profiles = [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+   
+    [all_data setValue:profiles  forKey:@"profiles"];
     // #1 profile
     
-    for (NSString* key in friends) {
-        NSDictionary* value = [friends objectForKey:key];
     
-        if ([value objectForKey:@"hide"]) {
-            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
-                
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                friends = newFriends;
+    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    NSMutableArray * fs = [friendsRepo getFriendsAll];
+    
+    NSMutableDictionary *friends = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < [fs count]; i++) {
+        NSArray *val =  [fs objectAtIndex:i];
+        
+        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+     
+        Boolean flag = true;
+        if ([friend objectForKey:@"hide"]) {
+            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                flag = false;
             }
         }
-        if ([value objectForKey:@"block"]) {
-            if ([[value objectForKey:@"block"] isEqualToString:@"1"]) {
-                // [friends removeObjectForKey:key];
-                
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                friends = newFriends;
+        if ([friend objectForKey:@"block"]) {
+            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                flag = false;
             }
+        }
+        
+        if (flag) {
+            [friends setObject:friend forKey:friend_id];
         }
     }
     
@@ -1307,9 +1326,8 @@
                                                            message:nil
                                                           delegate:self
                                                  cancelButtonTitle:@"Close"
-                                                 otherButtonTitles:@"Manage group", @"Delete Group", nil];
+                                                 otherButtonTitles:@"Manage group", @"Delete Group", @"Chat", nil];
                 
-                NSLog(@"00 => %d", section.row);
                 alert.userData = section;
                 alert.tag = 2;
                 [alert show];
@@ -1354,12 +1372,11 @@
                                                            message:nil
                                                           delegate:self
                                                  cancelButtonTitle:@"Close"
-                                                 otherButtonTitles:[NSString stringWithFormat:@"Favorite : %@", isFav], @"Change friend's name", @"Friend Profile", @"Connect", nil];
+                                                 otherButtonTitles:[NSString stringWithFormat:@"Favorite : %@", isFav], @"Change friend's name", @"Friend Profile", @"Chat", nil];
                 
                 alert.userData = section;
                 alert.tag = 1;
                 [alert show];
-                
                 break;
             }
                 
@@ -1419,12 +1436,15 @@
         [self.navigationController pushViewController:profile animated:YES];
     }
     */
-    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
-    UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
-    navTabHome.navigationBar.topItem.title = @"My Profile";
-    [self presentViewController:navTabHome animated:YES completion:nil];
+    if (indexPath.section == 0) {
+        UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+        Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+        UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+        navTabHome.navigationBar.topItem.title = @"My Profile";
+        [self presentViewController:navTabHome animated:YES completion:nil];
+    }
 }
 
 - (void)alertView:(UserDataUIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -1442,7 +1462,6 @@
                 
             case 1:{
                 // Favorite
-                
                 NSMutableDictionary *idata = [[NSMutableDictionary alloc] init];
                 switch (indexPath.section) {
                     case 2:
@@ -1455,7 +1474,6 @@
                     default:
                         break;
                 }
-                
                 
                 // NSMutableDictionary *item = [friends objectAtIndex:indexPath.row];
                 
@@ -1563,16 +1581,15 @@
                 ////---sort
                 
                 UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                Changefriendsname *changeFN = [storybrd instantiateViewControllerWithIdentifier:@"Changefriendsname"];
+                Changefriendsname *cn = [storybrd instantiateViewControllerWithIdentifier:@"Changefriendsname"];
                 
-                changeFN.friend_id = [sortedKeys objectAtIndex:indexPath.row];
-                [self.navigationController pushViewController:changeFN animated:YES];
+                cn.friend_id = [sortedKeys objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:cn animated:YES];
             }
                 break;
                 
             case 3:{
                 // Friend Profile
-                NSLog(@"");
                 
                 // ดึงข้อมูล
                 NSMutableDictionary *idata = [[NSMutableDictionary alloc] init];
@@ -1654,16 +1671,18 @@
                 //
                 UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                 
+                /*
                 ChatWall* chatWall = [storybrd instantiateViewControllerWithIdentifier:@"ChatWall"];
                 chatWall.friend_id = [sortedKeys objectAtIndex:indexPath.row];
                 chatWall.type      = @"private";
+            
+                [self.navigationController pushViewController:chatWall animated:YES];
+                */
                 
-                UINavigationController* chatWallNavController = [[UINavigationController alloc] initWithRootViewController:chatWall];
-                // chatWallNavController.backBarButtonItem.title = @"Tactic";
-                // chatWallNavController.navigationItem.backBarButtonItem.title= @"c";
-                
-                [self presentViewController:chatWallNavController animated:YES completion:nil];
-                
+                ChatViewController *cV = [storybrd instantiateViewControllerWithIdentifier:@"ChatViewController"];
+                cV.type      = @"private";
+                cV.friend_id = [sortedKeys objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:cV animated:YES];
             }
                 break;
             default:
@@ -1752,6 +1771,57 @@
                 [alert show];
             }
                 break;
+                
+            case 3:{
+                
+                NSMutableDictionary *groups = [all_data valueForKey:@"groups"];
+                
+                /*
+                 NSArray *keys = [group allKeys];
+                 id key = [keys objectAtIndex:indexPath.row];
+                 NSMutableDictionary*  item = [group objectForKey:key];
+                 [item setValue:key forKey:@"group_id"];
+                 */
+                ////---sort เราต้องการเรียงก่อนแสดงผล
+                NSArray *myKeys = [groups allKeys];
+                NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                    return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+                }];
+                
+                //
+//                UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//
+//                ChatWall* chatWall = [storybrd instantiateViewControllerWithIdentifier:@"ChatWall"];
+//                chatWall.friend_id = [sortedKeys objectAtIndex:indexPath.row];
+//                chatWall.type      = @"groups";
+                
+                /*
+                UINavigationController* chatWallNavController = [[UINavigationController alloc] initWithRootViewController:chatWall];
+                // chatWallNavController.backBarButtonItem.title = @"Tactic";
+                // chatWallNavController.navigationItem.backBarButtonItem.title= @"c";
+                
+                [self presentViewController:chatWallNavController animated:YES completion:nil];
+                */
+                
+                // [self.navigationController popViewControllerAnimated:chatWall];
+                
+                /*
+                UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                ChatWall *chatWall = [storybrd instantiateViewControllerWithIdentifier:@"ChatWall"];
+                // manageGroup.group =item;//[friends objectAtIndex:indexPath.row];
+                // manageGroup.group_id = [sortedKeys objectAtIndex:indexPath.row];
+                chatWall.type = @"Groups";
+                
+                [self.navigationController pushViewController:chatWall animated:YES];
+                */
+                
+                UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                ChatViewController *cV = [storybrd instantiateViewControllerWithIdentifier:@"ChatViewController"];
+                cV.type = @"Groups";
+                cV.friend_id = [sortedKeys objectAtIndex:indexPath.row];
+                [self.navigationController pushViewController:cV animated:YES];
+            }
+                break;
         }
     }else if(alertView.tag == 3){
         // Delete Group
@@ -1775,22 +1845,20 @@
                         // จะได้ Group id
                         NSString* key = [ref key];
                         
+                        /*
                         NSMutableDictionary *groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
                         
-                        /*
-                         เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
-                         */
+                        //  เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
                         if ([groups objectForKey:key]) {
-                            /*
-                             Update group ของ groups
-                             */
+                            
+                            //  Update group ของ groups
+                             
                             NSMutableDictionary *newGroups = [[NSMutableDictionary alloc] init];
                             [newGroups addEntriesFromDictionary:groups];
                             [newGroups removeObjectForKey:key];
-                            
-                            /*
-                             Update groups ของ DATA
-                             */
+      
+                            //  Update groups ของ DATA
+     
                             NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
                             [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
                             [newDict removeObjectForKey:@"groups"];
@@ -1798,6 +1866,13 @@
                             
                             [[Configs sharedInstance] saveData:_DATA :newDict];
                         }
+                        */
+                        
+                        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
+                        if ([groupChatRepo get:key] != nil){
+                            BOOL sv = [groupChatRepo deleteGroup:key];
+                        }
+                        [self reloadData:nil];
                     }
                 }];
             }
@@ -1988,11 +2063,12 @@
  */
 -(void)updateFavoriteFriend:(NSString*)friend_id:(NSString *)is_favorite{
 
+    /*
     NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
     
-    /*
-     ดึงเพือนตาม friend_id แล้ว set change_friends_name
-     */
+    
+    //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
+    
     NSMutableDictionary *friend  = [friends objectForKey:friend_id];
     [friend setValue:is_favorite forKey:@"favorite"];
     
@@ -2003,6 +2079,34 @@
     [newDict setObject:friends forKey:@"friends"];
     
     [[Configs sharedInstance] saveData:_DATA :newDict];
+    */
+    
+    FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+    
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    // NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    Friends *friend  = [[Friends alloc] init];
+    friend.friend_id = friend_id;
+    
+    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+    [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+    [newDict removeObjectForKey:@"favorite"];
+    [newDict setObject:is_favorite forKey:@"favorite"];
+    
+    // friend.data      = [NSJSONSerialization JSONObjectWithData:newDict options:0 error:nil];
+    
+    NSError * err;
+    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    friend.update    = [timeStampObj stringValue];
+    
+    BOOL rs= [friendRepo update:friend];
     
     [self reloadData:nil];
 }
@@ -2012,11 +2116,10 @@
  */
 -(void)updateBlockFriend:(NSString*)friend_id:(NSString *)is_block{
     
+    /*
     NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
     
-    /*
-     ดึงเพือนตาม friend_id แล้ว set change_friends_name
-     */
+    //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
     NSMutableDictionary *friend  = [friends objectForKey:friend_id];
     [friend setValue:is_block forKey:@"block"];
     
@@ -2029,6 +2132,34 @@
     [[Configs sharedInstance] saveData:_DATA :newDict];
     
     [self reloadData:nil];
+    */
+    
+    FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+    
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    // NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    Friends *friend  = [[Friends alloc] init];
+    friend.friend_id = friend_id;
+    
+    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+    [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+    [newDict removeObjectForKey:@"block"];
+    [newDict setObject:is_block forKey:@"block"];
+    
+    NSError * err;
+    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    friend.update    = [timeStampObj stringValue];
+    
+    BOOL rs= [friendRepo update:friend];
+    
+    [self reloadData:nil];
 }
 
 /*
@@ -2036,11 +2167,10 @@
  */
 -(void)updateHideFriend:(NSString*)friend_id:(NSString *)is_hide{
     
+    /*
     NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
     
-    /*
-     ดึงเพือนตาม friend_id แล้ว set change_friends_name
-     */
+    //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
     NSMutableDictionary *friend  = [friends objectForKey:friend_id];
     [friend setValue:is_hide forKey:@"hide"];
     
@@ -2051,7 +2181,31 @@
     [newDict setObject:friends forKey:@"friends"];
     
     [[Configs sharedInstance] saveData:_DATA :newDict];
+    [self reloadData:nil];
+    */
     
+    FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    Friends *friend  = [[Friends alloc] init];
+    friend.friend_id = friend_id;
+    
+    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+    [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+    [newDict removeObjectForKey:@"hide"];
+    [newDict setObject:is_hide forKey:@"hide"];
+    
+    NSError * err;
+    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    friend.update    = [timeStampObj stringValue];
+    
+    BOOL rs= [friendRepo update:friend];
     [self reloadData:nil];
 }
 
@@ -2060,8 +2214,12 @@
 }
 
 - (IBAction)onCreateGroup:(id)sender {
+//    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//    CreateGroup* createGroup = [storybrd instantiateViewControllerWithIdentifier:@"CreateGroup"];
+//    [self.navigationController pushViewController:createGroup animated:YES];
+    
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    CreateGroup* createGroup = [storybrd instantiateViewControllerWithIdentifier:@"CreateGroup"];
-    [self.navigationController pushViewController:createGroup animated:YES];
+    AddFriend* addFriend = [storybrd instantiateViewControllerWithIdentifier:@"AddFriend"];
+    [self.navigationController pushViewController:addFriend animated:YES];
 }
 @end

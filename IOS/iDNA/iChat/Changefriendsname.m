@@ -11,8 +11,13 @@
 @import FirebaseMessaging;
 @import FirebaseDatabase;
 #import "Configs.h"
+#import "FriendsRepo.h"
 
-@interface Changefriendsname ()
+@interface Changefriendsname (){
+    
+    FriendsRepo *friendRepo;
+    NSDictionary *friend;
+}
 
 @property (strong, nonatomic) FIRDatabaseReference *ref;
 @end
@@ -29,8 +34,17 @@
     ref = [[FIRDatabase database] reference];
     
     NSLog(@"friend_id = %@", friend_id);
+    
+    friendRepo = [[FriendsRepo alloc] init];
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    /*
+     [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+     */
         
-    NSDictionary *friend = [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"] objectForKey:friend_id];
+    friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];//[[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"] objectForKey:friend_id];
     
     txtName.text = @"";
     if ([friend objectForKey:@"change_friends_name"] != nil) {
@@ -62,11 +76,11 @@
         [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
             if (error == nil) {
 
+                /*
                 NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
                 
-                /*
-                 ดึงเพือนตาม friend_id แล้ว set change_friends_name
-                 */
+                
+                //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
                 NSMutableDictionary *friend  = [friends objectForKey:friend_id];
                 [friend setValue:text_name forKey:@"change_friends_name"];
                 
@@ -77,6 +91,29 @@
                 [newDict setObject:friends forKey:@"friends"];
                 
                 [[Configs sharedInstance] saveData:_DATA :newDict];
+                */
+                
+                Friends *fd  = [[Friends alloc] init];
+                fd.friend_id = friend_id;
+                
+                NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+                [newDict addEntriesFromDictionary:friend];
+                
+                if ([newDict objectForKey:@"change_friends_name"]) {
+                    [newDict removeObjectForKey:@"change_friends_name"];
+                }
+                
+                [newDict setObject:text_name forKey:@"change_friends_name"];
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+                fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                fd.update    = [timeStampObj stringValue];
+                
+                BOOL rs= [friendRepo update:fd];
                 
                 [self.navigationController popViewControllerAnimated:YES];
             }

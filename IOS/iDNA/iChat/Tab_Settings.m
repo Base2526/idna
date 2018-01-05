@@ -17,12 +17,22 @@
 #import "FriendProfileRepo.h"
 #import "GroupChatRepo.h"
 #import "MyApplicationsRepo.h"
+#import "ProfilesRepo.h"
+#import "FriendsRepo.h"
+#import "ClasssRepo.h"
+#import "FollowingRepo.h"
+#import "CenterRepo.h"
 
 
 #import "UserDataUIAlertView.h"
 
 #import "ManageClass.h"
 #import "CreateGroup.h"
+
+#import "FriendsRepo.h"
+#import "Friends.h"
+
+
 // #import "SWRevealViewController.h"
 
 @interface Tab_Settings (){
@@ -87,8 +97,30 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
+    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    NSMutableArray * fs = [friendsRepo getFriendsAll];
     
-    friends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
+    friends = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < [fs count]; i++) {
+        NSArray *val =  [fs objectAtIndex:i];
+        
+        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        if ([friend objectForKey:@"hide"]) {
+            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                [friends setObject:friend forKey:friend_id];
+            }
+        }
+        if ([friend objectForKey:@"block"]) {
+            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                [friends setObject:friend forKey:friend_id];
+            }
+        }
+    }
     
     [self.tableView reloadData];
 }
@@ -188,21 +220,17 @@
             
         case 2:{
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            
             [labelName setText:[NSString stringWithFormat:@"%@", name]];
         }
             break;
         case 3:{
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            
             [labelName setText:[NSString stringWithFormat:@"%@", name]];
         }
             break;
-        case 4:
-            // Logout
-        {
+        // Logout
+        case 4:{
             cell.accessoryType = UITableViewCellAccessoryNone;
-            
             [labelName setText:name];
         }
             break;
@@ -210,8 +238,6 @@
         default:
             break;
     }
-    
-    // cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -246,7 +272,6 @@
             break;
         
         case 4:{
-            
             UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:@"Logout"
                                                        message:@"Are you sure logout?"
                                                       delegate:self
@@ -256,8 +281,6 @@
             alert.userData = indexPath;
             alert.tag = 1;
             [alert show];
-            
-            
         }
             break;
             
@@ -298,12 +321,17 @@
                  
                         // Delete User ออกจาก
                         [[Configs sharedInstance] saveData:_USER :nil];
-                 
+                         
+                        [[[ProfilesRepo alloc] init] delete];
+                        [[[FriendsRepo alloc] init] deleteFriendAll];
                         [[[MessageRepo alloc] init] deleteMessagesAll];
                         [[[FriendProfileRepo alloc] init] deleteFriendProfileAll];
                         [[[GroupChatRepo alloc] init] deleteGroupAll];
-                         [[[MyApplicationsRepo alloc] init] deleteMyApplicationAll];
-                 
+                        [[[MyApplicationsRepo alloc] init] deleteMyApplicationAll];
+                        [[[ClasssRepo alloc] init] deleteClasssAll];
+                        [[[FollowingRepo alloc] init] deleteFollowingAll];
+                        [[[CenterRepo alloc] init] deleteCenterAll];
+    
                         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                         PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
                         UINavigationController *navPreLogin = [[UINavigationController alloc] initWithRootViewController:preLogin];

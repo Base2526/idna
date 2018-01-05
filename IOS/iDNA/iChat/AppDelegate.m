@@ -30,6 +30,9 @@
 
 #import "ProfilesRepo.h"
 
+#import "Friends.h"
+#import "FriendsRepo.h"
+
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
 #endif
@@ -462,28 +465,16 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     NSString *child = [NSString stringWithFormat:@"%@%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     
     ////////////////////////////////////////////  friends  /////////////////////////////////////////////////
+    /*
+     กรณีมีการ เพิ่มเพือนใหม่
+     */
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
-        /*
-         FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
-         
-         if (![friendPRepo check:parent]) {
-         FriendProfile *friendProfile = [[FriendProfile alloc] init];
-         friendProfile.friend_id = parent;
-         
-         NSError * err;
-         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-         friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-         
-         BOOL sv = [friendPRepo insert:friendProfile];
-         
-         NSLog(@"");
-         }
-         */
-        
         FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
-        
+        /*
+         กรณีมีการ เพิ่มเพือนใหม่เราต้องเช็กทุกวัน friend_id นี้เราได้ดึง profile มาหรือยังถ้ายังให้ไปดึง
+         */
         if ([friendPRepo get:snapshot.key] == nil){
             NSString *fchild = [NSString stringWithFormat:@"%@%@/profiles", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], snapshot.key];
             
@@ -513,27 +504,12 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
             }];
-            
-//            //  กรณี friend_id มีการ change data เช่น online, offline
-//            [[ref child:fchild] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-//
-//                NSLog(@"%@, %@, %@",snapshot.ref.parent.key,snapshot.key, snapshot.value);
-//
-//                // จะได้ %@ => จาก toonchat/%@/ เราจะรู้เป็น friend_id
-//                NSString* parent = snapshot.ref.parent.key;
-//
-//                [childObserver_Friends addObject:[ref child:child]];
-//                [self friendUpdateData:snapshot];
-//
-//            }];
         }
         
-        NSDictionary *item = snapshot.value;
         /*
          เราจะ tage เฉพาะ profile friend เท่านั้น
          */
         NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], snapshot.key];
-        
         
         [[ref child:child] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
             NSLog(@"%@, %@, %@",snapshot.ref.parent.key,snapshot.key, snapshot.value);
@@ -548,7 +524,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             NSLog(@"%@, %@, %@",snapshot.ref.parent.key,snapshot.key, snapshot.value);
             
             // จะได้ %@ => จาก toonchat/%@/ เราจะรู้เป็น friend_id
-            NSString* parent = snapshot.ref.parent.key;
+            // NSString* parent = snapshot.ref.parent.key;
             
             
             [childObserver_Friends addObject:[ref child:child]];
@@ -557,6 +533,8 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         }];
         
     
+        NSDictionary *item = snapshot.value;
+        
         // toonchat_message
         NSString *child_cmessage = [NSString stringWithFormat:@"toonchat_message/%@/", [item objectForKey:@"chat_id"]];
         [[ref child:child_cmessage] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -604,6 +582,36 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     }];
     
     /*
+     กรณีมีการ ข้อมูลเพือนมีการแก้ไข
+     */
+    [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        NSLog(@"%@, %@", snapshot.key, snapshot.value);
+        
+        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+        
+        NSArray *val =  [friendRepo get:snapshot.key];
+        
+        NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        // NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        Friends *friend  = [[Friends alloc] init];
+        friend.friend_id = snapshot.key;
+        // friend.data      = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+        friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        friend.update    = [timeStampObj stringValue];
+        
+        BOOL rs= [friendRepo update:friend];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+    }];
+    
+    /*
      กรณีมีการ ลบเพือน
      */
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -648,7 +656,9 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             
             BOOL sv = [myAppRepo insert:myApp];
 
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA" object:self userInfo:@{}];
+            // [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA" object:self userInfo:@{}];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_iDNA_MyApp_reloadData" object:self userInfo:@{}];
         }
     }];
     
@@ -745,23 +755,27 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
              });
             */
             
+            
+            NSLog(@"%@, %@", snapshot.key, snapshot.value);
+            
             ProfilesRepo*profileRepo = [[ProfilesRepo alloc] init];
             
             NSArray *profile = [profileRepo get];
-            NSLog(@"");
-            /*
-            MyApplications *myApp = [[MyApplications alloc] init];
-            myApp.app_id = snapshot.key;
             
+            Profiles *pf = [[Profiles alloc] init];
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            myApp.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            BOOL sv = [myAppRepo update:myApp];
-            */
-             
+            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            // pf.create    = [timeStampObj stringValue];
+            pf.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [profileRepo update:pf];
+           
         }else if ([snapshot.key isEqualToString:@"friends"]) {
             
-            
+            /*
             NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
             NSLog(@"");
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -782,6 +796,9 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
                     
                 });
             });
+            */
+            
+            
             
         }else if([snapshot.key isEqualToString:@"invite_group"]){
             
@@ -1485,6 +1502,19 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
     }
+}
+
+- (void)initMainView{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    MainViewController *mainViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainViewController"];
+    mainViewController.rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"MainTabBarController"];
+    [mainViewController setupWithType:1];
+    // [self presentViewController:mainViewController animated:YES completion:nil];
+    
+    self.window.rootViewController = mainViewController;
+    
+    [self.window makeKeyAndVisible];
+    
 }
 
 @end

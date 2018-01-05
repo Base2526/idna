@@ -14,6 +14,7 @@
 
 #import "GroupChatRepo.h"
 #import "FriendProfileRepo.h"
+#import "FriendsRepo.h"
 
 @interface GroupInvite (){
     NSMutableDictionary *group;
@@ -41,7 +42,23 @@
     
     selectedIndex = [NSMutableDictionary dictionary];
 
-    friends = [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"] mutableCopy];
+    // friends = [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"] mutableCopy];
+    
+    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    NSMutableArray * fs = [friendsRepo getFriendsAll];
+    
+    friends = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < [fs count]; i++) {
+        NSArray *val =  [fs objectAtIndex:i];
+        
+        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        [friends setObject:friend forKey:friend_id];
+    }
     
     barBtnInvite.enabled = NO;
 }

@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageProfile;
 @property (weak, nonatomic) IBOutlet UILabel *labelName;
 @property (weak, nonatomic) IBOutlet UILabel *labelEmail;
+@property (weak, nonatomic) IBOutlet UILabel *labelSMessage;
 
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageV_qrcode;
 

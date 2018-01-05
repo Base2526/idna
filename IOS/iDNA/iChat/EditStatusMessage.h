@@ -8,9 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@import Firebase;
+@import FirebaseMessaging;
+@import FirebaseDatabase;
+
 @interface EditStatusMessage : UIViewController<UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *btnSave;
 @property (weak, nonatomic) IBOutlet UITextField *textFieldMessage;
+
+@property (strong, nonatomic) FIRDatabaseReference *ref;
 - (IBAction)onSave:(id)sender;
 
 @property (strong, nonatomic) NSString *message;

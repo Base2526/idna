@@ -11,8 +11,12 @@
 #import "SVProgressHUD.h"
 #import "AppConstant.h"
 #import "Configs.h"
+#import "ProfilesRepo.h"
 
-@interface EditPhone ()
+@interface EditPhone (){
+    ProfilesRepo *profilesRepo;
+    NSMutableDictionary *profiles;
+}
 
 @end
 
@@ -30,6 +34,13 @@
     }else{
         self.title =@"Add Phone";
     }
+    
+    profilesRepo = [[ProfilesRepo alloc] init];
+    
+    NSArray *pf = [profilesRepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -73,70 +84,93 @@
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
         
         EditPhoneThread *eThread = [[EditPhoneThread alloc] init];
-        [eThread setCompletionHandler:^(NSString *data) {
+        [eThread setCompletionHandler:^(NSData *data) {
             
             NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
             
             [[Configs sharedInstance] SVProgressHUD_Dismiss];
             
             if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                
                 if ([jsonDict[@"is_edit"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
                     // add new phone number
-                    /*
-                    NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-                    
-                    NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-                    // NSMutableDictionary*profile =  [[profile objectForKey:@"phones"] mutableCopy];
-                    
-                    NSMutableDictionary*phones = [[NSMutableDictionary alloc] init];
-                    if ([profile objectForKey:@"phones"]) {
-                        phones =  [[profile objectForKey:@"phones"] mutableCopy];
+                    if ([profiles objectForKey:@"phones"]) {
+                        NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
+                        
+                        if (![phones objectForKey:jsonDict[@"item"]]) {
+                            
+                            [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                            
+                            NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                            [newProfile addEntriesFromDictionary:profiles];
+                            [newProfile removeObjectForKey:@"phones"];
+                            [newProfile setObject:phones forKey:@"phones"];
+                            
+                            NSArray *profile = [profilesRepo get];
+                            
+                            Profiles *pf = [[Profiles alloc] init];
+                            NSError * err;
+                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                            // pf.create    = [timeStampObj stringValue];
+                            pf.update    = [timeStampObj stringValue];
+                            
+                            BOOL sv = [profilesRepo update:pf];
+                        }
+                    }else{
+                        NSMutableDictionary * phones = [[NSMutableDictionary alloc] init];
+                        
+                        [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                        
+                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                        [newProfile addEntriesFromDictionary:profiles];
+                        // [newProfile removeObjectForKey:@"phones"];
+                        [newProfile setObject:phones forKey:@"phones"];
+                        
+                        NSArray *profile = [profilesRepo get];
+                        
+                        Profiles *pf = [[Profiles alloc] init];
+                        NSError * err;
+                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                        pf.update    = [timeStampObj stringValue];
+                        
+                        BOOL sv = [profilesRepo update:pf];
                     }
-                    
-                    [phones setObject:jsonDict[@"data"] forKey:jsonDict[@"item_id"]];
-                    
-                    NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                    [newProfile addEntriesFromDictionary:profile];
-                    [newProfile removeObjectForKey:@"phones"];
-                    [newProfile setObject:phones forKey:@"phones"];
-                    
-                    NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-                    [newData addEntriesFromDictionary:data];
-                    [newData removeObjectForKey:@"profile"];
-                    [newData setObject:newProfile forKey:@"profile"];
-                    
-                    [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-                    */
                 }else{
-                    /*
                     // edit phone number
-                    NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
+                    NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
                     
-                    NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-                    // NSMutableDictionary*profile =  [[profile objectForKey:@"phones"] mutableCopy];
-                    
-                    NSMutableDictionary*phones = [[profile objectForKey:@"phones"] mutableCopy];
-                
-                    [phones removeObjectForKey:jsonDict[@"item_id"]];
-                    [phones setObject:jsonDict[@"data"] forKey:jsonDict[@"item_id"]];
-                    
-                    NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                    [newProfile addEntriesFromDictionary:profile];
-                    [newProfile removeObjectForKey:@"phones"];
-                    [newProfile setObject:phones forKey:@"phones"];
-                    
-                    NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-                    [newData addEntriesFromDictionary:data];
-                    [newData removeObjectForKey:@"profile"];
-                    [newData setObject:newProfile forKey:@"profile"];
-                    
-                    [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-                    */
+                    if (![phones objectForKey:jsonDict[@"item"]]) {
+                        
+                        [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                        
+                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                        [newProfile addEntriesFromDictionary:profiles];
+                        [newProfile removeObjectForKey:@"phones"];
+                        [newProfile setObject:phones forKey:@"phones"];
+                        
+                        NSArray *profile = [profilesRepo get];
+                        
+                        Profiles *pf = [[Profiles alloc] init];
+                        NSError * err;
+                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                        pf.update    = [timeStampObj stringValue];
+                        
+                        BOOL sv = [profilesRepo update:pf];
+                    }
                 }
                 
                 [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success"];
-                [self.navigationController popViewControllerAnimated:YES];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
                 
             }else{
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];

@@ -17,10 +17,14 @@
 #import "SelectFriendClasss.h"
 #import "Classs.h"
 #import "ClasssRepo.h"
+#import "FriendsRepo.h"
+
+
 
 @interface FriendProfileView (){
 
     FriendProfileRepo *friendPRepo;
+    FriendsRepo *friendsRepo;
 }
 @end
 
@@ -36,6 +40,7 @@
     
     ref = [[FIRDatabase database] reference];
     
+    friendsRepo = [[FriendsRepo alloc] init];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(dismissKeyboard)];
@@ -92,10 +97,18 @@
         txtFStatus.text =[profiles objectForKey:@"status_message"];
     }
     
-    // txtIsFavorite
-    NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
     
-    NSDictionary * friend = [friends objectForKey:friend_id];
+    
+    // NSMutableArray * fs = [friendsRepo getFriendsAll];
+    
+    NSMutableArray * fs = [friendsRepo get:friend_id];
+        
+    NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:[[fs objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    // txtIsFavorite
+    // NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
+    
+    // NSDictionary * friend = [friends objectForKey:friend_id];
     txtIsFavorite.enabled = NO;
     txtIsFavorite.text = @"NO";
     if ([friend objectForKey:@"favorite"]) {
@@ -104,13 +117,18 @@
         }
     }
     
-    
+    /*
     NSMutableDictionary *local_friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
     NSMutableDictionary *local_friend  = [local_friends objectForKey:friend_id];
     // [friend setValue:class forKey:@"classs"];
-    if ([local_friend objectForKey:@"classs"]) {
+    */
+    NSArray *val =  [friendsRepo get:friend_id];
+    
+    NSDictionary* fc = [NSJSONSerialization JSONObjectWithData:[[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    if ([fc objectForKey:@"classs"]) {
         ClasssRepo * classsRepo = [[ClasssRepo alloc] init];
-        NSArray *class = [classsRepo get:[local_friend objectForKey:@"classs"]];
+        NSArray *class = [classsRepo get:[fc objectForKey:@"classs"]];
         
         NSData *class_data =  [[class objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
         
@@ -120,8 +138,6 @@
     }else{
         [btnClasss setTitle:@"ยังไม่ได้กำหนดคลาส" forState:UIControlStateNormal];
     }
-    
-    
 }
 
 - (IBAction)onSelectClasss:(id)sender {

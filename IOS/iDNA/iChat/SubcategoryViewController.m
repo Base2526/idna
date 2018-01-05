@@ -14,11 +14,9 @@
 #import "AppConstant.h"
 
 @interface SubcategoryViewController (){
-    NSDictionary *all_data; //  = @[@"1", @"2", @"3", @"4", @"5"];
+    NSDictionary *children; //  = @[@"1", @"2", @"3", @"4", @"5"];
     
     NSMutableArray * sortedKeys;
-    
-    
     UIActivityIndicatorView *activityIndicator;
 }
 @end
@@ -29,19 +27,22 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    activityIndicator = [[UIActivityIndicatorView alloc]
-                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//    activityIndicator = [[UIActivityIndicatorView alloc]
+//                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//
+//    activityIndicator.center=self.view.center;
+//    [activityIndicator startAnimating];
+//    [self.view addSubview:activityIndicator];
     
-    activityIndicator.center=self.view.center;
-    [activityIndicator startAnimating];
-    [self.view addSubview:activityIndicator];
-    
-    all_data = [[NSDictionary alloc] init];
+    // all_data = [[NSDictionary alloc] init];
     
     // [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
     
-    all_data = [[Configs sharedInstance] loadData:_CATEGORY_APPLICATION];
+    children = [[[[Configs sharedInstance] loadData:_CATEGORY_APPLICATION] objectForKey:self.category] objectForKey:@"children"];
     
+    // key    NSTaggedPointerString *    @"children"    0xa0039504228500b8
+    NSLog(@"");
+    /*
     if ([all_data count] == 0){
         ApplicationCategoryThread *categoryThread = [[ApplicationCategoryThread alloc] init];
         [categoryThread setCompletionHandler:^(NSString * data) {
@@ -80,6 +81,7 @@
         [activityIndicator stopAnimating];
         [activityIndicator removeFromSuperview];
     }
+    */
 }
 
 - (void)didReceiveMemoryWarning {
@@ -87,9 +89,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidLayoutSubviews {
-    activityIndicator.center = self.view.center;
-}
+//- (void)viewDidLayoutSubviews {
+//    activityIndicator.center = self.view.center;
+//}
 
 /*
 #pragma mark - Navigation
@@ -108,7 +110,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [all_data count];
+    return [children count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -123,48 +125,38 @@
     // [im setImage:[UIImage imageNamed:@"ic-green.png"]];
     // [text setText:[all_data objectAtIndex:indexPath.row]];
     
+    NSArray *keys = [children allKeys];
+    id key = [keys objectAtIndex:indexPath.row];
+    NSDictionary* item = [children objectForKey:key];
     
-    id key = [sortedKeys objectAtIndex:indexPath.row];
+    [text setText:[item objectForKey:@"name"]];
     
-    // items_post
-//    NSArray *keys = [all_data allKeys];
-//    id aKey = [keys objectAtIndex:indexPath.row];
-    id anObject = [all_data objectForKey:key];
-
-    [text setText:[anObject objectForKey:@"name"]];
-    
-    
-    NSDictionary *field_tags_image= [anObject objectForKey:@"field_tags_image"];
-    if ([field_tags_image count] > 0) {
-        
-        NSDictionary *tags_image =  [anObject objectForKey:@"field_tags_image"][@"und"][0];
-        NSLog(@"%@", [tags_image objectForKey:@"filename"]);
-        
-        NSString *url = [[NSString stringWithFormat:@"%@/sites/default/files/%@", [Configs sharedInstance].API_URL, [tags_image objectForKey:@"filename"]] stringByAddingPercentEscapesUsingEncoding:
-                         NSUTF8StringEncoding];
-        
+    if ([item objectForKey:@"field_image"]) {
         [im clear];
-        [im showLoadingWheel];
-        [im setUrl:[NSURL URLWithString:url]];
-
+        [im showLoadingWheel]; // API_URL
+        [im setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [item objectForKey:@"field_image"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:im ];
+    }else{
+        [im clear];
     }
     
-    if (self.category != nil) {
-        if ([self.category isEqualToString: key]) {
+    if (self.subcategory != nil) {
+        if ([self.subcategory isEqualToString: key]) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
     }
+
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    id key = [sortedKeys objectAtIndex:indexPath.row];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSArray *keys = [children allKeys];
+    id key = [keys objectAtIndex:indexPath.row];
+    NSDictionary* item = [children objectForKey:key];
+
+    NSDictionary* sCategory = @{@"index": key, @"value" : [item objectForKey:@"name"]};
     
-    NSDictionary* sCategory = @{@"index": key, @"value" : [[all_data objectForKey:key] objectForKey:@"name"]};
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"selectCategory" object:self userInfo:sCategory];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"selectSubcategory" object:self userInfo:sCategory];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

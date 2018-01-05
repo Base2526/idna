@@ -24,6 +24,6 @@
 @property (nonatomic, copy) void (^completionHandler)(NSData *);
 @property (nonatomic, copy) void (^errorHandler)(NSString *);
 
--(void)start: (UIImage*) photo: (NSString *)name : (NSString *)category;
+-(void)start: (UIImage*) photo: (NSString *)name : (NSString *)category :(NSString *)subcategory;
 -(void)cancel;
 @end//

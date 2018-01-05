@@ -349,7 +349,7 @@
                 [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
                 
                 EditPhoneThread *dThread = [[EditPhoneThread alloc] init];
-                [dThread setCompletionHandler:^(NSString *data) {
+                [dThread setCompletionHandler:^(NSData *data) {
                     
                     NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
                     

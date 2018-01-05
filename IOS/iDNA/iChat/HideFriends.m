@@ -13,6 +13,8 @@
 #import "HJManagedImageV.h"
 #import "AppDelegate.h"
 
+#import "FriendsRepo.h"
+
 @interface HideFriends (){
     NSMutableDictionary *hideFriends;
     FriendProfileRepo *friendPRepo;
@@ -51,25 +53,44 @@
 
 -(void)reloadData:(NSNotification *) notification{
     
-    hideFriends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
+    // hideFriends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
     
-    for (NSString* key in hideFriends) {
-        NSDictionary* value = [hideFriends objectForKey:key];
-
-        if ([value objectForKey:@"hide"]) {
-            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
-                continue;
+//    for (NSString* key in hideFriends) {
+//        NSDictionary* value = [hideFriends objectForKey:key];
+//
+//        if ([value objectForKey:@"hide"]) {
+//            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
+//                continue;
+//            }
+//        }
+//
+//        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
+//        [newFriends addEntriesFromDictionary:hideFriends];
+//
+//        [newFriends removeObjectForKey:key];
+//
+//        hideFriends = newFriends;
+//    }
+    
+    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    NSMutableArray * fs = [friendsRepo getFriendsAll];
+    
+    hideFriends = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < [fs count]; i++) {
+        NSArray *val =  [fs objectAtIndex:i];
+        
+        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        if ([friend objectForKey:@"hide"]) {
+            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                [hideFriends setObject:friend forKey:friend_id];
             }
         }
-        
-        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-        [newFriends addEntriesFromDictionary:hideFriends];
-        
-        [newFriends removeObjectForKey:key];
-        
-        hideFriends = newFriends;
     }
-
     
     [self.tableView reloadData];
 }
@@ -141,17 +162,13 @@
     return YES;
 }
 
-
 /*
  Unhide
  */
 -(void)updateUnhideFriend:(NSString*)friend_id{
-    
-    NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-    
     /*
-     ดึงเพือนตาม friend_id แล้ว set change_friends_name
-     */
+    NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
+    //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
     NSMutableDictionary *friend  = [friends objectForKey:friend_id];
     [friend setValue:@"0" forKey:@"hide"];
     
@@ -162,9 +179,31 @@
     [newDict setObject:friends forKey:@"friends"];
     
     [[Configs sharedInstance] saveData:_DATA :newDict];
+    */
+    
+    FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    Friends *friend  = [[Friends alloc] init];
+    friend.friend_id = friend_id;
+    
+    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+    [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+    [newDict removeObjectForKey:@"hide"];
+    [newDict setObject:@"0" forKey:@"hide"];
+    
+    NSError * err;
+    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    friend.update    = [timeStampObj stringValue];
+    
+    BOOL rs= [friendRepo update:friend];
     
     [self reloadData:nil];
 }
-
-
 @end

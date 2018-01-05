@@ -10,13 +10,14 @@
 
 #import "EditDisplayNameThread.h"
 #import "EditFriendDisplayNameThread.h"
-
-// #import "SVProgressHUD.h"
 #import "AppConstant.h"
 #import "Configs.h"
+#import "Profiles.h"
+#import "ProfilesRepo.h"
 
-@interface EditDisplayName ()
-
+@interface EditDisplayName (){
+    ProfilesRepo *profileRepo;
+}
 @end
 
 @implementation EditDisplayName
@@ -25,7 +26,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    ref = [[FIRDatabase database] reference];
+    ref         = [[FIRDatabase database] reference];
+    profileRepo = [[ProfilesRepo alloc] init];
 
     self.btnSave.enabled = NO;
     self.textFieldName.delegate = self;
@@ -33,11 +35,16 @@
     
     if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
         // แสดงว่าเป้น User
-        NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+        // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+        
+        NSArray *pf = [profileRepo get];
+        NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
         [self.textFieldName setText:[profiles objectForKey:@"name"]];
     }else{
         // แสดงว่าเป้น Friend
-        
     }
 }
 
@@ -79,89 +86,46 @@
     if ([strName isEqualToString:@""]) {
         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Empty"];
     }else {
-        
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update."];
         
-        
         if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
-            /*
-            EditDisplayNameThread *eThread = [[EditDisplayNameThread alloc] init];
-            [eThread setCompletionHandler:^(NSString *data) {
-                
-                [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                
-                NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.navigationController popViewControllerAnimated:YES];
-                    });
-                }
-            }];
             
-            [eThread setErrorHandler:^(NSString *error) {
-                NSLog(@"%@", error);
-                
-                [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-            }];
-            [eThread start:strName];
-            */
+            NSArray *pf = [profileRepo get];
+            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
             
-            [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
+            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             
-            NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-            
-            NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
             NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
             [newProfiles addEntriesFromDictionary:profiles];
             [newProfiles removeObjectForKey:@"name"];
             [newProfiles setValue:strName forKey:@"name"];
             
-            NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-            [newData addEntriesFromDictionary:data];
-            [newData removeObjectForKey:@"profiles"];
+            Profiles *pfs = [[Profiles alloc] init];
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            pfs.update    = [timeStampObj stringValue];
             
-            [newData setObject:newProfiles forKey:@"profiles"];
-            
-            [[Configs sharedInstance] saveData:_DATA :newData];
+            BOOL sv = [profileRepo update:pfs];
             
             NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
             NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
             
             [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+               
+                [[Configs sharedInstance] SVProgressHUD_Dismiss];
                 if (error == nil) {
-                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self.navigationController popViewControllerAnimated:NO];
                     });
                 }else{
+                    [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update name."];
                 }
             }];
         }else {
-            /*
-            EditFriendDisplayNameThread *eThread = [[EditFriendDisplayNameThread alloc] init];
-            [eThread setCompletionHandler:^(NSString *data) {
-                [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                
-                NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.navigationController popViewControllerAnimated:YES];
-                    });
-                }
-            }];
-            
-            [eThread setErrorHandler:^(NSString *error) {
-                NSLog(@"%@", error);
-                
-                [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-            }];
-
-            [eThread start:self.uid: strName];
-            */
+           
         }
     }
 }

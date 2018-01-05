@@ -12,6 +12,8 @@
 #import "Configs.h"
 #import "AppDelegate.h"
 
+#import "ProfilesRepo.h"
+
 @interface LeftViewController ()
 
 @property (strong, nonatomic) NSArray *titlesArray;
@@ -52,8 +54,15 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     
-    NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-    NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
+    // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+    // NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
+    
+    ProfilesRepo *profilesRepo = [[ProfilesRepo alloc] init];
+    NSArray *pf = [profilesRepo get];
+    
+    NSDictionary* profiles = [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    // [all_data setValue:profiles  forKey:@"profiles"];
     
     if ([profiles objectForKey:@"image_url"]) {
         [imageV clear];

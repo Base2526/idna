@@ -12,8 +12,6 @@
 @import FirebaseMessaging;
 @import FirebaseDatabase;
 
-
-
 #import "HJObjManager.h"
 #import "Configs.h"
 
@@ -32,5 +30,7 @@
  */
 - (void)observeEventType;
 
+
+- (void)initMainView;
 @end
 

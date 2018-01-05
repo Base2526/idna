@@ -14,9 +14,13 @@
 #import "Configs.h"
 #import "FriendProfileRepo.h"
 
+#import "Friends.h"
+
 @import Firebase;
 @import FirebaseMessaging;
 @import FirebaseDatabase;
+
+#import "FriendsRepo.h"
 
 
 @interface SelectFriendClasss (){
@@ -27,6 +31,9 @@
     FIRDatabaseReference *ref;
     
     // FriendProfileRepo *friendProfileRepo;
+    
+    FriendsRepo *friendRepo;
+    NSDictionary * friend;
 }
 @end
 
@@ -38,11 +45,19 @@
     data_all = [[NSArray alloc] init];
     classsRepo  = [[ClasssRepo alloc] init];
     
+    friendRepo  = [[FriendsRepo alloc] init];
+    
     select = @"0";
     
     ref = [[FIRDatabase database] reference];
     
     // friendProfileRepo = [[FriendProfileRepo alloc] init];
+    
+    NSArray *val =  [friendRepo get:friend_id];
+    
+    NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -57,7 +72,7 @@
 //    NSMutableDictionary *data = [NSJSONSerialization JSONObjectWithData:_data options:0 error:nil];
     
     
-    NSMutableDictionary *friend = [[[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"] objectForKey:friend_id];
+    // NSMutableDictionary *friend = [[[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"] objectForKey:friend_id];
     
     [self reloadData:nil];
 }
@@ -70,12 +85,12 @@
     data_all = [classsRepo getClasssAll];
     
     
-    NSMutableDictionary *local_friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-    NSMutableDictionary *local_friend  = [local_friends objectForKey:friend_id];
+    // NSMutableDictionary *local_friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
+    // NSMutableDictionary *local_friend  = [local_friends objectForKey:friend_id];
     // [friend setValue:class forKey:@"classs"];
-    if ([local_friend objectForKey:@"classs"]) {
+    if ([friend objectForKey:@"classs"]) {
         ClasssRepo * classsRepo = [[ClasssRepo alloc] init];
-        NSArray *class = [classsRepo get:[local_friend objectForKey:@"classs"]];
+        NSArray *class = [classsRepo get:[friend objectForKey:@"classs"]];
         
         
         NSString *item_id = [class objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
@@ -120,12 +135,14 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
     }
     
+    
     NSArray *value = [data_all objectAtIndex:indexPath.row];
     
     NSString *item_id = [value objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
     NSData *data =  [[value objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
     
     HJManagedImageV *imageV =(HJManagedImageV *)[cell viewWithTag:100];
     UILabel *lblName    =(UILabel *)[cell viewWithTag:101];
@@ -210,8 +227,8 @@
     [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error == nil) {
             
+            /*
             NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-            
             // ดึงเพือนตาม friend_id แล้ว set classs
             NSMutableDictionary *friend  = [friends objectForKey:friend_id];
             [friend setValue:class forKey:@"classs"];
@@ -228,8 +245,32 @@
             [newDict setObject:newFriends forKey:@"friends"];
             
             [[Configs sharedInstance] saveData:_DATA :newDict];
+            */
             
-            // [self.navigationController popViewControllerAnimated:YES];
+            // friendRepo = [[FriendsRepo alloc] init];
+            
+            
+            Friends *fd  = [[Friends alloc] init];
+            fd.friend_id = friend_id;
+            
+            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+            [newDict addEntriesFromDictionary:friend];
+            
+            if ([newDict objectForKey:@"classs"]) {
+                [newDict removeObjectForKey:@"classs"];
+            }
+            
+            [newDict setValue:class forKey:@"classs"];
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+            fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            fd.update    = [timeStampObj stringValue];
+            
+            BOOL rs= [friendRepo update:fd];
         }
     }];
 }
