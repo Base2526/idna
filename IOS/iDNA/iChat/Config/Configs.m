@@ -107,7 +107,7 @@
         self.ACCEPT_FRIEND          = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/accept_friend"];
         self.NOT_ACCEPT_FRIEND      = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/not_accept_friend"];
         
-        self.RESULT_SEARCH_FRIEND   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/search_friend_by_id"];
+        self.FIND_FRIEND   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/find_friend"];
         self.PEOPLE_YOU_MAY_KNOW    = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/people_you_may_know"];
         self.EDIT_DISPLAY_NAME      = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_display_name"];
         self.EDIT_FRIEND_DISPLAY_NAME = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/edit_friend_display_name"];
@@ -168,9 +168,11 @@
         
         self.UPDATE_PICTURE_GROUP   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/update_picture_group"];
         
-        self.CREATE_CLASS   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/create_class"];
+        self.CREATE_CLASS           = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/create_class"];
         
-        self.GET_GENDER   = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/get_gender"];
+        self.GET_GENDER             = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/get_gender"];
+        
+        self.RECREATE_QRCODE        = [NSString stringWithFormat:@"%@%@", self.END_POINT, @"/recreate_qrcode"];
     
         self.kBarHeight = 50.0f;
         

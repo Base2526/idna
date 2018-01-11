@@ -43,7 +43,7 @@
 @property(nonatomic)NSString* SEND_HEART_TO_FRINEDS;
 @property(nonatomic)NSString* ACCEPT_FRIEND;
 @property(nonatomic)NSString* NOT_ACCEPT_FRIEND;
-@property(nonatomic)NSString* RESULT_SEARCH_FRIEND;
+@property(nonatomic)NSString* FIND_FRIEND;
 
 @property(nonatomic)NSString* PEOPLE_YOU_MAY_KNOW;
 @property(nonatomic)NSString* EDIT_DISPLAY_NAME;
@@ -102,6 +102,8 @@
 @property(nonatomic)NSString* CREATE_CLASS;
 
 @property(nonatomic)NSString* GET_GENDER;
+
+@property(nonatomic)NSString* RECREATE_QRCODE;
 
 
 // Send Heart by Class

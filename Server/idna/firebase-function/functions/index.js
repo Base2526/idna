@@ -13,6 +13,14 @@ var request = require('request');
 var db = admin.database();
 
 /*
+FRIEND_STATUS
+*/
+var FRIEND_STATUS_FRIEND 			= "10";
+var FRIEND_STATUS_FRIEND_CANCEL 	= "13";
+var FRIEND_STATUS_FRIEND_REQUEST 	= "11";  
+var FRIEND_STATUS_WAIT_FOR_A_FRIEND = "12";  
+
+/*
 Header 
 Refer : https://stackoverflow.com/questions/17121846/node-js-how-to-send-headers-with-form-data-using-request-module
 */
@@ -31,13 +39,14 @@ var PATH_ROOT_IDNA  = 'idna';
 var PATH_USER_IDNA  = 'user'; 
 var PATH_CENTER_IDNA  = 'center'; 
 
-var PATH_UPDATE_PROFILE 			= '/update_profile';
-var PATH_UPDATE_GROUP_CHAT    		= '/update_group_chat';
+var PATH_UPDATE_PROFILE 				= '/update_profile';
+var PATH_UPDATE_GROUP_CHAT    			= '/update_group_chat';
 
-var PATH_USER_FOR_FRIEND_EDITUPDATE = '/user_for_friend_editupdate';
+var PATH_USER_FOR_FRIEND_EDITUPDATE 	= '/user_for_friend_editupdate';
+var PATH_USER_FOR_FRIEND_DELETE 		= '/user_for_friend_delete';
 
-var PATH_CREATE_MY_APPLICATIOM_FOLLOW = '/create_my_application_follow';
-var PATH_UPDATE_MY_APPLICATIOM_FOLLOW = '/update_my_application_follow';
+var PATH_CREATE_MY_APPLICATIOM_FOLLOW 	= '/create_my_application_follow';
+var PATH_UPDATE_MY_APPLICATIOM_FOLLOW 	= '/update_my_application_follow';
 
 var PATH_CREATE_MY_APPLICATIOM_POST_LIKE = '/create_my_application_post_like';
 var PATH_UPDATE_MY_APPLICATIOM_POST_LIKE = '/update_my_application_post_like';
@@ -112,7 +121,7 @@ exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{
 });
 
 /*
- สำหรับ Tigger กรณี friend for user มีการเปลียนแปลง เช่น is_block, close notification, ตั้งชื่อเพือน
+ สำหรับ Tigger กรณี friend for user มีการเปลียนแปลง เช่น is_block, close notification, ตั้งชื่อเพือน, status
 */
 exports.iDNA_User_for_Friend_EditUpdate = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/friends/{friend_id}/').onWrite(event => {
     
@@ -133,7 +142,50 @@ exports.iDNA_User_for_Friend_EditUpdate = functions.database.ref(PATH_ROOT_IDNA 
 	}else{
 		// กรณี Edit | Update
 
-		// console.log('#1 : iDNA_User_Friend > edit & updated');
+		// console.log('#1 : iDNA_User_for_Friend_EditUpdate > edit & updated');
+
+		
+		/*
+			เราต้องเช็ดกรณี status เปลียนแปลง
+		
+		if (event.data.previous.val().status !== event.data.val().status) {
+			// console.log('previous : ' + event.data.previous.val().status);
+			// console.log('Text : ' + event.data.val().status);
+
+			console.log('มีการเปลียนแปลงข้อมูล');
+
+			// var ref = db.ref(PATH_ROOT_IDNA);
+			// ref.child(PATH_USER_IDNA).child(event.params.friend_id).child('friends').child(event.params.uid).update({'status': event.data.val().status});
+		
+			switch(event.data.val().status) {
+			    case FRIEND_STATUS_FRIEND:{
+					console.log('FRIEND_STATUS_FRIEND');
+					var ref = db.ref(PATH_ROOT_IDNA);
+					ref.child(PATH_USER_IDNA).child(event.params.friend_id).child('friends').child(event.params.uid).update({'status': event.data.val().status});
+			    }
+			        break;
+			    case FRIEND_STATUS_FRIEND_CANCEL:{
+					console.log('FRIEND_STATUS_FRIEND_CANCEL');
+			    }
+			        break;
+
+			    case FRIEND_STATUS_FRIEND_REQUEST:{
+					console.log('FRIEND_STATUS_FRIEND_REQUEST');
+			    }
+			        break;
+
+			    case FRIEND_STATUS_WAIT_FOR_A_FRIEND:{
+					console.log('FRIEND_STATUS_WAIT_FOR_A_FRIEND');
+			    }
+			        break;
+			    default:
+			        {
+
+			        }
+			}
+		}
+		*/
+
 		
 		request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_USER_FOR_FRIEND_EDITUPDATE, form: {uid:event.params.uid, friend_id:event.params.friend_id, data:event.data.current.val()}, headers: headers}, function(err,httpResponse,body){ 
 				/* ... */
@@ -146,6 +198,19 @@ exports.iDNA_User_for_Friend_EditUpdate = functions.database.ref(PATH_ROOT_IDNA 
 				// console.log(body);
 		});
 	}
+});
+
+exports.iDNA_User_for_Friend_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/friends/{friend_id}/').onDelete(event => {		
+	request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_USER_FOR_FRIEND_DELETE, form: {uid:event.params.uid, friend_id:event.params.friend_id}, headers: headers}, function(err,httpResponse,body){ 
+			/* ... */
+			// เราต้อง parse value ก่อนถึงจะสามารถใช้งานได้
+			// var objectValue = JSON.parse(body);
+			// if (!objectValue.result) {
+			// 	console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
+			// }
+
+			console.log(body);
+	});
 });
 
 

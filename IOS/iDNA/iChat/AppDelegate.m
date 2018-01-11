@@ -471,11 +471,59 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
+        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+        
+        if([friendRepo get:snapshot.key] == nil){
+            // NSArray *val =  [friendRepo get:snapshot.key];
+            
+            Friends *friend = [[Friends alloc] init];
+            friend.friend_id = snapshot.key;
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            friend.create    = [timeStampObj stringValue];
+            friend.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [friendRepo insert:friend];
+            NSLog(@"");
+        }
+        
+        
         FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
         /*
          กรณีมีการ เพิ่มเพือนใหม่เราต้องเช็กทุกวัน friend_id นี้เราได้ดึง profile มาหรือยังถ้ายังให้ไปดึง
          */
         if ([friendPRepo get:snapshot.key] == nil){
+            
+            NSLog(@"");
+            
+            /*
+             FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+             NSMutableDictionary *friends = [value objectForKey:@"friends"];
+             
+             __block int count = 0;
+             for (NSString* key in friends) {
+             NSDictionary* val = [friends objectForKey:key];
+             
+             Friends *friend = [[Friends alloc] init];
+             friend.friend_id = key;
+             
+             NSError * err;
+             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:val options:0 error:&err];
+             friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+             
+             NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+             friend.create    = [timeStampObj stringValue];
+             friend.update    = [timeStampObj stringValue];
+             
+             BOOL sv = [friendsRepo insert:friend];
+             */
+            
             NSString *fchild = [NSString stringWithFormat:@"%@%@/profiles", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], snapshot.key];
             
             // การดึง ข้อมูล profile friend มาครั้งแรก
@@ -617,19 +665,22 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
-        NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
+//        NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
+//
+//        /* Update friend ของ friends */
+//        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
+//        [newFriends addEntriesFromDictionary:friends];
+//        [newFriends removeObjectForKey:snapshot.key];
+//
+//        /* Update friends ของ DATA */
+//        NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+//        [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
+//        [newDict removeObjectForKey:@"friends"];
+//        [newDict setObject:newFriends forKey:@"friends"];
+//        [[Configs sharedInstance] saveData:_DATA :newDict];
         
-        /* Update friend ของ friends */
-        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-        [newFriends addEntriesFromDictionary:friends];
-        [newFriends removeObjectForKey:snapshot.key];
-        
-        /* Update friends ของ DATA */
-        NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-        [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-        [newDict removeObjectForKey:@"friends"];
-        [newDict setObject:newFriends forKey:@"friends"];
-        [[Configs sharedInstance] saveData:_DATA :newDict];
+        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
+        [friendRepo deleteFriend:snapshot.key];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
     }];

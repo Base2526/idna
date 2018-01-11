@@ -49,7 +49,8 @@ function idna_init(){
 
   // $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
   
-
+  // $to = config_pages_get('configure_idna', 'field_config_tag');
+  // dpm($to);
 
   
   global $firebase;
@@ -59,7 +60,7 @@ function idna_init(){
   *** การใช้งาน
     เราต้อง ประกาศ global $firebase ถึงเราจะสามารถนําไปใช้งานได้
   */
-  $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
+  $firebase = new \Firebase\FirebaseLib(config_pages_get(CONFIG_PAGES_TYPE, 'field_firebase_default_url'));
 
   /*
   $values = array("profiles"=>array(
@@ -141,8 +142,8 @@ function idna_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['idna/URL_STORE'] = array(
-    'page callback' => 'URL_STORE',
+  $items['qe'] = array(
+    'page callback' => 'qe',
     'access arguments' => array('idna_permission'),
     // 'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
@@ -330,15 +331,15 @@ function idna_user_insert(&$edit, $account, $category) {
 
           /*
           Load เพือนทั้งหมดขึ้นมาก่อน
-          */
+          *
           foreach (load_user() as $friend_id => $value){
             if (strcasecmp($account->uid, $friend_id) != 0) {
 
               $chat_id = generateRandomString(DEFUALT_LENGTH_CHAT_ID);
 
-              /*
-              เป็นการเพือนให้ตัวเรา
-              */
+              
+              // เป็นการเพือนให้ตัวเรา
+              
               $user_profile = profile2_by_uid_load($account->uid, 'main');
 
               $friend_values = array();
@@ -363,10 +364,9 @@ function idna_user_insert(&$edit, $account, $category) {
               $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/friends/' . $friend_id . "/", $values);
               
 
-              /*
-              เป็นการเพิ่มตัวเรา  ให้เพือน
-              */
-
+              
+              // เป็นการเพิ่มตัวเรา  ให้เพือน
+              
               $friend_profile = profile2_by_uid_load($friend_id, 'main');
 
               $user_values = array();
@@ -390,6 +390,7 @@ function idna_user_insert(&$edit, $account, $category) {
             }
           }  
           // end foreach 
+          */
           
         }
         break;
@@ -430,6 +431,7 @@ function idna_user_insert(&$edit, $account, $category) {
         $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/', $values);
 
         // Check is Friend ?, if is not is add friend 
+        /*
         foreach (load_user() as $friend_id => $value){
           if (strcasecmp($account->uid, $friend_id) != 0) {
 
@@ -483,6 +485,7 @@ function idna_user_insert(&$edit, $account, $category) {
           }
         }  
         // end foreach
+        */
       } catch (Exception $e) {
           watchdog(TAG, 'Caught exception: %message', array('%message' => $e->getMessage()), WATCHDOG_INFO);
       }
@@ -1208,10 +1211,20 @@ function idna_services_resources()
       ),
     ),
 
-    'search_friend_by_id'=>array(
+    'find_friend'=>array(
       'create' =>array(
-        'help'=>'Services ค้นหาเพือนโดย uid',
-        'callback'=>'search_friend_by_id',
+        'help'=>'ค้นหาเพือนโดย my id, qrcode',
+        'callback'=>'find_friend',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+      ),
+    ),
+
+    'recreate_qrcode'=>array(
+      'create' =>array(
+        'help'=>'สร้าง qrcode ใหม่ให้กับ user',
+        'callback'=>'recreate_qrcode',
         'access callback' => 'user_access',
         'access arguments' => array('access content'),
         'access arguments append' => FALSE,
@@ -1859,6 +1872,27 @@ function idna_services_resources()
       ),
     ),
 
+    'user_for_friend_delete'=>array(
+      'create' =>array(
+        'help'=>'Services ลบ friend ของ user : param uid, friend_id',
+        'callback'=>'user_for_friend_delete',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
+
     'delete_group_chat'=>array(
       'create' =>array(
         'help'=>'Services ลบ Group Chat : param uid, group_id',
@@ -2348,11 +2382,14 @@ function login(){
     $result['message']  = "function : login, parameter";
     return $result;
   }
+
+  $name = $_REQUEST['name'];
+  $pass = $_REQUEST['pass'];
   
   module_load_include('inc', 'services', 'resources/user_resource');
 
-  $result['result']   = TRUE;
-  $result['data']     = _user_resource_login($_POST['name'], $_POST['pass']);
+  $result['result']         = TRUE;
+  $result['data']           = _user_resource_login($name, $pass);
 
   return $result;
 }
@@ -2389,9 +2426,9 @@ function annmousu(){
 
   module_load_include('inc', 'services', 'resources/user_resource');
 
-  $result['result']   = TRUE;
-  $result['data']     = _user_resource_login(generate_name_annmousu($getallheaders['udid']), DEFUALT_PASSWORD);
-
+  $result['result']         = TRUE;
+  $result['data']           = _user_resource_login(generate_name_annmousu($getallheaders['udid']), DEFUALT_PASSWORD);
+  
   return $result;
 }
 
@@ -2700,6 +2737,18 @@ function shby_class()
   return $result;
 }
 
+
+/*
+  get Friend status
+*/
+function get_friend_status(){
+  return taxonomy_get_tree_nested(taxonomy_vocabulary_machine_name_load("tags_friend_status")->vid);;
+}
+
+
+/*
+  get application category
+*/
 function application_category(){
   $result = array();
 
@@ -3796,26 +3845,325 @@ function send_heart_to_friends()
 }
 
 
-function search_friend_by_id()
-{
-
+function recreate_qrcode(){
   $result = array();
 
-   // เป้นการโหลดข้อมูลของ profile user ซึ่งจะได้รู้ว่า friend ของ user
-  $user_fields = user_load($_POST['uid']);
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+   if (!isset($_REQUEST['uid']) || !isset($_REQUEST['platform']) || !isset($_REQUEST['bundleidentifier'])) {
+    $result['result'] = FALSE;
+    return $result;
+  }
+
+  global $firebase;
+  $uid                = $_REQUEST['uid'];
+  $platform           = $_REQUEST['platform'];
+  $bundleidentifier   = $_REQUEST['bundleidentifier'];
+
+  ///-----------
+
+  $account = user_load($uid);
+
+  generatorQRCode($account, $platform, $bundleidentifier);
+
+  $profile = profile2_by_uid_load($account->uid, 'main');
+
+  $image_url_android_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna_andr[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+
+  $image_url_ios_qrcode = substr(file_create_url($profile->field_profile_my_qrcode_dna[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+  
+  // add profile ให้กับ user
+  $values = array(
+                  "image_url_android_qrcode" => $image_url_android_qrcode,
+                  "image_url_ios_qrcode" => $image_url_ios_qrcode,
+                  "update"          => time()
+                );
+  
+  /*
+   #1 : บันทึก profile ตัวเองไว้ที่ firebase
+  */
+  $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/profiles/', $values);
+
+  ///-----------
+
+  $result['result']             = TRUE;
+  $result['url_android_qrcode'] = $image_url_android_qrcode;
+  $result['url_ios_qrcode']     = $image_url_ios_qrcode;
+
+  return $result;
+}
+
+function find_friend(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+   if (!isset($_REQUEST['uid']) || !isset($_REQUEST['fction']) || !isset($_REQUEST['code'])) {
+    $result['result'] = FALSE;
+    $result['_REQUEST'] = $_REQUEST;
+    return $result;
+  }
+
+  global $firebase;
+  $uid        = $_REQUEST['uid'];
+
+  /*
+  0 = my id
+  1 = qrcode
+  */
+  $fction     = $_REQUEST['fction'];
+  $code       = $_REQUEST['code'];
+
+  switch ($fction) {
+    case '0':{
+        /*
+          เป็นการ find friend จาก id
+        */
+        // https://gist.github.com/chuan-su/0a6573634bbab3a80827
+        $query = new EntityFieldQuery();
+        $entities = $query->entityCondition('entity_type', 'profile2')
+        ->entityCondition('bundle', 'main')
+        ->fieldCondition('field_profile_heart_id', 'value', $code, '=')
+        ->execute();  
+
+        if (count($entities) < 1) {
+          # code...
+          $result['result']   = TRUE;
+          $result['friend_status']  = '-1';
+          $result['code']  = $code;
+          $result['message']  = "Friend not found.";
+          return $result;
+        }
+
+        foreach ($entities['profile2'] as $key => $value) {
+          $val = entity_load('profile2', array($key));
+          
+          // เราจะได้ uid ของเจ้าของ code นี้
+          $friend_id   = $val[$key]->uid;
+
+          // กรณีเป้น ตัวเอง(My self)
+          if (strcasecmp($uid, $friend_id) == 0) {
+
+            $result['result']     = TRUE;
+            $result['friend_status']  = '99';
+            $result['message']    = "You can't add yourself as a friend.";
+            return  $result;
+          }
+        
+          /*
+          เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
+          */
+          $profile_user = profile2_by_uid_load($uid, 'main');
+
+          $friend_status = 0;
+          foreach ($profile_user->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
+              $data_item_load = field_collection_item_load($value['value']);
+              
+              if($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'] == $friend_id){
+                
+                $friend_status = $data_item_load->field_friend_status[LANGUAGE_NONE][0]['tid'];
+                break;
+             
+              }
+          }
+
+          $profile_friend    = profile2_by_uid_load($friend_id, 'main');
+
+          $result['name']     = $profile_friend->field_profile_name[LANGUAGE_NONE][0]['value'];
+          if(count($profile_friend->field_profile_image) > 0){
+            $result['url_image'] = substr(file_create_url($profile_friend->field_profile_image[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+          }else{
+            $result['url_image'] = "";
+          }
+
+          $result['friend_id']      = $friend_id;
+
+          if ($friend_status == 0) {
+            // แสดงยังไม่ได้ เป้นเพือนสามารถเพิ่มเพือนได้ โดย return profile 
+            $result['result']         = TRUE;
+            $result['friend_status']  = '0';
+           
+          }else{
+              switch ($friend_status) {
+                // Friend กรณีเราเป็นเพือนกันอยู่แล้ว
+                case '10':{
+                  $result['result']         = TRUE;
+                  $result['friend_status']  = '10';
+                  $result['message']        = "is already your friend.";
+                }
+                  break;
+
+                // Friend Cancel : กรณีเราเคยขอเป้นเพือนแล้วโดน เพือน กด cancel
+                case '13':{
+                  $result['result']         = TRUE;
+                  $result['friend_status']  = '13';
+                  $result['message']        = "Friend Cancel.";
+                }
+                  break;
+
+                // Friend request : กรณีเราส่งคำขอเป้นเพือน
+                case '11':{
+                  $result['result']         = TRUE;
+                  $result['friend_status']  = '11';
+                  $result['message']        = "Friend request.";
+                }
+                  break;
+
+                // Wait for a friend : เพือนคนนี้ส่งคำขอ ขอเราเป็นเพือน
+                case '12':{
+                  $result['result']         = TRUE;
+                  $result['friend_status']  = '12';
+                  $result['message']        = "Wait for a friend.";
+                }
+                  break;
+                
+                default:
+                  # code...
+                  break;
+              }
+          }
+        } 
+      }
+      break;
+
+      case '1':{
+        /*
+          เป็นการ find friend จาก scan qrcode. เราต้อง เอา code ทีได้จากการ scan มา decode ก่อน
+        */
+
+        $friend_id = dec_enc('decrypt', $code);
+
+        // กรณีเป้น ตัวเอง(My self)
+        if (strcasecmp($uid, $friend_id) == 0) {
+
+          $result['result']     = TRUE;
+          $result['friend_status']  = '99';
+          $result['message']    = "You can't add yourself as a friend.";
+          return  $result;
+        }
+
+        /*
+        เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
+        */
+        $profile_user = profile2_by_uid_load($uid, 'main');
+
+        $friend_status = 0;
+        foreach ($profile_user->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
+            $data_item_load = field_collection_item_load($value['value']);
+            
+            if($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'] == $friend_id){
+              
+              $friend_status = $data_item_load->field_friend_status[LANGUAGE_NONE][0]['tid'];
+              break;
+           
+            }
+        }
+
+        $profile_friend    = profile2_by_uid_load($friend_id, 'main');
+
+        $result['name']     = $profile_friend->field_profile_name[LANGUAGE_NONE][0]['value'];
+        if(count($profile_friend->field_profile_image) > 0){
+          $result['url_image'] = substr(file_create_url($profile_friend->field_profile_image[LANGUAGE_NONE][0]['uri']), strlen($GLOBALS['base_url']));
+        }else{
+          $result['url_image'] = "";
+        }
+
+        $result['friend_id']      = $friend_id;
+
+        if ($friend_status == 0) {
+          // แสดงยังไม่ได้ เป้นเพือนสามารถเพิ่มเพือนได้ โดย return profile 
+          $result['result']         = TRUE;
+          $result['friend_status']  = '0';
+         
+        }else{
+          switch ($friend_status) {
+            // Friend กรณีเราเป็นเพือนกันอยู่แล้ว
+            case '10':{
+              $result['result']         = TRUE;
+              $result['friend_status']  = '10';
+              $result['message']        = "is already your friend.";
+            }
+              break;
+
+            // Friend Cancel : กรณีเราเคยขอเป้นเพือนแล้วโดน เพือน กด cancel
+            case '13':{
+              $result['result']         = TRUE;
+              $result['friend_status']  = '13';
+              $result['message']        = "Friend Cancel.";
+            }
+              break;
+
+            // Friend request : กรณีเราส่งคำขอเป้นเพือน
+            case '11':{
+              $result['result']         = TRUE;
+              $result['friend_status']  = '11';
+              $result['message']        = "Friend request.";
+            }
+              break;
+
+            // Wait for a friend : เพือนคนนี้ส่งคำขอ ขอเราเป็นเพือน
+            case '12':{
+              $result['result']         = TRUE;
+              $result['friend_status']  = '12';
+              $result['message']        = "Wait for a friend.";
+            }
+              break;
+            
+            default:
+              # code...
+              break;
+          }
+        }
+      }
+      break;
+    
+    default:
+      # code...
+      break;
+  }
+
+  return $result;
+}
+
+function find_friend2(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
+    return $result;
+  }
+
+   if (empty($_POST['fction']) || empty($_POST['uid'])) {
+    $result['result'] = FALSE;
+    return $result;
+  }
+
+  global $firebase;
+  $uid        = $_POST['uid'];
+  $fction     = $_POST['fction'];
+  $uid_friend = $_POST['uid_friend'];
+  $isQR       = $_POST['isQR'];
+
+  // เป้นการโหลดข้อมูลของ profile user ซึ่งจะได้รู้ friend ของ uid นี้
+  $user_fields = user_load($uid);
 
   if (!$user_fields->uid) {
-    // User is not logged in
-    //services_error(t('User is not logged in.'), 406);
-
     $result['result'] = FALSE;
     $result['output'] = "uid not match is user";
 
     return $result;
   }
 
-// 
-  if (strcasecmp($_POST['isQR'], '0') == 0) {
+  if (strcasecmp($isQR, '0') == 0) {
     # การค้นหาแบบ id search
 
       $uids = db_select('users', 'ur')
@@ -3825,7 +4173,7 @@ function search_friend_by_id()
         // ->condition('ur.uid', 1, '!=')
         ->condition('ur.uid', 0, '!=')
         ->condition('ur.uid', 1, '!=')
-        ->condition('ur.uid', $_POST['uid'], '!=')
+        ->condition('ur.uid', $uid, '!=')
         ->execute()
         ->fetchCol();
 
@@ -3871,7 +4219,7 @@ function search_friend_by_id()
       $key = $profile->field_profile_heart_id[LANGUAGE_NONE][0]['value'];
 
       // ที่ใช้ uid_friend เพราว่าเราใช้ function ร่วมกันกับ search qrcode ด้วย
-      if (strcasecmp($_POST['uid_friend'], $key) == 0) {
+      if (strcasecmp($uid_friend, $key) == 0) {
         # code...
 
         $result['result'] = TRUE;
@@ -5184,10 +5532,22 @@ function set_my_id()
 {
   $result = array();
 
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
   if (empty($_REQUEST['uid']) || empty($_REQUEST['my_id'])) {
     $result['result'] = FALSE;
     return $result;
   }
+
+
+  global $firebase;
+
+  $uid = $_REQUEST['uid'];
+  $my_id = $_REQUEST['my_id'];
 
   $uids = db_select('users', 'ur')
         ->fields('ur', array('uid'))
@@ -5196,7 +5556,7 @@ function set_my_id()
         // ->condition('ur.uid', 1, '!=')
         ->condition('ur.uid', 0, '!=')
         ->condition('ur.uid', 1, '!=')
-        ->condition('ur.uid', $_POST['uid'], '!=')
+        ->condition('ur.uid', $uid, '!=')
         ->execute()
         ->fetchCol();
 
@@ -5211,7 +5571,7 @@ function set_my_id()
     $key = $profile->field_profile_heart_id[LANGUAGE_NONE][0]['value'];
 
     // เช็ดว่ามีคนตั้ง id นี้หรือเปล่า  ตัวใหญ่-เล้กมองเป้นตัวเดียวกัน
-    if (strcasecmp($_POST['my_id'], $key) == 0) {
+    if (strcasecmp($my_id, $key) == 0) {
       $result['result'] = FALSE;
       $result['message'] = "My ID Duplicate.";
       return  $result;
@@ -5224,8 +5584,8 @@ function set_my_id()
   // เป็นการ โหลด profile เพือเราจะหา pid ของ user นั้นๆ
   // $profile2_load_by_user = profile2_load_by_user($user_fields, NULL)['main'];
 
-  $profile2_load_by_user = profile2_by_uid_load($_REQUEST['uid'], 'main');
-  $profile2_load_by_user->field_profile_heart_id[LANGUAGE_NONE][0]['value'] = $_POST['my_id'];
+  $profile2_load_by_user = profile2_by_uid_load($uid, 'main');
+  $profile2_load_by_user->field_profile_heart_id[LANGUAGE_NONE][0]['value'] = $my_id;
   profile2_save($profile2_load_by_user);
 
 /*
@@ -5238,8 +5598,13 @@ function set_my_id()
   $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/', $data_update);
   */
 
+  // Firebase : update image url profile
+  $data_update = array(
+      "my_id"  => $my_id
+  );
+  $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/", $data_update);
+
   $result['result'] = TRUE;
-  $result['value']  = $_POST['my_id'];
  
   return  $result;
 }
@@ -5459,95 +5824,153 @@ function user_forgot_password()
   return $result;
 }
 
-function add_friend(){
+/*
 
+*/
+function add_friend(){
   $result = array();
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['uid_friend'])) {
-    $result['result']  = FALSE;
+
+  if (!check_header()) {
+    $result['result']   = FALSE;
+    $result['message']  = "check_header()";
     return $result;
   }
 
-  // #1 load profile user
-  $profile_user = profile2_by_uid_load($_REQUEST['uid'], 'main');
-  // #1 load profile user
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['friend_id'])) {
+    $result['result'] = FALSE;
+    return $result;
+  }
 
-  // #2 load profile friend
-  $profile_friend = profile2_by_uid_load($_REQUEST['uid_friend'], 'main');
-  // #2 load profile friend
+  global $firebase;
+  $uid        = $_REQUEST['uid'];
+  $friend_id  = $_REQUEST['friend_id'];
 
-  // #3 เช็กว่ามีเคยเป้นเพือนหรือเปล่า ถ้าเคยเราจะ update status = 4 ถ้าไม่เคยเราจะเพิ่ม
-  $flag = TRUE;
-  //  กรณีเราเคยมีเพือนคนนี้อยู่แล้ว เราจะ update friend status อย่างเดียว
+  // กรณีเป้น ตัวเอง(My self)
+  if (strcasecmp($uid, $friend_id) == 0) {
+    $result['result']     = TRUE;
+    $result['friend_status']  = '-1';
+    $result['message']    = "You can't add yourself as a friend.";
+    return  $result;
+  }
+
+  /*
+  เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
+  */
+  $profile_user = profile2_by_uid_load($uid, 'main');
+
+  $friend_status = 0;
   foreach ($profile_user->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
       $data_item_load = field_collection_item_load($value['value']);
-      if($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'] == $_REQUEST['uid_friend']){
-        $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
-
-        //Update value
-        $wrapper->field_heart_friend_status->set('4'); // Wait to Accept
-        $wrapper->save(TRUE);
-
-        $flag = FALSE;
+      
+      if($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'] == $friend_id){
+        
+        $friend_status = $data_item_load->field_friend_status[LANGUAGE_NONE][0]['tid'];
         break;
       }
   }
 
-  if ($flag) {
-    # code...
-    $user_values = array();
-    $user_values['field_name'] = 'field_profile_friends'; // field collection name
+  if ($friend_status == 0) {
+    // มีอยู่กรณีเดียวทีเราสามารถเพิ่มเพือนได้
+    /*
+    หลักการคือ friend_id ต้องยังไม่เคยเป้นเพื่อนเท่านั้น
+    ขั้นตอน
+    1. เราต้องเพิ่ม friend_id  เป็นเพื่อน โดยสถานะ Wait for a friend(12) ที่ database และ firebase database
+    2. เราต้องเพิ่ม uid ไปเป็นเพือน ของ friend_id ด้วย โดยสถานะ Friend request(11) ที่ database และ firebase database
+    */
 
-    $user_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $_POST['uid_friend'];
-    $user_values['field_heart_receive'][LANGUAGE_NONE][0]['value'] = 0;
-    $user_values['field_heart_send'][LANGUAGE_NONE][0]['value'] = 0;
-    $user_values['field_heart_friend_status'][LANGUAGE_NONE][0]['value'] = '4';
-    $user_values['field_profile_status_message'][LANGUAGE_NONE][0]['value'] = $profile_friend->field_profile_status_message[LANGUAGE_NONE][0]['value'];
-    $user_values['field_display_name'][LANGUAGE_NONE][0]['value'] = $profile_friend->field_profile_name[LANGUAGE_NONE][0]['value'];
-    $user_values['field_turn_off_notifications'][LANGUAGE_NONE][0]['value'] = 0;
+    $chat_id = generateRandomString(config_pages_get(CONFIG_PAGES_TYPE, 'field_defualt_length_chat_id', 20));
 
-    // Create the field collection entry and associate it with the profile
-    $field_entity = entity_create('field_collection_item', $user_values);
-    $field_entity->setHostEntity('profile2', $profile_user);
-    $field_entity->save();
-  }
+    // เป็นการเพือนให้ตัวเรา
+    $user_profile = profile2_by_uid_load($uid, 'main');
 
-
-  // #4 เช็กว่ามีเคยเพือนหรือเปล่า ถ้าเคยเราจะ update status = 3 ถ้าไม่เคยเราจะเพิ่ม
-  $flag = TRUE;
-  //  กรณีเราเคยมีเพือนคนนี้อยู่แล้ว เราจะ update friend status อย่างเดียว
-  foreach ($profile_friend->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
-      $data_item_load = field_collection_item_load($value['value']);
-      if($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'] == $_POST['uid']){
-        $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
-
-        //Update value
-        $wrapper->field_heart_friend_status->set('3'); // Friend Requests
-        $wrapper->save(TRUE);
-
-        $flag = FALSE;
-        break;
-      }
-  }
-
-  if ($flag) {
     $friend_values = array();
     $friend_values['field_name'] = 'field_profile_friends'; // field collection name
 
-    $friend_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $_POST['uid'];
-    $friend_values['field_heart_receive'][LANGUAGE_NONE][0]['value'] = 0;
-    $friend_values['field_heart_send'][LANGUAGE_NONE][0]['value'] = 0;
-    $friend_values['field_heart_friend_status'][LANGUAGE_NONE][0]['value'] = '3';
-    $friend_values['field_profile_status_message'][LANGUAGE_NONE][0]['value'] = $profile_user->field_profile_status_message[LANGUAGE_NONE][0]['value'];
-    $friend_values['field_display_name'][LANGUAGE_NONE][0]['value'] = $profile_user->field_profile_name[LANGUAGE_NONE][0]['value'];
-    $friend_values['field_turn_off_notifications'][LANGUAGE_NONE][0]['value'] = 0;
-
-    // Create the field collection entry and associate it with the profile
+    $friend_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $friend_id;
+    $friend_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
+    $friend_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = FRIEND_STATUS_WAIT_FOR_A_FRIEND;
+  
     $field_entity = entity_create('field_collection_item', $friend_values);
-    $field_entity->setHostEntity('profile2', $profile_friend);
+    $field_entity->setHostEntity('profile2', $user_profile);
     $field_entity->save();
+
+    //  $field_entity->item_id;
+
+    $values = array(
+      "status"       => FRIEND_STATUS_WAIT_FOR_A_FRIEND,
+      "chat_id"      => $chat_id,
+      "item_id"      => $field_entity->item_id,
+      "create"       => time()
+    );
+    $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/friends/' . $friend_id . "/", $values);
+    
+    
+    // เป็นการเพิ่มตัวเรา  ให้เพือน
+    $friend_profile = profile2_by_uid_load($friend_id, 'main');
+
+    $user_values = array();
+    $user_values['field_name'] = 'field_profile_friends'; // field collection name
+
+    $user_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $uid;
+    $user_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
+    $user_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = FRIEND_STATUS_FRIEND_REQUEST;
+  
+    $field_entity = entity_create('field_collection_item', $user_values);
+    $field_entity->setHostEntity('profile2', $friend_profile);
+    $field_entity->save();
+
+    $values = array(
+      "status"       => FRIEND_STATUS_FRIEND_REQUEST,
+      "chat_id"      => $chat_id,
+      "item_id"      => $field_entity->item_id,
+      "create"       => time()
+    );
+    $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $friend_id . '/friends/' . $uid . "/", $values);
+
+
+    $result['result']         = TRUE;
+    $result['friend_status']  = '99';  
+    $result['message']        = "Send requests friend success.";
+  }else{
+    switch ($friend_status) {
+      // Friend กรณีเราเป็นเพือนกันอยู่แล้ว
+      case '10':{
+        $result['result']         = TRUE;
+        $result['friend_status']  = '-1';
+        $result['message']        = "is already your friend.";
+      }
+        break;
+
+      // Friend Cancel : กรณีเราเคยขอเป้นเพือนแล้วโดน เพือน กด cancel
+      case '13':{
+        $result['result']         = TRUE;
+        $result['friend_status']  = '-1';
+        $result['message']        = "Friend Cancel.";
+      }
+        break;
+
+      // Friend request : กรณีเราส่งคำขอเป้นเพือน
+      case '11':{
+        $result['result']         = TRUE;
+        $result['friend_status']  = '-1';
+        $result['message']        = "Friend request.";
+      }
+        break;
+
+      // Wait for a friend : เพือนคนนี้ส่งคำขอ ขอเราเป็นเพือน
+      case '12':{
+        $result['result']         = TRUE;
+        $result['friend_status']  = '-1';
+        $result['message']        = "Wait for a friend.";
+      }
+        break;
+      
+      default:
+        # code...
+        break;
+    }
   }
 
-  $result['result'] = TRUE;
   return $result;
 }
 
@@ -7451,7 +7874,7 @@ function create_group_chat(){
   $image  = $_REQUEST['image'];
   
   // chat_id เป้น id ที่ไว้สำหรับอ้างอิงเป้น chat id  
-  $chat_id = generateRandomString(DEFUALT_LENGTH_CHAT_ID);
+  $chat_id = generateRandomString(config_pages_get(CONFIG_PAGES_TYPE, 'field_defualt_length_chat_id', 20));
 
   $profile = profile2_by_uid_load($uid, 'main');
 
@@ -7752,7 +8175,7 @@ function update_group_chat(){
 
 
 /**
- ถุกเรียกใช้ firebase เท่านั้น
+ ถุกเรียกใช้จาก firebase เท่านั้น
  แก้ไข, เพิ่มเติม field friend ของ user
 */
 function user_for_friend_editupdate(){
@@ -7770,8 +8193,10 @@ function user_for_friend_editupdate(){
     return $result;
   }
 
-  $uid      = $_REQUEST['uid'];
-  $friend_id = $_REQUEST['friend_id'];
+  global $firebase;
+
+  $uid        = $_REQUEST['uid'];
+  $friend_id  = $_REQUEST['friend_id'];
   $data     = $_REQUEST['data'];
 
   /*
@@ -7813,10 +8238,115 @@ function user_for_friend_editupdate(){
         $wrapper->field_change_friend_name->set("");
         $wrapper->save();
       }
+
+      if (array_key_exists('status', $data)) {
+
+        // watchdog(TAG, '<< ||| >> : %account', array('%account'=> $wrapper->field_friend_status->value()->tid), WATCHDOG_INFO);
+
+       if (strcmp($wrapper->field_friend_status->value()->tid, $data['status']) != 0) {
+          $wrapper->field_friend_status->set($data['status']);
+          $wrapper->save();
+
+
+          /*
+          เราต้องมาวิเคราะห์ status ด้วย
+
+          มาถึงขั้นตอนนี้เรา ต้องการ update 2 จุด คือ update database ของเพือน และ firebase ของเพือน
+               
+          switch ($data['status']) {
+            case FRIEND_STATUS_FRIEND:{
+
+                  // load profile ของเพือนขึ้นมา
+                  $profile_friend = profile2_by_uid_load($friend_id, 'main');
+
+                  foreach ($profile_friend->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
+                    // Build array of field collection values.
+
+                    $val = field_collection_item_load($value['value']);
+
+                    // จะดึงที่ field_friend_uid = $uid แก้ใข friend status
+                    if($val->field_friend_uid[LANGUAGE_NONE][0]['value'] == $_POST['uid_friend']){
+                      $wrapper = entity_metadata_wrapper('field_collection_item', $val);
+                      $wrapper->field_friend_status->set($data['status']);
+                      $wrapper->save();
+
+                      $values = array(
+                          "status" => FRIEND_STATUS_FRIEND,
+                          "update" => time()
+                        );
+                      $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $friend_id . '/friends/', $values);
+                    }
+                  }
+              }
+              break;
+            
+            default:
+              # code...
+              break;
+          }
+          */
+
+          
+        }
+      }
   }
 
   $result['result'] = TRUE;
   return  $result;
+}
+
+/**
+ ถุกเรียกใช้จาก firebase เท่านั้น
+ ลบเพือน
+*/
+function user_for_friend_delete(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['friend_id'])) {
+    $result['result'] = FALSE;
+    $result['message']  = "function : user_for_friend_delete, parameter";
+    return $result;
+  }
+
+  global $firebase;
+  $uid        = $_REQUEST['uid'];
+  $friend_id  = $_REQUEST['friend_id'];
+
+  // # 1 -- เป็นการลบเพือนของเราที่ friend_id ตรงกัน
+  $profile = profile2_by_uid_load($uid, 'main');
+  foreach ($profile->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
+    // ดึงเพือนมาทั้งหมด
+    $data_item_load = field_collection_item_load($value['value']);
+    if (strcmp($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'], $friend_id) == 0) {
+      $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);    
+      entity_delete_multiple('field_collection_item', array($wrapper->getIdentifier()));
+      break;
+    }
+  }
+  // # 1 -- เป็นการลบเพือนของเราที่ friend_id ตรงกัน
+
+  // # 2 -- เป็นการลบเพือนของเพือนที่ uid ตรงกัน
+  $profile = profile2_by_uid_load($friend_id, 'main');
+  foreach ($profile->field_profile_friends[LANGUAGE_NONE] as $key => $value) {
+    // ดึงเพือนมาทั้งหมด
+    $data_item_load = field_collection_item_load($value['value']);
+    if (strcmp($data_item_load->field_friend_uid[LANGUAGE_NONE][0]['value'], $uid) == 0) {
+      $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);    
+      entity_delete_multiple('field_collection_item', array($wrapper->getIdentifier()));
+      break;
+    }
+  }
+
+  // # 2 -- เป็นการลบเพือนของเพือนที่ uid ตรงกัน
+
+  $result['result']   = TRUE;
+  return $result;
 }
 
 /** 
@@ -8034,15 +8564,14 @@ function generatorQRCode($account, $platform, $bundleidentifier){
         
     // Gen QRCode
     //set it to writable location, a place for temp generated PNG files
-    $PNG_TEMP_DIR = PATH_FOLDER_QRCODE;
+    $PNG_TEMP_DIR = config_pages_get(CONFIG_PAGES_TYPE, 'field_path_folder_qrcode'); 
 
     //Create the directory if it does not already exist, otherwise check the permissions
     file_prepare_directory($PNG_TEMP_DIR, FILE_CREATE_DIRECTORY);
 
-    $text = $account->uid;//$_GET['user'];
+    $text     = dec_enc('encrypt', $account->uid);
     $errorCorrectionLevel = "M";
     $matrixPointSize = 8;
-
 
     // Create Profile2
     // Where 'main' is your profile2 type machine name.
@@ -8068,9 +8597,10 @@ function generatorQRCode($account, $platform, $bundleidentifier){
       case BI_ANDROID_BASIC:
       case BI_IOS_BASIC:
       {
+
         // ios
         $filename = $PNG_TEMP_DIR.'/'.md5($text.'|'.$errorCorrectionLevel.'|'.$matrixPointSize).'.png';
-        QRcode::png(URL_SERVER() . "/idna/URL_STORE?&bi=" . BI_IOS_idna . "&heart-id=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
+        QRcode::png(URL_SERVER() . "/qe?&bi=" . dec_enc('encrypt', BI_IOS_BASIC) . "&bii=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
 
         $currentDate = date("Ymd");
         $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
@@ -8087,7 +8617,7 @@ function generatorQRCode($account, $platform, $bundleidentifier){
 
         // android
         $filename = $PNG_TEMP_DIR.'/'.md5($text.'|'.$errorCorrectionLevel.'|'.$matrixPointSize).'.png';
-        QRcode::png(URL_SERVER() . "/idna/URL_STORE?&bi=" . BI_ANDROID_idna . "&heart-id=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
+        QRcode::png(URL_SERVER() . "/qe?&bi=" . dec_enc('encrypt', BI_ANDROID_BASIC) . "&bii=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
 
         $currentDate = date("Ymd");
         $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
@@ -8108,7 +8638,7 @@ function generatorQRCode($account, $platform, $bundleidentifier){
       {
         // ios
         $filename = $PNG_TEMP_DIR.'/'.md5($text.'|'.$errorCorrectionLevel.'|'.$matrixPointSize).'.png';
-        QRcode::png(URL_SERVER() . "/idna/URL_STORE?&bi=" . BI_IOS_IDNA  . "&heart-id=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
+        QRcode::png(URL_SERVER() . "/qe?&bi=" . dec_enc('encrypt', BI_IOS_IDNA)  . "&bii=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
 
         $currentDate = date("Ymd");
         $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
@@ -8125,7 +8655,7 @@ function generatorQRCode($account, $platform, $bundleidentifier){
 
         // android 
         $filename = $PNG_TEMP_DIR.'/'.md5($text.'|'.$errorCorrectionLevel.'|'.$matrixPointSize).'.png';
-        QRcode::png(URL_SERVER() . "/idna/URL_STORE?&bi=" . BI_ANDROID_IDNA . "&heart-id=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
+        QRcode::png(URL_SERVER() . "/qe?&bi=" . dec_enc('encrypt',BI_ANDROID_IDNA) . "&bii=" . $text, $filename, $errorCorrectionLevel, $matrixPointSize, 2);  
 
         $currentDate = date("Ymd");
         $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
@@ -8165,49 +8695,73 @@ function generatorQRCode($account, $platform, $bundleidentifier){
 /*
  เป็นการ redirect url store
 */ 
-function URL_STORE(){
+function qe(){
+  // $iPod = stripos($_SERVER['HTTP_USER_AGENT'],"iPod");
+  // $iPhone = stripos($_SERVER['HTTP_USER_AGENT'],"iPhone");
+  // $iPad = stripos($_SERVER['HTTP_USER_AGENT'],"iPad");
+  // $Android= stripos($_SERVER['HTTP_USER_AGENT'],"Android");
 
-  $iPod = stripos($_SERVER['HTTP_USER_AGENT'],"iPod");
-  $iPhone = stripos($_SERVER['HTTP_USER_AGENT'],"iPhone");
-  $iPad = stripos($_SERVER['HTTP_USER_AGENT'],"iPad");
-  $Android= stripos($_SERVER['HTTP_USER_AGENT'],"Android");
+  // drupal_goto("node/308");
+
+  // header('Location: ' . 'https://www.blognone.com/'); 
+  // return;
+
+  $detect = mobile_detect_get_object();
+
+  // echo "<pre>";
+  // echo $_REQUEST['bi'] . '<br/>';
+  // echo dec_enc('decrypt', $_REQUEST['bi']). '<br/>';
+  // var_dump($detect->is('iPad') );
+  // echo "</pre>";
+
+  // header('Location: ' . DEFUALT_IOS_URL_STORE_DNA); 
 
   // //check if user is using ipod, iphone or ipad...
-  if( $iPod || $iPhone || $iPad ){
+  // if( $iPod || $iPhone || $iPad ){
+  if($detect->is('iPod') || $detect->is('iPhone') || $detect->is('iPad')){
     // bi = bundleidentifier
     //we send these people to Apple Store
-    switch ($_GET['bi']) {
-      case BI_IOS_idna:{
-        header('Location: ' . DEFUALT_IOS_URL_STORE_idna); // <-apple store link here
+    // echo "iPod || iPhone || iPad : " . dec_enc('decrypt', $_REQUEST['bi']);
+
+    switch (dec_enc('decrypt', $_REQUEST['bi'])) {
+      case BI_IOS_BASIC:{
+        header('Location: ' . DEFUALT_IOS_URL_STORE_BASIC); // <-apple store link here
         break;
       }
 
-      case BI_IOS_IDNA:{
-        header('Location: ' . DEFUALT_IOS_URL_STORE_DNA); // <-apple store link here
+      case BI_IOS_IDNA:{  // 
+        header('Location: ' . config_pages_get(CONFIG_PAGES_TYPE, 'field_defualt_ios_url_store_idna')); // <-apple store link here
         break;
       }
       
-      default:
+      default:{
+        header('Location: ' . $GLOBALS['base_url']); 
+      }
         # code...
         break;
     }
-  }else if($Android){
+    
+  }else if($detect->is('Android')){ 
     //we send these people to Android Store
 
-    switch ($_GET['bi']) {
-      case BI_ANDROID_idna:{
-        header('Location: ' . DEFUALT_ANDROID_URL_STORE_idna); // <-apple store link here
+    switch (dec_enc('decrypt', $_REQUEST['bi'])) {
+      case BI_ANDROID_BASIC:{
+        header('Location: ' . DEFUALT_ANDROID_URL_STORE_BASIC); // <-apple store link here
         break;
       }
 
-      case BI_ANDROID_IDNA:{
-        header('Location: ' . DEFUALT_ANDROID_URL_STORE_DNA); // <-apple store link here
+      case BI_ANDROID_IDNA:{  
+        header('Location: ' . config_pages_get(CONFIG_PAGES_TYPE, 'field_android_url_store_idna')); // <-apple store link here
         break;
       }
       
-      default:
+      default:{
+        header('Location: ' . $GLOBALS['base_url']); 
+      }
         # code...
         break;
     }
+  }else{
+    header('Location: ' . $GLOBALS['base_url']); 
   }
 }

@@ -17,6 +17,8 @@
 
 @interface EditDisplayName (){
     ProfilesRepo *profileRepo;
+    
+    NSMutableDictionary *profiles;
 }
 @end
 
@@ -40,9 +42,10 @@
         NSArray *pf = [profileRepo get];
         NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
         
-        NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         
-        [self.textFieldName setText:[profiles objectForKey:@"name"]];
+       [self.textFieldName setText:[profiles objectForKey:@"name"]];
+        
     }else{
         // แสดงว่าเป้น Friend
     }

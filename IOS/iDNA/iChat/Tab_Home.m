@@ -65,35 +65,39 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    
+    [self reloadData];
+}
+
+
+-(void)reloadData{
     NSArray *pf = [profilesRepo get];
     NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     profile = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
     /*
-    NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
-    [newProfiles addEntriesFromDictionary:profiles];
-    [newProfiles removeObjectForKey:@"bg_url"];
-    [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
-    
-    Profiles *pfs = [[Profiles alloc] init];
-    NSError * err;
-    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-    pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    pfs.update    = [timeStampObj stringValue];
-    
-    BOOL sv = [profilesRepo update:[[pf objectAtIndex: [profileRepo.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue] :pfs];
-    
-    */
+     NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+     [newProfiles addEntriesFromDictionary:profiles];
+     [newProfiles removeObjectForKey:@"bg_url"];
+     [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
+     
+     Profiles *pfs = [[Profiles alloc] init];
+     NSError * err;
+     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+     pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+     NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+     NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+     pfs.update    = [timeStampObj stringValue];
+     
+     BOOL sv = [profilesRepo update:[[pf objectAtIndex: [profileRepo.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue] :pfs];
+     
+     */
     
     // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
- 
+    
     // #1 profile
     // NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
-
+    
     // NSDictionary *profiles = [data objectForKey:@"profiles"];
     // NSLog(@"");
     
@@ -130,6 +134,16 @@
         [imageV_qrcode setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url_ios_qrcode"]]]];
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV_qrcode ];
     }
+    
+    /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
+    UITapGestureRecognizer *qrcodeTap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(handleQRCodeTap:)];
+    
+    imageV_qrcode.userInteractionEnabled = YES;
+    [imageV_qrcode addGestureRecognizer:qrcodeTap];
+    
+    /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
     
     UITapGestureRecognizer *singleFingerTap =
     [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -232,6 +246,73 @@
         MyProfile* profile = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
         [self.navigationController pushViewController:profile animated:YES];
     // }
+}
+
+-(void)handleQRCodeTap:(UITapGestureRecognizer *)recognizer{
+
+    [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].RECREATE_QRCODE ]];
+    
+    NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    // NSLog(@"%@", [request allHTTPHeaderFields]);
+    
+    //set http method
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+    // getBundleIdentifier
+    UIDevice *deviceInfo = [UIDevice currentDevice];
+    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&platform=%@&bundleidentifier=%@", [[Configs sharedInstance] getUIDU], @"ios", [[Configs sharedInstance] getBundleIdentifier] ];
+    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        [[Configs sharedInstance] SVProgressHUD_Dismiss];
+        
+        if (error == nil) {
+            NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+            if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                
+                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                [newProfiles addEntriesFromDictionary:profile];
+                
+                if ([newProfiles objectForKey:@"image_url_android_qrcode"]) {
+                    [newProfiles removeObjectForKey:@"image_url_android_qrcode"];
+                }
+                
+                if ([newProfiles objectForKey:@"image_url_ios_qrcode"]) {
+                    [newProfiles removeObjectForKey:@"image_url_ios_qrcode"];
+                }
+                
+                [newProfiles setValue:jsonDict[@"url_android_qrcode"] forKey:@"image_url_android_qrcode"];
+                [newProfiles setValue:jsonDict[@"url_ios_qrcode"] forKey:@"image_url_ios_qrcode"];
+                
+                Profiles *pfs = [[Profiles alloc] init];
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                pfs.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [profilesRepo update:pfs];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reloadData];
+                });
+            }else{
+                
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
+            }
+            
+        }else{
+            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error."];
+        }
+    }];
+    
+    [postDataTask resume];
 }
 
 @end

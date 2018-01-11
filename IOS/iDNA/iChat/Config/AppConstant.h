@@ -37,12 +37,18 @@
 // #define     _USER_MY_ID             @"user_my_id"     // เก็บ my id ของ user  โดยรวมถึง my card, my application
 
 #define     _CATEGORY_APPLICATION   @"category_application"
-#define     _GENDER                 @"gender" 
+#define     _GENDER                 @"gender"
 
 
 #define     _DATA                   @"data"
 #define     _EXTERNAL               @"external"
 #define     _CENTER                 @"center"
 #define     _CENTER_SLIDE           @"center_slide"
+
+#define _FRIEND_STATUS_FRIEND            @"10"
+#define _FRIEND_STATUS_FRIEND_CANCEL     @"13"
+#define _FRIEND_STATUS_FRIEND_REQUEST    @"11"
+#define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
+
 
 #endif /* AppConstant_h */

@@ -20,7 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnAdd;
 
 
-@property (strong, nonatomic) NSString *key_search;
+@property (strong, nonatomic) NSDictionary *queryStringDictionary;
 @property (strong, nonatomic) NSString *isQR; /* 0= มาจาก id, 1 = เป็นการ Scan QRCode  */ 
 
 

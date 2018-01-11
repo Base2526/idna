@@ -88,6 +88,11 @@
     NSLog(@"");
 }
 
+// กรณีเปิด จะมีการ hide Tabbar
+-(BOOL)hidesBottomBarWhenPushed{
+    return YES;
+}
+
 - (void)viewDidLayoutSubviews {
     activityIndicator.center = self.view.center;
 }
@@ -326,7 +331,7 @@
     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Add Friend"];
     
     AddFriendThread *afThread = [[AddFriendThread alloc] init];
-    [afThread setCompletionHandler:^(NSString *str) {
+    [afThread setCompletionHandler:^(NSData *str) {
         
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
@@ -472,7 +477,7 @@
             [queryStringDictionary setObject:value forKey:key];
         }
         
-        if ([queryStringDictionary objectForKey:@"heart-id"]) {
+        if ([queryStringDictionary objectForKey:@"bii"]) {
             // contains object
             
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -485,7 +490,7 @@
                 UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                 
                 ResultSearchFriend *ivFriend = [storybrd instantiateViewControllerWithIdentifier:@"ResultSearchFriend"];
-                ivFriend.key_search = [queryStringDictionary objectForKey:@"heart-id"];
+                ivFriend.queryStringDictionary = queryStringDictionary;
                 ivFriend.isQR = @"1";
                 UINavigationController* nav = [[UINavigationController alloc] initWithRootViewController:ivFriend];
                 

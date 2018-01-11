@@ -15,30 +15,34 @@
 #import "AppDelegate.h"
 #import "AppConstant.h"
 
-@interface ResultSearchFriend ()
+#import "FindFriendThread.h"
+#import "ProfilesRepo.h"
 
-{
-    NSDictionary *result;
+@interface ResultSearchFriend (){
+    // NSDictionary *result;
+    NSDictionary *jsonDict;
 }
 @end
 
 @implementation ResultSearchFriend
-
+@synthesize queryStringDictionary;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    NSLog(@"%@", self.key_search);
+    // NSLog(@"%@", self.key_search);
     
     self.btnAdd.layer.cornerRadius = 5;
     self.btnAdd.layer.borderWidth = 1;
     self.btnAdd.layer.borderColor = [UIColor blueColor].CGColor;
     
-    result = [[NSDictionary alloc] init];
+    // result = [[NSDictionary alloc] init];
     
-    [SVProgressHUD showWithStatus:@"Please Wait"];
+    // [SVProgressHUD showWithStatus:@"Please Wait"];
     
+//    FindFriendThread
+    /*
     ResultSearchFriendThread *RSFThread = [[ResultSearchFriendThread alloc] init];
     [RSFThread setCompletionHandler:^(NSString * data) {
         
@@ -177,6 +181,115 @@
     }];
 
     [RSFThread start:self.key_search: self.isQR];
+    */
+    
+    
+    [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
+    FindFriendThread *ff = [[FindFriendThread alloc] init];
+    [ff setCompletionHandler:^(NSData *data) {
+        
+        jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+        
+        [[Configs sharedInstance] SVProgressHUD_Dismiss];
+        
+        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // imageV_friend.hidden = NO;
+                // textView_message.hidden = NO;
+                
+                if ([jsonDict[@"friend_status"] isEqualToString:@"0"]) {
+                    // แสดงยังไม่ได้ เป้นเพือนสามารถเพิ่มเพือนได้
+                    // btnAddFriend.hidden     = NO;
+                    
+                    if (![jsonDict[@"url_image"] isEqualToString:@""]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, jsonDict[@"url_image"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg ];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"10"]) {
+                    // Friend กรณีเราเป็นเพือนกันอยู่แล้ว
+                    
+                    if (![jsonDict[@"url_image"] isEqualToString:@""]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, jsonDict[@"url_image"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg ];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                    
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"13"]) {
+                    // Friend Cancel : กรณีเราเคยขอเป้นเพือนแล้วโดน เพือน กด cancel
+                    
+                    if (![jsonDict[@"url_image"] isEqualToString:@""]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, jsonDict[@"url_image"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"11"]) {
+                    // Friend request : กรณีเราส่งคำขอเป้นเพือน
+                    if (![jsonDict[@"url_image"] isEqualToString:@""]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, jsonDict[@"url_image"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"12"]) {
+                    // Wait for a friend : เพือนคนนี้ส่งคำขอ ขอเราเป็นเพือน
+                    if (![jsonDict[@"url_image"] isEqualToString:@""]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, jsonDict[@"url_image"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg ];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"-1"]) {
+                    // Friend not found : ไม่มีคนทีตั้ง code นี้
+                }else  if ([jsonDict[@"friend_status"] isEqualToString:@"99"]) {
+                    // You can't add yourself as a friend. : ตัวเอง(My self)
+                    
+                    ProfilesRepo *profileRepo = [[ProfilesRepo alloc] init];
+                    
+                    NSArray *pf = [profileRepo get];
+                    NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                    
+                    NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    
+                    if ([profiles objectForKey:@"image_url"]) {
+                        [self.hjmImg clear];
+                        [self.hjmImg showLoadingWheel]; // API_URL
+                        [self.hjmImg setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [profiles objectForKey:@"image_url"]]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:self.hjmImg ];
+                    }else{
+                        [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
+                    }
+                }
+                if ([jsonDict objectForKey:@"name"]) {
+                    [self.labelName setText:jsonDict[@"name"]];
+                }
+                
+            });
+            
+        }else{
+            NSLog(@"");
+        }
+    
+    }];
+    
+    [ff setErrorHandler:^(NSString *error) {
+        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
+    }];
+    [ff start:@"1" :[queryStringDictionary objectForKey:@"bii"]];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -196,13 +309,13 @@
 
 - (IBAction)onAddFriend:(id)sender {
     
+    NSLog(@"");
+   /*
     __block NSString* uid_friend = [result objectForKey:@"uid"];
-    
-    
     [SVProgressHUD showWithStatus:@"Add Friend"];
     
     AddFriendThread *addFriendsThread = [[AddFriendThread alloc] init];
-    [addFriendsThread setCompletionHandler:^(NSString *data) {
+    [addFriendsThread setCompletionHandler:^(NSData *data) {
         
         NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
         
@@ -263,6 +376,36 @@
         NSLog(@"%@", data);
     }];
     [addFriendsThread start:uid_friend];
+    
+    */
+    
+    [SVProgressHUD showWithStatus:@"Wait."];
+    
+    AddFriendThread *addFriendsThread = [[AddFriendThread alloc] init];
+    [addFriendsThread setCompletionHandler:^(NSData *data) {
+        [[Configs sharedInstance] SVProgressHUD_Dismiss];
+        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+        
+        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            if ([jsonDict[@"friend_status"] isEqualToString:@"-1"]) {
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
+            }else if ([jsonDict[@"friend_status"] isEqualToString:@"99"]) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:jsonDict[@"message"]];
+                });
+            }
+        }else{
+            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
+        }
+    }];
+    
+    [addFriendsThread setErrorHandler:^(NSString *data) {
+        NSLog(@"%@", data);
+    }];
+    [addFriendsThread start:[jsonDict objectForKey:@"friend_id"]];
+    
 }
 
 - (IBAction)onClose:(id)sender {

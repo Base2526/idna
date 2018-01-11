@@ -76,33 +76,9 @@
             if (![idata isKindOfClass:[NSDictionary class]]) {
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[NSString stringWithFormat:@"%@", idata]];
             }else{
-                
                 if ([idata count] > 0) {
-                    // http://stackoverflow.com/questions/19206762/equivalent-to-shared-preferences-in-ios
-                    // NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-                    
-                    // NSLog(@"%@", [idata objectForKey:@"user"][@"uid"]);
-                    
-                    // const NSInteger currentLevel = ...;
-                    // [preferences setInteger:currentLevel forKey:currentLevelKey];
-                    // [preferences setObject:[idata objectForKey:@"user"][@"uid"] forKey:_UID];
-                    // [preferences setObject:[idata objectForKey:@"sessid"] forKey:_SESSION_ID];
-                    // [preferences setObject:[idata objectForKey:@"session_name"] forKey:_SESSION_NAME];
-                    
-                    // NSUserDefaults save NSMutableDictionary
-                    // http://stackoverflow.com/questions/471830/why-nsuserdefaults-failed-to-save-nsmutabledictionary-in-iphone-sdk
-                    // [preferences setObject:[NSKeyedArchiver archivedDataWithRootObject: idata] forKey:_USER];
-                    
                     [[Configs sharedInstance] saveData:_USER :idata];
-                    //if ([preferences synchronize])
-                    // {
-//                        NSDictionary *dict =  @{@"function" : @"reset"};
-//                        
-//                        [[NSNotificationCenter defaultCenter] postNotificationName:@"ManageTabBar" object:nil userInfo:dict];
-//                        [self dismissViewControllerAnimated:YES completion:nil];
-                        
-                        // [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
-                        
+                    
                     [[NSNotificationCenter defaultCenter] addObserver:self
                                                              selector:@selector(synchronizeData:)
                                                                      name:@"synchronizeData"
@@ -110,7 +86,6 @@
                         
                     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait Synchronize data"];
                     [[Configs sharedInstance] synchronizeData];
-                    
                 }else{
                     [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Login Error"];
                 }

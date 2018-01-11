@@ -10,8 +10,13 @@
 #import "SetMyIDThread.h"
 #import "AppConstant.h"
 #import "Configs.h"
+#import "ProfilesRepo.h"
 
-@interface SetMyID ()
+@interface SetMyID (){
+    
+    ProfilesRepo *profilesRepo;
+    NSMutableDictionary *profiles;
+}
 
 @end
 
@@ -21,7 +26,17 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    [self.textFieldMessage setText:self.message];
+    profilesRepo = [[ProfilesRepo alloc] init];
+    
+    NSArray *pf = [profilesRepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    [self.textFieldMessage setText:@""];
+    if ([profiles objectForKey:@"my_id"]) {
+        [self.textFieldMessage setText:[profiles objectForKey:@"my_id"]];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -49,7 +64,7 @@
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update."];
         
         SetMyIDThread *eThread = [[SetMyIDThread alloc] init];
-        [eThread setCompletionHandler:^(NSString *data) {
+        [eThread setCompletionHandler:^(NSData *data) {
             
             [[Configs sharedInstance] SVProgressHUD_Dismiss];
             
@@ -57,35 +72,27 @@
             
             if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
                 
-                /*
-                NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-                
-                NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-                // NSMutableDictionary*profile =  [[profile objectForKey:@"phones"] mutableCopy];
-                
-                //NSMutableDictionary*phones = [[profile objectForKey:@"phones"] mutableCopy];
-                
-                // [phones removeObjectForKey:jsonDict[@"item_id"]];
-                // [phones setObject:jsonDict[@"data"] forKey:jsonDict[@"item_id"]];
-                
-                NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                [newProfile addEntriesFromDictionary:profile];
-                
-                if ([profile objectForKey:@"my_id"]) {
-                    [newProfile removeObjectForKey:@"my_id"];
+                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                [newProfiles addEntriesFromDictionary:profiles];
+        
+                if ([newProfiles objectForKey:@"my_id"]) {
+                    [newProfiles removeObjectForKey:@"my_id"];
                 }
-                [newProfile setObject:jsonDict[@"value"] forKey:@"my_id"];
+                [newProfiles setValue:strName forKey:@"my_id"];
                 
-                NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-                [newData addEntriesFromDictionary:data];
-                [newData removeObjectForKey:@"profile"];
-                [newData setObject:newProfile forKey:@"profile"];
+                Profiles *pfs = [[Profiles alloc] init];
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                pfs.update    = [timeStampObj stringValue];
                 
-                [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-                */
+                BOOL sv = [profilesRepo update:pfs];
                 
-                [self.navigationController popViewControllerAnimated:YES];
-                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
             }else{
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
             }
@@ -95,7 +102,7 @@
             [[Configs sharedInstance] SVProgressHUD_Dismiss];
             [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
         }];
-        [eThread start:strName :@"add"];
+        [eThread start:strName];
     }
 }
 @end

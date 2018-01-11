@@ -7,30 +7,25 @@
 //
 
 #import "MyProfile.h"
-
 #import "Configs.h"
 #import "AppDelegate.h"
 #import "ManageClass.h"
 #import "UpdatePictureProfileThread.h"
 #import "UpdateMyProfileThread.h"
 #import "UpdatePictureBGThread.h"
-
 #import "ManageClass.h"
-
 #import "TopAlignedLabel.h"
 #import "HJManagedImageV.h"
-
 #import "EditDisplayName.h"
-
 #import "Profiles.h"
 #import "ProfilesRepo.h"
-
 #import "EditStatusMessage.h"
 #import "EditAddress.h"
 #import "ListPhone.h"
 #import "ListEmail.h"
 #import "Gender.h"
 #import "Birthday.h"
+#import "SetMyID.h"
 
 @interface MyProfile (){
     NSMutableDictionary *profiles;
@@ -118,6 +113,8 @@
 -(void)dismissKeyboard {
     [self.view endEditing:true];
 }
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -445,14 +442,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 11;
+    return 12;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     switch (indexPath.row) {
-        case 0:
-        {
+        case 0:{
             UITableViewCell *cell   = [tableView dequeueReusableCellWithIdentifier:@"cell_picture_profile"];
             
             cell.selectionStyle     = UITableViewCellSelectionStyleNone;
@@ -480,18 +476,34 @@
             UILabel *label2 = [cell viewWithTag:11];
             
             [label1 setText:@"ชื่อ :"];
-            
-            // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
-            
+        
             [label2 setText:[profiles objectForKey:@"name"]];
-            NSLog(@"");
-            
             return cell;
         }
              break;
             
-            // Status message
+            // my id
         case 2:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"My ID :"];
+            
+            if ([profiles objectForKey:@"my_id"]) {
+                [label2 setText:[profiles objectForKey:@"my_id"]];
+            }else{
+                [label2 setText:[profiles objectForKey:@"-"]];
+            }
+            return cell;
+        }
+            break;
+            
+            // Status message
+        case 3:{
             
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             
@@ -510,11 +522,10 @@
                 [label2 setText:[profiles objectForKey:@"-"]];
             }
             
-            NSLog(@"");
             return cell;
         }
             break;
-        case 3:
+        case 4:
         {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_address"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -531,7 +542,7 @@
         }
             break;
             
-        case 4:{
+        case 5:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -555,7 +566,7 @@
             return cell;
         }
             
-        case 5:{
+        case 6:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -587,7 +598,7 @@
 //            return cell;
 //        }
             
-        case 6:{
+        case 7:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_picture_profile"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -608,7 +619,7 @@
             return cell;
         }
             
-        case 7:{
+        case 8:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -633,7 +644,7 @@
             return cell;
         }
             
-        case 8:{
+        case 9:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -655,7 +666,7 @@
             return cell;
         }
             
-        case 9:{
+        case 10:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -674,7 +685,7 @@
             return cell;
         }
             
-        case 10:{
+        case 11:{
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
@@ -721,13 +732,24 @@
         case 1:{
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
-            EditDisplayName* editName = [storybrd instantiateViewControllerWithIdentifier:@"EditDisplayName"];
-            editName.uid = [[Configs sharedInstance] getUIDU];
-            [self.navigationController pushViewController:editName animated:YES];
+            EditDisplayName* ed = [storybrd instantiateViewControllerWithIdentifier:@"EditDisplayName"];
+            ed.uid = [[Configs sharedInstance] getUIDU];
+            [self.navigationController pushViewController:ed animated:YES];
         }
             break;
             
         case 2:{
+            // NSLog(@"My ID");
+            
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+
+            SetMyID* ed = [storybrd instantiateViewControllerWithIdentifier:@"SetMyID"];
+            // ed.uid = [[Configs sharedInstance] getUIDU];
+            [self.navigationController pushViewController:ed animated:YES];
+        }
+            break;
+            
+        case 3:{
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             EditStatusMessage* editStatusMessage = [storybrd instantiateViewControllerWithIdentifier:@"EditStatusMessage"];
             
@@ -740,7 +762,7 @@
         }
             break;
             
-        case 3:{
+        case 4:{
             // NSLog(@"Address");
 
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -750,7 +772,7 @@
         }
             break;
             
-        case 4:{
+        case 5:{
             // Email
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
@@ -759,7 +781,7 @@
         }
             break;
             
-        case 5:{
+        case 6:{
             // Phone
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
@@ -768,7 +790,7 @@
         }
             break;
         
-        case 6:{
+        case 7:{
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                                      delegate:self
                                                             cancelButtonTitle:@"Cancel"
@@ -780,7 +802,7 @@
         }
             break;
             
-        case 7:{
+        case 8:{
             // Gender
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
@@ -789,7 +811,7 @@
         }
             break;
             
-        case 8:{
+        case 9:{
             // Birthday
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
@@ -799,7 +821,7 @@
             break;
             
             
-        case 9:{
+        case 10:{
             // School
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];
@@ -808,7 +830,7 @@
         }
             break;
             
-        case 10:{
+        case 11:{
             // Company
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];

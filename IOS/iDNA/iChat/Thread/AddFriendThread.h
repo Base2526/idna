@@ -20,10 +20,10 @@
 @property (nonatomic, strong) NSURLConnection *connection;
 @property (retain, nonatomic) NSMutableData *receivedData;
 
-@property (nonatomic, copy) void (^completionHandler)(NSString *);
+@property (nonatomic, copy) void (^completionHandler)(NSData *);
 @property (nonatomic, copy) void (^errorHandler)(NSString *);
 
--(void)start: (NSString *)uid_friend;
+-(void)start: (NSString *)friend_id;
 -(void)cancel;
 
 @end

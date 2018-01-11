@@ -37,6 +37,7 @@
 #import "AddFriend.h"
 
 #import "ChatViewController.h"
+#import "FriendRequestCell.h"
 
 #define __count 5
 
@@ -47,6 +48,7 @@
     NSMutableDictionary *all_data;
     
     FriendProfileRepo *friendPRepo;
+    FriendsRepo *friendsRepo;
 }
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
@@ -90,6 +92,7 @@
      // 1 : Groups
      // 2 : Favorites
      // 3 : Friends
+     // 4 : Friend Requests มีคำขอเป็นเพือน จะต้องแสดง Confirm, Delete
     */
     // [all_data setObject:@[@"profile-Red"] forKey:@"profile"];
     // [all_data setObject:@[@"groups-Red", @"groups-Yellow"] forKey:@"groups"];
@@ -113,6 +116,7 @@
     [tblView registerNib:[UINib nibWithNibName:@"ProfileTableViewCell" bundle:nil] forCellReuseIdentifier:@"ProfileTableViewCell"];
     [tblView registerNib:[UINib nibWithNibName:@"FriendTableViewCell" bundle:nil] forCellReuseIdentifier:@"FriendTableViewCell"];
     [tblView registerNib:[UINib nibWithNibName:@"GroupTableViewCell" bundle:nil] forCellReuseIdentifier:@"GroupTableViewCell"];
+    [tblView registerNib:[UINib nibWithNibName:@"FriendRequestCell" bundle:nil] forCellReuseIdentifier:@"FriendRequestCell"];
 
     // NSDictionary *_data =  [[Configs sharedInstance] loadData:_DATA];
     // NSLog(@"");
@@ -222,10 +226,12 @@
     // #1 profile
     
     
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    friendsRepo = [[FriendsRepo alloc] init];
     NSMutableArray * fs = [friendsRepo getFriendsAll];
     
     NSMutableDictionary *friends = [[NSMutableDictionary alloc] init];
+    
+    NSMutableDictionary *friend_request = [[NSMutableDictionary alloc] init];
     
     for (int i = 0; i < [fs count]; i++) {
         NSArray *val =  [fs objectAtIndex:i];
@@ -243,6 +249,28 @@
         }
         if ([friend objectForKey:@"block"]) {
             if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                flag = false;
+            }
+        }
+        
+        /*
+         #define _FRIEND_STATUS_FRIEND            @"10"
+         #define _FRIEND_STATUS_FRIEND_CANCEL     @"13"
+         #define _FRIEND_STATUS_FRIEND_REQUEST    @"11"
+         #define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
+         */
+        
+//        if ([friend objectForKey:@"status"]) {
+//            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+//                flag = false;
+//            }
+//        }
+        
+        if ([friend objectForKey:@"status"]) {
+            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                if ([[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND_REQUEST]) {
+                    [friend_request setObject:val forKey:friend];
+                }
                 flag = false;
             }
         }
@@ -284,6 +312,7 @@
     [all_data setValue:friends forKey:@"friends"];
     // #3 friends
     
+    
     // #4 groups
     
     GroupChatRepo *groupChatRepo  = [[GroupChatRepo alloc] init];
@@ -307,16 +336,10 @@
     
     // #4 groups
     
-    // #5 multi_chat
-    /*
-    NSMutableDictionary *multi_chat = [[NSMutableDictionary alloc] init];
-    [all_data setValue:multi_chat forKey:@"multi_chat"];
-    if ([data objectForKey:@"multi_chat"]) {
-        [all_data setValue:[data objectForKey:@"multi_chat"] forKey:@"multi_chat"];
-    }
-    */
-    
-    // #5 multi_chat
+    // #5 Friend REQUEST
+    [all_data setValue:friend_request forKey:@"friend_request"];
+    NSLog(@"");
+    // #5 Friend REQUEST
     
     // #6 invite_group
     /*
@@ -349,6 +372,9 @@
     //    }
     
     // [tblView reloadData];
+    
+    
+    // Friend Requests
     
     /*
      Updating data for UITableView in background breaks animations
@@ -402,6 +428,11 @@
             case 3:{
                 NSMutableArray *friends = [all_data valueForKey:@"friends"];
                 return  [friends count];
+            }
+                // friend_request
+            case 4:{
+                NSMutableArray *friend_request = [all_data valueForKey:@"friend_request"];
+                return  [friend_request count];
             }
                 default:
                 return 0;
@@ -627,7 +658,6 @@
                 break;
             }
             case 3:{
-                
                 // @"Friends";
                 NSMutableDictionary *friends = [all_data objectForKey:@"friends"];
                 
@@ -654,7 +684,7 @@
                 // NSMutableDictionary *f = [[Configs sharedInstance] loadData:[sortedKeys objectAtIndex:indexPath.row]];//[[(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] objectForKey:[sortedKeys objectAtIndex:indexPath.row]];
                 
             
-                NSArray *fprofileAll = [friendPRepo getFriendProfileAll];
+                // NSArray *fprofileAll = [friendPRepo getFriendProfileAll];
                 NSArray *fprofile = [friendPRepo get:[sortedKeys objectAtIndex:indexPath.row]];
     
                 
@@ -726,6 +756,85 @@
                 // lpgr.minimumPressDuration = 1.0; //seconds
                 [cell addGestureRecognizer:lpgr];
                 break;
+            }
+                
+            case 4:{
+                
+                FriendRequestCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FriendRequestCell"];
+                cell = [tableView dequeueReusableCellWithIdentifier:@"FriendRequestCell"];
+                
+                
+                // @"Favorite"
+                NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_request"];
+                
+                
+                NSArray *keys = [friend_request allKeys];
+                id key = [keys objectAtIndex:indexPath.row];
+                NSArray *val = [friend_request objectForKey:key];
+                
+                // NSArray *val = [friend_request ob]
+                
+                NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+//                NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                // NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                NSLog(@"");
+                
+                NSArray *fprofile = [friendPRepo get:friend_id];
+                
+                
+                NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                
+//
+////
+//                NSData *data =  [[item objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+////
+////                if (data == nil) {
+////                    return  cell;
+////                }
+////
+////                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+//
+//
+////                NSData *data =  [[sortedValues objectAtIndex:indexPath.row] dataUsingEncoding:NSUTF8StringEncoding];
+//
+//                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                
+                if ([f objectForKey:@"image_url"]) {
+                    [cell.imageV clear];
+                    [cell.imageV showLoadingWheel]; // API_URL
+                    [cell.imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [f objectForKey:@"image_url"]]]];
+                    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.imageV ];
+                }else{
+                    [cell.imageV clear];
+                }
+                
+                if ([f objectForKey:@"name"]) {
+                    [cell.labelName setText:[f objectForKey:@"name"]];
+                }
+                
+                
+                UITapGestureRecognizer *singleBtnConfirmTap =
+                [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                        action:@selector(handleSingleBtnConfirmTap:)];
+                
+                cell.btnConfirm.tag = indexPath.row;
+                [cell.btnConfirm addGestureRecognizer:singleBtnConfirmTap];
+                
+                
+                UITapGestureRecognizer *singleBtnDeleteRequestTap =
+                [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                        action:@selector(handleSingleBtnDeleteRequestTap:)];
+                
+                cell.btnDeleteRequest.tag = indexPath.row;
+                [cell.btnDeleteRequest addGestureRecognizer:singleBtnDeleteRequestTap];
+                
+                
+               
+                
+                return cell;
             }
                 /*
             case 3:{
@@ -888,6 +997,11 @@
         if([friends count] == 0){
             return 0;
         }
+    }else if(section == 4){
+        NSMutableArray *friend_request = [all_data valueForKey:@"friend_request"];
+        if([friend_request count] == 0){
+            return 0;
+        }
     }
     return 44.0f;
 }
@@ -897,6 +1011,7 @@
     switch (indexPath.section) {
         case 0:
         case 1:
+        case 4:
             return 100.0f;
         default:
             return 200.0f;
@@ -966,6 +1081,19 @@
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
         }
             break;
+            
+            
+        case 4:{
+            NSMutableArray *friend_request = [all_data valueForKey:@"friend_request"];
+            headerView.lbTitle.text = [NSString stringWithFormat:@"Friend Request (%ld)", [friend_request count]];
+            if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:section]]){
+                headerView.btnShowHide.selected = YES;
+            }
+            [[headerView btnShowHide] setTag:section];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+        }
+            break;
         default:{
             headerView.lbTitle.text = [NSString stringWithFormat:@"Section %ld", (long)section];
             if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:section]]){
@@ -978,6 +1106,136 @@
             break;
     }
     return headerView.contentView;
+}
+
+//The event handling method
+- (void)handleSingleBtnConfirmTap:(UITapGestureRecognizer *)recognizer{
+    NSLog (@"%d",[recognizer.view tag]);
+    
+    NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_request"];
+    
+    NSArray *keys = [friend_request allKeys];
+    id key = [keys objectAtIndex:[recognizer.view tag]];
+    NSArray *val = [friend_request objectForKey:key];
+    NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+    /*
+     การ udpate status ให้ status friend = _FRIEND_STATUS_FRIEND{ยอมรับการเป้นเพือน}
+     
+     1. เราต้อง udpate status friend ของ เรา
+     2. เราต้องวิ่งไป update friend ขอเพือนทีเราเป็นเพือนด้วย {เราย้ายไปทำทีหลังบ้านแทน function user_for_friend_editupdate}
+     */
+    
+    // 1. เราต้อง udpate status friend ของ เรา
+    NSString *child = [NSString stringWithFormat:@"%@%@/friends/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU]];
+    
+    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@%@/status/", child, friend_id]: _FRIEND_STATUS_FRIEND};
+    [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error == nil) {
+            
+            Friends *fd  = [[Friends alloc] init];
+            fd.friend_id = friend_id;
+            
+            NSData *data =  [[val objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+            [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+            
+            if ([newDict objectForKey:@"status"]) {
+                [newDict removeObjectForKey:@"status"];
+            }
+            
+            [newDict setObject:_FRIEND_STATUS_FRIEND forKey:@"status"];
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+            fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            fd.update    = [timeStampObj stringValue];
+            
+            BOOL rs= [friendsRepo update:fd];
+        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadData:nil];
+            });
+        }
+    }];
+    
+    // 2. เราต้องวิ่งไป update friend ขอเพือนทีเราเป็นเพือนด้วย
+    NSString *child2 = [NSString stringWithFormat:@"%@%@/friends/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], friend_id];
+    
+    NSDictionary *childUpdates2 = @{[NSString stringWithFormat:@"%@%@/status/", child2, [[Configs sharedInstance] getUIDU]]: _FRIEND_STATUS_FRIEND};
+    [ref updateChildValues:childUpdates2 withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error == nil) {
+        }
+    }];
+}
+
+- (void)handleSingleBtnDeleteRequestTap:(UITapGestureRecognizer *)recognizer{
+    NSLog (@"%d",[recognizer.view tag]);
+    
+    NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_request"];
+    
+    NSArray *keys = [friend_request allKeys];
+    id key = [keys objectAtIndex:[recognizer.view tag]];
+    NSArray *val = [friend_request objectForKey:key];
+    NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+    
+    [self deleteFriend:friend_id];
+    
+    // NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@%@/status/", child, friend_id]: _FRIEND_STATUS_FRIEND};
+    
+    /*
+     // NSMutableDictionary *__groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
+     NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], group_id];
+     [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+     
+        if (error == nil) {
+            // จะได้ Group id
+            NSString* key = [ref key];
+     
+             if (error == nil) {
+             }else{
+             }
+        }
+     }];
+     */
+}
+
+-(void)deleteFriend:(NSString *)friend_id{
+    NSString *child = [NSString stringWithFormat:@"%@%@/friends/%@", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], friend_id];
+    
+    [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        
+        if (error == nil) {
+            // จะได้ friend_id
+            NSString* key = [ref key];
+            
+            BOOL rs= [friendsRepo deleteFriend:key];
+            
+            if (error == nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reloadData:nil];
+                });
+            }else{
+            }
+        }
+    }];
+    
+    child = [NSString stringWithFormat:@"%@%@/friends/%@", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], friend_id, [[Configs sharedInstance] getUIDU]];
+    
+    [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        
+        if (error == nil) {
+            // จะได้ Group id
+            NSString* key = [ref key];
+            
+            if (error == nil) {
+            }else{
+            }
+        }
+    }];
 }
 
 -(IBAction)btnTapShowHideSection:(UIButton*)sender{
@@ -1154,6 +1412,7 @@
         [self reloadData:nil];
     }];
     btnBlock.backgroundColor = [UIColor redColor];
+    
     UITableViewRowAction *btnHide = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Hide" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
         NSLog(@"Hide");
         NSLog(@"--> %@", [NSString stringWithFormat:@"%d", indexPath.section]);
@@ -1294,7 +1553,163 @@
         [self reloadData:nil];
     }];
     btnHide.backgroundColor = [UIColor grayColor];
-    return @[btnBlock, btnHide];
+    
+    UITableViewRowAction *btnDelete = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        
+        NSLog(@"Delete");
+        /*
+        
+        NSLog(@"--> %@", [NSString stringWithFormat:@"%d", indexPath.section]);
+        
+        switch (indexPath.section) {
+            case 2:{
+                // hide
+                NSDictionary *favorite = [all_data objectForKey:@"favorite"];
+                
+                ////---sort เราต้องการเรียงก่อนแสดงผล
+                NSArray *myKeys = [favorite allKeys];
+                NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                    return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+                }];
+                
+                NSMutableArray *sortedValues = [[NSMutableArray alloc] init] ;
+                for(id key in sortedKeys) {
+                    id object = [favorite objectForKey:key];
+                    [sortedValues addObject:object];
+                }
+                NSDictionary *item = [sortedValues objectAtIndex:indexPath.row];
+                ////---sort
+                
+                __block NSString *child = [NSString stringWithFormat:@"%@%@/friends/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], [sortedKeys objectAtIndex:indexPath.row]];
+                
+                [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                    NSLog(@"%@", snapshot.value);
+                    // NSLog(@"%@", snapshot.key);
+                    // NSLog(@"%@", snapshot.children);
+                    // NSLog(@"%@", snapshot.value);
+                    BOOL flag = true;
+                    for(FIRDataSnapshot* snap in snapshot.children){
+                        // NSLog(@">%@", snapshot.key);
+                        // NSLog(@">%@", snap.key);
+                        // NSLog(@">%@", snap.value);
+                        if ([snap.key isEqualToString:@"hide"]) {
+                            
+                            if ([snap.value isEqualToString:@"1"]) {
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"0"];
+                            }else{
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                            }
+                            
+                            flag = false;
+                            
+                            break;
+                        }
+                    }
+                    
+                    // กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+                    if (flag) {
+                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/hide/", child]: @"1"};
+                        [ref updateChildValues:childUpdates];
+                        
+                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                    }
+                }];
+                
+                NSLog(@"");
+            }
+                break;
+            case 3:{
+                // Friends
+                NSDictionary *friends = [all_data objectForKey:@"friends"];
+                
+                ////---sort เราต้องการเรียงก่อนแสดงผล
+                NSArray *myKeys = [friends allKeys];
+                NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                    return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+                }];
+                
+                NSMutableArray *sortedValues = [[NSMutableArray alloc] init] ;
+                for(id key in sortedKeys) {
+                    id object = [friends objectForKey:key];
+                    [sortedValues addObject:object];
+                }
+                NSDictionary *item = [sortedValues objectAtIndex:indexPath.row];
+                ////---sort
+                
+                
+                __block NSString *child = [NSString stringWithFormat:@"%@%@/friends/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU], [sortedKeys objectAtIndex:indexPath.row]];
+                
+                [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                    NSLog(@"%@", snapshot.value);
+                    // NSLog(@"%@", snapshot.key);
+                    // NSLog(@"%@", snapshot.children);
+                    // NSLog(@"%@", snapshot.value);
+                    BOOL flag = true;
+                    for(FIRDataSnapshot* snap in snapshot.children){
+                        // NSLog(@">%@", snapshot.key);
+                        // NSLog(@">%@", snap.key);
+                        // NSLog(@">%@", snap.value);
+                        if ([snap.key isEqualToString:@"hide"]) {
+                            
+                            if ([snap.value isEqualToString:@"1"]) {
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"0"];
+                            }else{
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                            }
+                            
+                            flag = false;
+                            
+                            break;
+                        }
+                    }
+                    
+                    // กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+                    if (flag) {
+                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/hide/", child]: @"1"};
+                        [ref updateChildValues:childUpdates];
+                        
+                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                    }
+                }];
+                
+                NSLog(@"");
+            }
+                break;
+                
+            default:
+                break;
+        }
+        
+        [self reloadData:nil];
+        */
+        
+        UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:@"เป็นการทดสอบลบเพือน จะลบทั้งสองฝั่งเลย"
+                                                           message:nil
+                                                          delegate:self
+                                                 cancelButtonTitle:nil
+                                                 otherButtonTitles:@"Delete", @"Close", nil];
+                
+        alert.userData = indexPath;
+        alert.tag = 7;
+        [alert show];
+    }];
+    btnDelete.backgroundColor = [UIColor orangeColor];
+    
+    return @[btnBlock, btnHide, btnDelete];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -1438,12 +1853,17 @@
     */
     
     if (indexPath.section == 0) {
-        UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-        Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
-        UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
-        navTabHome.navigationBar.topItem.title = @"My Profile";
-        [self presentViewController:navTabHome animated:YES completion:nil];
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+            Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+            UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+            navTabHome.navigationBar.topItem.title = @"My Profile";
+            [self presentViewController:navTabHome animated:YES completion:nil];
+        });
+
     }
 }
 
@@ -1834,45 +2254,25 @@
                 break;
             case 1:{
                 
-                NSMutableDictionary *__groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
+                GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
+                if ([groupChatRepo get:group_id] != nil){
+                    BOOL sv = [groupChatRepo deleteGroup:group_id];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self reloadData:nil];
+                    });
+                }
+                
+                // NSMutableDictionary *__groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
                 NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], group_id];
                 [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
                     
                     if (error == nil) {
-                        // [ref parent]
-                        //NSString* parent = ref.parent.key;
-                        
                         // จะได้ Group id
                         NSString* key = [ref key];
-                        
-                        /*
-                        NSMutableDictionary *groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
-                        
-                        //  เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
-                        if ([groups objectForKey:key]) {
-                            
-                            //  Update group ของ groups
-                             
-                            NSMutableDictionary *newGroups = [[NSMutableDictionary alloc] init];
-                            [newGroups addEntriesFromDictionary:groups];
-                            [newGroups removeObjectForKey:key];
-      
-                            //  Update groups ของ DATA
-     
-                            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-                            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-                            [newDict removeObjectForKey:@"groups"];
-                            [newDict setObject:groups forKey:@"groups"];
-                            
-                            [[Configs sharedInstance] saveData:_DATA :newDict];
+                       
+                        if (error == nil) {
+                        }else{
                         }
-                        */
-                        
-                        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-                        if ([groupChatRepo get:key] != nil){
-                            BOOL sv = [groupChatRepo deleteGroup:key];
-                        }
-                        [self reloadData:nil];
                     }
                 }];
             }
@@ -2052,6 +2452,162 @@
                 break;
             case 2:{
                 NSLog(@"Join");
+            }
+                break;
+        }
+    }else if(alertView.tag == 7){
+        
+        NSIndexPath *indexPath = alertView.userData;
+        switch (buttonIndex) {
+            case 0:{
+                NSLog(@"Delete");
+                
+                
+                NSLog(@"--> %@", [NSString stringWithFormat:@"%d", indexPath.section]);
+                
+                switch (indexPath.section) {
+                    case 2:{
+                        // hide
+                        NSDictionary *favorite = [all_data objectForKey:@"favorite"];
+                        
+                        ////---sort เราต้องการเรียงก่อนแสดงผล
+                        NSArray *myKeys = [favorite allKeys];
+                        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+                        }];
+                        
+                        NSMutableArray *sortedValues = [[NSMutableArray alloc] init] ;
+                        for(id key in sortedKeys) {
+                            id object = [favorite objectForKey:key];
+                            [sortedValues addObject:object];
+                        }
+                        NSDictionary *item = [sortedValues objectAtIndex:indexPath.row];
+                        ////---sort
+                        
+                        
+                        [self deleteFriend:[sortedKeys objectAtIndex:indexPath.row]];
+                        /*
+                        __block NSString *child = [NSString stringWithFormat:@"%@%@/friends/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], [sortedKeys objectAtIndex:indexPath.row]];
+                        
+                        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                            NSLog(@"%@", snapshot.value);
+                            // NSLog(@"%@", snapshot.key);
+                            // NSLog(@"%@", snapshot.children);
+                            // NSLog(@"%@", snapshot.value);
+                            BOOL flag = true;
+                            for(FIRDataSnapshot* snap in snapshot.children){
+                                // NSLog(@">%@", snapshot.key);
+                                // NSLog(@">%@", snap.key);
+                                // NSLog(@">%@", snap.value);
+                                if ([snap.key isEqualToString:@"hide"]) {
+                                    
+                                    if ([snap.value isEqualToString:@"1"]) {
+                                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+                                        [ref updateChildValues:childUpdates];
+                                        
+                                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"0"];
+                                    }else{
+                                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+                                        [ref updateChildValues:childUpdates];
+                                        
+                                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                                    }
+                                    
+                                    flag = false;
+                                    
+                                    break;
+                                }
+                            }
+                            
+                            // กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+                            if (flag) {
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/hide/", child]: @"1"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                            }
+                        }];
+                        */
+                        
+                        NSLog(@"");
+                    }
+                        break;
+                    case 3:{
+                        // Friends
+                        NSDictionary *friends = [all_data objectForKey:@"friends"];
+                        
+                        ////---sort เราต้องการเรียงก่อนแสดงผล
+                        NSArray *myKeys = [friends allKeys];
+                        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+                        }];
+                        
+                        NSMutableArray *sortedValues = [[NSMutableArray alloc] init] ;
+                        for(id key in sortedKeys) {
+                            id object = [friends objectForKey:key];
+                            [sortedValues addObject:object];
+                        }
+                        NSDictionary *item = [sortedValues objectAtIndex:indexPath.row];
+                        ////---sort
+                        
+                        [self deleteFriend:[sortedKeys objectAtIndex:indexPath.row]];
+                        /*
+                        __block NSString *child = [NSString stringWithFormat:@"%@%@/friends/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU], [sortedKeys objectAtIndex:indexPath.row]];
+                        
+                        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                            NSLog(@"%@", snapshot.value);
+                            // NSLog(@"%@", snapshot.key);
+                            // NSLog(@"%@", snapshot.children);
+                            // NSLog(@"%@", snapshot.value);
+                            BOOL flag = true;
+                            for(FIRDataSnapshot* snap in snapshot.children){
+                                // NSLog(@">%@", snapshot.key);
+                                // NSLog(@">%@", snap.key);
+                                // NSLog(@">%@", snap.value);
+                                if ([snap.key isEqualToString:@"hide"]) {
+                                    
+                                    if ([snap.value isEqualToString:@"1"]) {
+                                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+                                        [ref updateChildValues:childUpdates];
+                                        
+                                        
+                                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"0"];
+                                    }else{
+                                        NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+                                        [ref updateChildValues:childUpdates];
+                                        
+                                        
+                                        [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                                    }
+                                    
+                                    flag = false;
+                                    
+                                    break;
+                                }
+                            }
+                            
+                            // กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+                            if (flag) {
+                                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/hide/", child]: @"1"};
+                                [ref updateChildValues:childUpdates];
+                                
+                                [self updateHideFriend:[sortedKeys objectAtIndex:indexPath.row] :@"1"];
+                            }
+                        }];
+                         */
+                        
+                        NSLog(@"");
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
+            }
+                break;
+            case 1:{
+                NSLog(@"Close");
             }
                 break;
         }
