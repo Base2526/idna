@@ -9,7 +9,6 @@
 #import "AddFriend.h"
 #import "AddListFriendsThread.h"
 #import "AddFriendThread.h"
-//#import "SVProgressHUD.h"
 #import "InviteFriendForContactsViewController.h"
 #import "ScanQRCodeViewController.h"
 #import "InviteFriendBySMS.h"
@@ -22,10 +21,14 @@
 #import "Configs.h"
 #import "AddByIDViewController.h"
 
-@interface AddFriend ()<UIActionSheetDelegate>
+#import "ProfilesRepo.h"
+
+@interface AddFriend ()<UIActionSheetDelegate>{
+    ProfilesRepo *profilesRepo;
+    NSMutableDictionary *profiles;
+}
 
 @property(nonatomic,retain) ZXCapture* zxcapture;
-
 @end
 
 @implementation AddFriend{
@@ -56,7 +59,7 @@
         NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            all_data = jsonDict[@"data"];
+            // all_data = jsonDict[@"data"];
             
             NSLog(@"");
             
@@ -76,6 +79,19 @@
     }];
     [peopleThread start];
     
+    [activityIndicator stopAnimating];
+    [activityIndicator removeFromSuperview];
+    
+    
+    
+    profilesRepo = [[ProfilesRepo alloc] init];
+    
+    NSArray *pf = [profilesRepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    NSLog(@"");
 }
 
 - (void)didReceiveMemoryWarning {
@@ -565,12 +581,12 @@
                                      UIActivityTypeAirDrop];
     
     
-    /*
+    
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSMutableDictionary *_dict = [NSKeyedUnarchiver unarchiveObjectWithData:[preferences objectForKey:_USER]];
     
     
-    NSString *text = [NSString stringWithFormat:@"HEART from %@ get the HEART app it's cool", [_dict objectForKey:@"user"][@"name"]];//;
+    NSString *text = [NSString stringWithFormat:@"iDNA from %@ get the iDNA app it's cool", [profiles objectForKey:@"name"]];//;
     NSURL *url = [NSURL URLWithString:@"https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1184807478/testflight/external"];
     
     UIImage *image = [UIImage imageNamed:@"bcc59e573a289.png"];
@@ -579,8 +595,6 @@
     activityController.excludedActivityTypes = excludeActivities;
     
     [self presentViewController:activityController animated:YES completion:nil];
-    */
-    
 }
 
 -(void)btnTapped:(UITapGestureRecognizer *)gestureRecognizer{

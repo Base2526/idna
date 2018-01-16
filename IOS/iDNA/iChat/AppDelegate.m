@@ -53,6 +53,8 @@
 #define NSFoundationVersionNumber_iOS_9_x_Max 1299
 #endif
 
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+
 @interface AppDelegate (){
     NSMutableArray *childObservers, *childObserver_Friends;
 }
@@ -144,7 +146,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
                                                  name:kFIRInstanceIDTokenRefreshNotification object:nil];
     
-    
     ref = [[FIRDatabase database] reference];
     // Firebase Config
     // Firebase
@@ -225,46 +226,84 @@
     NSLog(@"แสดงรายชื่อตารางทั้งหมด database : %@",[db fetchTableNames]);
     //  แสดงรายชื่อตารางทั้งหมด database
     
+    
+    // ---- FB
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
+    // ---- FB
+    
     return YES;
 }
+   
+// ---- FB
+- (BOOL)application:(UIApplication *)application
+                openURL:(NSURL *)url
+                options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                      openURL:url
+                                                            sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                                                                   annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
+                        ];
+    // Add any custom logic here.
+    NSLog(@"");
+    return handled;
+}
+    
+- (BOOL)application:(UIApplication *)application
+                openURL:(NSURL *)url
+      sourceApplication:(NSString *)sourceApplication
+             annotation:(id)annotation {
+    
+    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                      openURL:url
+                                                            sourceApplication:sourceApplication
+                                                                   annotation:annotation
+                        ];
+    NSLog(@"");
+        // Add any custom logic here.
+    return handled;
+}
+// ---- FB
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     
-    if([[Configs sharedInstance] isLogin]){
-        __block NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
-        
-        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-            FIRDatabaseReference *childRef = [ref child:child];
-            [childObservers addObject:childRef];
-            
-            
-            BOOL flag = true;
-            for(FIRDataSnapshot* snap in snapshot.children){
-                if ([snap.key isEqualToString:@"online"]) {
-                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
-                    [ref updateChildValues:childUpdates];
-                    
-                    flag = false;
-                    break;
-                }
-            }
-            
-            /*
-             กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
-             */
-            if (flag) {
-                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"0"};
-                [ref updateChildValues:childUpdates];
-            }
-        }];
-    }
+//    if([[Configs sharedInstance] isLogin]){
+//        __block NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+//
+//        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+//            FIRDatabaseReference *childRef = [ref child:child];
+//            [childObservers addObject:childRef];
+//
+//
+//            BOOL flag = true;
+//            for(FIRDataSnapshot* snap in snapshot.children){
+//                if ([snap.key isEqualToString:@"online"]) {
+//                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+//                    [ref updateChildValues:childUpdates];
+//
+//                    flag = false;
+//                    break;
+//                }
+//            }
+//
+//            /*
+//             กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+//             */
+//            if (flag) {
+//                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"0"};
+//                [ref updateChildValues:childUpdates];
+//            }
+//        }];
+//    }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    NSLog(@"");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -321,6 +360,35 @@
  */
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
+    if([[Configs sharedInstance] isLogin]){
+        __block NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+        
+        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+            FIRDatabaseReference *childRef = [ref child:child];
+            [childObservers addObject:childRef];
+            
+            
+            BOOL flag = true;
+            for(FIRDataSnapshot* snap in snapshot.children){
+                if ([snap.key isEqualToString:@"online"]) {
+                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
+                    [ref updateChildValues:childUpdates];
+                    
+                    flag = false;
+                    break;
+                }
+            }
+            
+            /*
+             กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+             */
+            if (flag) {
+                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"0"};
+                [ref updateChildValues:childUpdates];
+            }
+        }];
+    }
     
     for (FIRDatabaseReference *ref in childObservers) {
         [ref removeAllObservers];
@@ -534,23 +602,28 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
                 
                 // [[Configs sharedInstance] saveData:parent :snapshot.value];
                 
-                FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
                 
-                FriendProfile *friendProfile = [[FriendProfile alloc] init];
-                friendProfile.friend_id = parent;
-                
-                NSError * err;
-                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snap.value options:0 error:&err];
-                friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                
-                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                friendProfile.create    = [timeStampObj stringValue];
-                friendProfile.update    = [timeStampObj stringValue];
-                
-                BOOL sv = [friendPRepo insert:friendProfile];
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+                if (snap.value == (id)[NSNull null]){
+                    NSLog(@"");
+                }else{
+                    FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
+                    
+                    FriendProfile *friendProfile = [[FriendProfile alloc] init];
+                    friendProfile.friend_id = parent;
+                    
+                    NSError * err;
+                    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snap.value options:0 error:&err];
+                    friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                    
+                    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                    friendProfile.create    = [timeStampObj stringValue];
+                    friendProfile.update    = [timeStampObj stringValue];
+                    
+                    BOOL sv = [friendPRepo insert:friendProfile];
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+                }
             }];
         }
         
@@ -581,6 +654,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         }];
         
     
+        /*
         NSDictionary *item = snapshot.value;
         
         // toonchat_message
@@ -616,9 +690,9 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             [[[ref child:child_cmessage] child:snapshot.key] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
                 NSLog(@"%@, %@, %@",snapshot.ref.parent.key,snapshot.key, snapshot.value);
                 
-                /*
-                 ติดไว้ก่อนเราต้อง removeObaserver ออกด้วยโดยมีเงือ่น ? ตอนนี้ลบออกให้หมดก่อน
-                 */
+         
+                //  ติดไว้ก่อนเราต้อง removeObaserver ออกด้วยโดยมีเงือ่น ? ตอนนี้ลบออกให้หมดก่อน
+  
                 [childObserver_Friends addObject:[ref child:child_cmessage]];
                 
                 // [ref removeAllObservers];
@@ -627,6 +701,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             }];
             
         }];
+        */
     }];
     
     /*
@@ -738,6 +813,17 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     }];
     
     ////////////////////////////////////////////  MY Applications  /////////////////////////////////////////////////
+    
+    
+    // device_access
+    
+    [[[ref child:child] child:@"device_access"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        
+        NSLog(@"%@, %@", snapshot.key, snapshot.value);
+        
+        NSDictionary *val = snapshot.value;
+        NSLog(@"");
+    }];
     
     /*
      กรณี friend_id มีการ change data เช่น online, offline
@@ -1512,46 +1598,64 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 
 -(void)friendUpdateData:(FIRDataSnapshot *) snapshot{
     
-    if([snapshot.key isEqualToString:@"image_url"] || [snapshot.key isEqualToString:@"mail"] || [snapshot.key isEqualToString:@"name"] || [snapshot.key isEqualToString:@"online"] || [snapshot.key isEqualToString:@"platform"] || [snapshot.key isEqualToString:@"status_message"] || [snapshot.key isEqualToString:@"udid"] || [snapshot.key isEqualToString:@"version"]){
+    if([snapshot.key isEqualToString:@"image_url"] || [snapshot.key isEqualToString:@"mail"] || [snapshot.key isEqualToString:@"name"] || [snapshot.key isEqualToString:@"online"] || [snapshot.key isEqualToString:@"platform"] || [snapshot.key isEqualToString:@"status_message"] || [snapshot.key isEqualToString:@"udid"] || [snapshot.key isEqualToString:@"version"] || [snapshot.key isEqualToString:@"mails"] || [snapshot.key isEqualToString:@"phones"]){
      
-        NSLog(@"%@, %@, %@",snapshot.ref.parent.parent.key,snapshot.key, snapshot.value);
-        FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
-        FriendProfile *friendProfile = [[FriendProfile alloc] init];
-        
-        NSString* parent = snapshot.ref.parent.parent.key;
-        
-        NSArray *fprofile = [friendPRepo get:parent];
-        NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        if (data == nil) {
-            return;
-        }
-        NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        if([[f objectForKey:snapshot.key] isEqualToString:snapshot.value]){
-            return;
-        }
-        
-        //*** update field ที่มีการ update
-        NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-        [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
-        [newDict removeObjectForKey:snapshot.key];
-        [newDict setObject:snapshot.value forKey:snapshot.key];
-        //****
-        
-        friendProfile.friend_id = parent;
-        NSError * err;
-        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-        friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        
-        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-        friendProfile.create    = [timeStampObj stringValue];
-        friendProfile.update    = [timeStampObj stringValue];
-        
-        BOOL sv = [friendPRepo update:friendProfile];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"friendUpdateData >> %@, %@, %@",snapshot.ref.parent.parent.key,snapshot.key, snapshot.value);
+            FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
+            FriendProfile *friendProfile = [[FriendProfile alloc] init];
+            
+            NSString* parent = snapshot.ref.parent.parent.key;
+            
+            NSArray *fprofile = [friendPRepo get:parent];
+            NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            if (data == nil) {
+                return;
+            }
+            NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            
+            //*** update field ที่มีการ update
+            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
+            [newDict addEntriesFromDictionary:f];
+            
+            if([f objectForKey:snapshot.key]){
+                
+                if([[f objectForKey:snapshot.key] isKindOfClass:[NSString class]]){
+                    if([[f objectForKey:snapshot.key] isEqualToString:snapshot.value]){
+                        return;
+                    }
+                }else if([[f objectForKey:snapshot.key] isKindOfClass:[NSDictionary class]]){
+                    if([[f objectForKey:snapshot.key] isEqualToDictionary:snapshot.value]){
+                        return;
+                    }
+                }else{
+                    [newDict removeObjectForKey:snapshot.key];
+                }
+            }
+           
+            [newDict setObject:snapshot.value forKey:snapshot.key];
+            //****
+            
+            friendProfile.friend_id = parent;
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
+            friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            
+            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            friendProfile.create    = [timeStampObj stringValue];
+            friendProfile.update    = [timeStampObj stringValue];
+            
+            BOOL sv = [friendPRepo update:friendProfile];
+            
+            
+           //  dispatch_async(dispatch_get_main_queue(), ^{
+                //update UI in main thread.
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+            // });
+        });
     }
 }
 

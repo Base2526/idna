@@ -37,6 +37,9 @@
     self.btnAdd.layer.borderWidth = 1;
     self.btnAdd.layer.borderColor = [UIColor blueColor].CGColor;
     
+    
+    [self.btnAdd setHidden:YES];
+    
     // result = [[NSDictionary alloc] init];
     
     // [SVProgressHUD showWithStatus:@"Please Wait"];
@@ -198,9 +201,13 @@
                 // imageV_friend.hidden = NO;
                 // textView_message.hidden = NO;
                 
+                
+                
                 if ([jsonDict[@"friend_status"] isEqualToString:@"0"]) {
                     // แสดงยังไม่ได้ เป้นเพือนสามารถเพิ่มเพือนได้
                     // btnAddFriend.hidden     = NO;
+                    
+                    [self.btnAdd setHidden:NO];
                     
                     if (![jsonDict[@"url_image"] isEqualToString:@""]) {
                         [self.hjmImg clear];
@@ -213,6 +220,8 @@
                 }else  if ([jsonDict[@"friend_status"] isEqualToString:@"10"]) {
                     // Friend กรณีเราเป็นเพือนกันอยู่แล้ว
                     
+                    self.labelMessage.text = jsonDict[@"message"];
+                    
                     if (![jsonDict[@"url_image"] isEqualToString:@""]) {
                         [self.hjmImg clear];
                         [self.hjmImg showLoadingWheel]; // API_URL
@@ -224,6 +233,7 @@
                     
                 }else  if ([jsonDict[@"friend_status"] isEqualToString:@"13"]) {
                     // Friend Cancel : กรณีเราเคยขอเป้นเพือนแล้วโดน เพือน กด cancel
+                    self.labelMessage.text = jsonDict[@"message"];
                     
                     if (![jsonDict[@"url_image"] isEqualToString:@""]) {
                         [self.hjmImg clear];
@@ -235,6 +245,9 @@
                     }
                 }else  if ([jsonDict[@"friend_status"] isEqualToString:@"11"]) {
                     // Friend request : กรณีเราส่งคำขอเป้นเพือน
+                    
+                    self.labelMessage.text = jsonDict[@"message"];
+                    
                     if (![jsonDict[@"url_image"] isEqualToString:@""]) {
                         [self.hjmImg clear];
                         [self.hjmImg showLoadingWheel]; // API_URL
@@ -245,6 +258,8 @@
                     }
                 }else  if ([jsonDict[@"friend_status"] isEqualToString:@"12"]) {
                     // Wait for a friend : เพือนคนนี้ส่งคำขอ ขอเราเป็นเพือน
+                    
+                    self.labelMessage.text = jsonDict[@"message"];
                     if (![jsonDict[@"url_image"] isEqualToString:@""]) {
                         [self.hjmImg clear];
                         [self.hjmImg showLoadingWheel]; // API_URL
@@ -257,6 +272,8 @@
                     // Friend not found : ไม่มีคนทีตั้ง code นี้
                 }else  if ([jsonDict[@"friend_status"] isEqualToString:@"99"]) {
                     // You can't add yourself as a friend. : ตัวเอง(My self)
+                    
+                    self.labelMessage.text = jsonDict[@"message"];
                     
                     ProfilesRepo *profileRepo = [[ProfilesRepo alloc] init];
                     
@@ -274,8 +291,10 @@
                         [self.hjmImg setImage:[UIImage imageNamed:@"icon_peoples.png"]];
                     }
                 }
-                if ([jsonDict objectForKey:@"name"]) {
-                    [self.labelName setText:jsonDict[@"name"]];
+                // if(!)
+                if ([jsonDict objectForKey:@"name"] && ![[jsonDict objectForKey:@"name"] isEqual:[NSNull null]]) {
+                    
+                    [self.labelName setText:[jsonDict objectForKey:@"name"]];
                 }
                 
             });

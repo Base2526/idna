@@ -80,6 +80,20 @@
     }
 }
 
+- (BOOL)deleteFriendProfileById:(NSString *)friend_id{
+    NSString *query = [NSString stringWithFormat:@"DELETE from friend_profile WHERE friend_id = %@", friend_id];
+    [self.dbManager executeQuery:query];
+    
+    //  If the query was succesfully executed then pop the view controller.
+    if (self.dbManager.affectedRows != 0) {
+        NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+        return true;
+    }else{
+        NSLog(@"Could not execute the query");
+        return false;
+    }
+}
+
 - (NSMutableArray *) getFriendProfileAll{
     //  Create a query
     NSString *query = [NSString stringWithFormat:@"select * from friend_profile;"];

@@ -36,21 +36,7 @@
     //set http method
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
-    /*
-    NSString *dataToSend = [[NSString alloc] initWithFormat:@"udid=%@&platform=ios&bundleidentifier=%@&version=%@", [[Configs sharedInstance] getUniqueDeviceIdentifierAsString], [[Configs sharedInstance] getBundleIdentifier], [[Configs sharedInstance] getVersionApplication]];
-    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
-    */
-    
-    /*
-    //initialize a connection from request
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    self.connection = connection;
-    
-    //start the connection
-    [connection start];
-    */
-    
+        
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
     NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request

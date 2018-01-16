@@ -27,7 +27,11 @@
 #import "Birthday.h"
 #import "SetMyID.h"
 
-@interface MyProfile (){
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
+
+@interface MyProfile ()<FBSDKLoginButtonDelegate>{
+    FBSDKLoginButton *loginButton;
     NSMutableDictionary *profiles;
     ProfilesRepo *profileRepo;
 }
@@ -41,7 +45,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+        
     profileRepo = [[ProfilesRepo alloc] init];
     
     /*
@@ -104,6 +108,8 @@
     
     // scrollView.contentSize = CGSizeMake(320, 800);
      */
+    
+    [self fb];
 }
 
 -(void) viewWillAppear:(BOOL)animated{
@@ -114,7 +120,77 @@
     [self.view endEditing:true];
 }
 
-
+// ------------- fb
+-(void)fb{
+    // https://stackoverflow.com/questions/35160329/custom-facebook-login-button-ios/35160568
+    loginButton = [[FBSDKLoginButton alloc] init];
+    // Optional: Place the button in the center of your view.
+    // loginButton.center = self.view.center;
+    loginButton.hidden = YES;
+    
+    loginButton.delegate = self;
+    loginButton.readPermissions = @[@"public_profile", @"email"];
+    
+    [self.view addSubview:loginButton];
+    
+    if ([FBSDKAccessToken currentAccessToken]) {
+        // User is logged in, do work such as go to next view controller.
+        [self fetchUserInfo];
+    }
+}
+    
+- (void)  loginButton:(FBSDKLoginButton *)loginButton
+    didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result
+                    error:(NSError *)error{
+        //use your custom code here
+        //redirect after successful login
+        
+        if (error)
+        {
+            // Process error
+            NSLog(@"");
+        }
+        else if (result.isCancelled)
+        {
+            // Handle cancellations
+            NSLog(@"");
+        }
+        else
+        {
+            if ([result.grantedPermissions containsObject:@"email"])
+            {
+                NSLog(@"result is:%@",result);
+                [self fetchUserInfo];
+            }
+        }
+    }
+- (void) loginButtonDidLogOut:(FBSDKLoginButton *)loginButton{
+    //use your custom code here
+    //redirect after successful logout
+    NSLog(@"");
+}
+    
+-(void)fetchUserInfo {
+    
+    // [FBSDKAccessToken setCurrentAccessToken:@""];
+    if ([FBSDKAccessToken currentAccessToken])
+    {
+        NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
+        
+        [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:@{@"fields": @"id, name, link, first_name, last_name, picture.type(large), email, birthday ,location ,friends ,hometown , friendlists"}]
+         startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+             if (!error)
+             {
+                 NSLog(@"resultis:%@",result);
+             }
+             else
+             {
+                 NSLog(@"Error %@",error);
+             }
+         }];
+    }
+}
+// ------------- fb
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -126,6 +202,12 @@
     NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    
+    /*
+     จะ call ทุกครั้งที refresh ซึงไม่ถูกแต่ทำงานได้ เอาแบบนี้ไม่ก่อน วิธีการที่ถูกต้อง check ว่าข้อมูลเปลียมแปลงหรือเปล่าค่อย เรียก
+     */
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
 
     [self.tableView reloadData];
 }
@@ -442,7 +524,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 12;
+    return 13;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -704,6 +786,26 @@
             return cell;
         }
         
+        case 12:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.accessoryType  = UITableViewCellAccessoryNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Facebook :"];
+            [label2 setText:@""];
+            
+//            if ([profiles objectForKey:@"company"]) {
+//                [label2 setText:[profiles objectForKey:@"company"]];
+//            }else{
+//                [label2 setText:@""];
+//            }
+            
+            return cell;
+        }
+        
         default:{
             
         }
@@ -838,6 +940,13 @@
             [self.navigationController pushViewController:editAddress animated:YES];
         }
             break;
+        
+        
+        case 12:{
+            // facebook
+             [loginButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+        }
+        break;
             
         default:
             break;
@@ -960,27 +1069,28 @@
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            NSArray *pf = [profileRepo get];
-            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-            
-            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            
-            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
-            [newProfiles addEntriesFromDictionary:profiles];
-            [newProfiles removeObjectForKey:@"image_url"];
-            [newProfiles setValue:jsonDict[@"url"] forKey:@"image_url"];
-            
-            Profiles *pfs = [[Profiles alloc] init];
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            pfs.update    = [timeStampObj stringValue];
-            
-            BOOL sv = [profileRepo update:pfs];
             
             dispatch_async(dispatch_get_main_queue(), ^{
+                NSArray *pf = [profileRepo get];
+                NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                
+                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                [newProfiles addEntriesFromDictionary:profiles];
+                [newProfiles removeObjectForKey:@"image_url"];
+                [newProfiles setValue:jsonDict[@"url"] forKey:@"image_url"];
+                
+                Profiles *pfs = [[Profiles alloc] init];
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                pfs.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [profileRepo update:pfs];
+                
                 [self reloadData:nil];
             });
         }
@@ -1003,42 +1113,28 @@
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            /*
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
-            [profiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
-            
-            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-            // เราต้อง addEntriesFromDictionary ก่อน ถึงจะสามารถลบได้ แ้วค่อย update ข้อมูล
-            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-            //  ลบข้อมูล key profiles ออกไป
-            [newDict removeObjectForKey:@"profiles"];
-            
-            [newDict setObject:profiles forKey:@"profiles"];
-            
-            [[Configs sharedInstance] saveData:_DATA :newDict];
-            */
-            
-            NSArray *pf = [profileRepo get];
-            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-            
-            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            
-            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
-            [newProfiles addEntriesFromDictionary:profiles];
-            [newProfiles removeObjectForKey:@"bg_url"];
-            [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
-            
-            Profiles *pfs = [[Profiles alloc] init];
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            pfs.update    = [timeStampObj stringValue];
-            
-            BOOL sv = [profileRepo update:pfs];
-            
+           
             dispatch_async(dispatch_get_main_queue(), ^{
+                NSArray *pf = [profileRepo get];
+                NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                
+                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                [newProfiles addEntriesFromDictionary:profiles];
+                [newProfiles removeObjectForKey:@"bg_url"];
+                [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
+                
+                Profiles *pfs = [[Profiles alloc] init];
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                pfs.update    = [timeStampObj stringValue];
+                
+                BOOL sv = [profileRepo update:pfs];
+            
                 [self reloadData:nil];
             });
         }

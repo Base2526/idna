@@ -16,4 +16,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnAnnonymous;
 
 - (IBAction)onAnnmousu:(id)sender;
+- (IBAction)onLoginFB:(id)sender;
+    
 @end

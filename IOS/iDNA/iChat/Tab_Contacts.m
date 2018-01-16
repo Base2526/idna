@@ -125,6 +125,13 @@
                                              selector:@selector(reloadData:)
                                                  name:@"Tab_Contacts_reloadData"
                                                object:nil];
+    
+    
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self reloadData:nil];
+    });
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -162,10 +169,14 @@
         }
     */
         
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
-        
-        [self reloadData:nil];
-        
+//        [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
+//
+//
+//
+//
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self reloadData:nil];
+//    });
         // [tblView reloadData];
 //    }
 }
@@ -198,206 +209,208 @@
  */
 -(void)reloadData:(NSNotification *) notification{
     
-     // [[Configs sharedInstance] saveData:_DATA :newDict];
-    
-    [all_data removeAllObjects];
-    
-    // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-    // NSMutableDictionary *friends = [data objectForKey:@"friends"];
-    
-    // #1 profile
-    /*
-    NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
-    [all_data setValue:nil forKey:@"profiles"];
-    if ([data objectForKey:@"profiles"]) {
-        NSDictionary *profiles = [data objectForKey:@"profiles"];
-        [all_data setValue:profiles  forKey:@"profiles"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // [[Configs sharedInstance] saveData:_DATA :newDict];
         
-        // self.title = [NSString stringWithFormat:@"CONTACTS-%@", [Configs sharedInstance].getUIDU] ;
-    }
-    */
-    
-    ProfilesRepo *profilesRepo = [[ProfilesRepo alloc] init];
-    NSArray *pf = [profilesRepo get];
-    
-    NSDictionary* profiles = [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-   
-    [all_data setValue:profiles  forKey:@"profiles"];
-    // #1 profile
-    
-    
-    friendsRepo = [[FriendsRepo alloc] init];
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
-    NSMutableDictionary *friends = [[NSMutableDictionary alloc] init];
-    
-    NSMutableDictionary *friend_request = [[NSMutableDictionary alloc] init];
-    
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
+        [all_data removeAllObjects];
         
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
+        // NSMutableDictionary *friends = [data objectForKey:@"friends"];
         
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-     
-        Boolean flag = true;
-        if ([friend objectForKey:@"hide"]) {
-            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
-                flag = false;
-            }
-        }
-        if ([friend objectForKey:@"block"]) {
-            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
-                flag = false;
-            }
-        }
-        
+        // #1 profile
         /*
-         #define _FRIEND_STATUS_FRIEND            @"10"
-         #define _FRIEND_STATUS_FRIEND_CANCEL     @"13"
-         #define _FRIEND_STATUS_FRIEND_REQUEST    @"11"
-         #define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
+         NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
+         [all_data setValue:nil forKey:@"profiles"];
+         if ([data objectForKey:@"profiles"]) {
+         NSDictionary *profiles = [data objectForKey:@"profiles"];
+         [all_data setValue:profiles  forKey:@"profiles"];
+         
+         // self.title = [NSString stringWithFormat:@"CONTACTS-%@", [Configs sharedInstance].getUIDU] ;
+         }
          */
         
-//        if ([friend objectForKey:@"status"]) {
-//            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
-//                flag = false;
-//            }
-//        }
+        ProfilesRepo *profilesRepo = [[ProfilesRepo alloc] init];
+        NSArray *pf = [profilesRepo get];
         
-        if ([friend objectForKey:@"status"]) {
-            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
-                if ([[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND_REQUEST]) {
-                    [friend_request setObject:val forKey:friend];
+        NSDictionary* profiles = [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+        
+        [all_data setValue:profiles  forKey:@"profiles"];
+        // #1 profile
+        
+        
+        friendsRepo = [[FriendsRepo alloc] init];
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
+        
+        NSMutableDictionary *friends = [[NSMutableDictionary alloc] init];
+        
+        NSMutableDictionary *friend_request = [[NSMutableDictionary alloc] init];
+        
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            Boolean flag = true;
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    flag = false;
                 }
-                flag = false;
+            }
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            
+            /*
+             #define _FRIEND_STATUS_FRIEND            @"10"
+             #define _FRIEND_STATUS_FRIEND_CANCEL     @"13"
+             #define _FRIEND_STATUS_FRIEND_REQUEST    @"11"
+             #define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
+             */
+            
+            //        if ([friend objectForKey:@"status"]) {
+            //            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+            //                flag = false;
+            //            }
+            //        }
+            
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    if ([[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND_REQUEST]) {
+                        [friend_request setObject:val forKey:friend];
+                    }
+                    flag = false;
+                }
+            }
+            
+            if (flag) {
+                [friends setObject:friend forKey:friend_id];
             }
         }
         
-        if (flag) {
-            [friends setObject:friend forKey:friend_id];
-        }
-    }
-    
-    // #2 favorite
-    NSMutableDictionary *favorites = [[NSMutableDictionary alloc] init];
-    for (NSString* key in friends) {
-        NSMutableDictionary* value = [friends objectForKey:key];
-        if ([value objectForKey:@"favorite"]) {
-            NSString* is_favorite = [value objectForKey:@"favorite"];
-            if ([is_favorite isEqualToString:@"1"]) {
-                [favorites setObject:value forKey:key];
+        // #2 favorite
+        NSMutableDictionary *favorites = [[NSMutableDictionary alloc] init];
+        for (NSString* key in friends) {
+            NSMutableDictionary* value = [friends objectForKey:key];
+            if ([value objectForKey:@"favorite"]) {
+                NSString* is_favorite = [value objectForKey:@"favorite"];
+                if ([is_favorite isEqualToString:@"1"]) {
+                    [favorites setObject:value forKey:key];
+                }
             }
         }
-    }
-    [all_data setValue:favorites forKey:@"favorite"];
-    // #2 favorite
-    
-    // #3 friends
-    /*
-     NSMutableArray *_f = [[NSMutableArray alloc] init];
-     for (NSString* key in friends) {
-     
-     NSMutableDictionary *item =[friends objectForKey:key];
-     [item setObject:key forKey:@"friend_id"];
-     [item setObject:@"friend" forKey:@"type"];
-     
-     [_f addObject:item];
-     }
-     
-     [data setValue:_f forKey:@"friends"];
-     */
-    
-    [all_data setValue:friends forKey:@"friends"];
-    // #3 friends
-    
-    
-    // #4 groups
-    
-    GroupChatRepo *groupChatRepo  = [[GroupChatRepo alloc] init];
-    
-    NSMutableArray* groupChat_All =  [groupChatRepo getGroupChatAll];
-    /*
-    NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    */
-    
-    NSMutableDictionary *groups = [[NSMutableDictionary alloc] init];
-    for (int i = 0; i<[groupChat_All count]; i++) {
-        NSArray* group = [groupChat_All objectAtIndex:i];
+        [all_data setValue:favorites forKey:@"favorite"];
+        // #2 favorite
         
-        NSString* group_id = [group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
-        NSData *data = [group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+        // #3 friends
+        /*
+         NSMutableArray *_f = [[NSMutableArray alloc] init];
+         for (NSString* key in friends) {
+         
+         NSMutableDictionary *item =[friends objectForKey:key];
+         [item setObject:key forKey:@"friend_id"];
+         [item setObject:@"friend" forKey:@"type"];
+         
+         [_f addObject:item];
+         }
+         
+         [data setValue:_f forKey:@"friends"];
+         */
         
-        [groups setObject:data forKey:group_id];
-    }
-    
-    [all_data setValue:groups forKey:@"groups"];
-    
-    // #4 groups
-    
-    // #5 Friend REQUEST
-    [all_data setValue:friend_request forKey:@"friend_request"];
-    NSLog(@"");
-    // #5 Friend REQUEST
-    
-    // #6 invite_group
-    /*
-    NSMutableDictionary *invite_group = [[NSMutableDictionary alloc] init];
-    [all_data setValue:invite_group forKey:@"invite_group"];
-    if ([data objectForKey:@"invite_group"]) {
-        [all_data setValue:[data objectForKey:@"invite_group"] forKey:@"invite_group"];
-    }
-    */
-    
-    // #6 invite_group
-    
-    // #7 invite_multi_chat
-    /*
-    NSMutableDictionary *invite_multi_chat = [[NSMutableDictionary alloc] init];
-    [all_data setValue:invite_multi_chat forKey:@"invite_multi_chat"];
-    if ([data objectForKey:@"invite_multi_chat"]) {
-        [all_data setValue:[data objectForKey:@"invite_multi_chat"] forKey:@"invite_multi_chat"];
-    }
-    */
-    
-    // #7 invite_multi_chat
-    
-    //    if (notification != nil) {
-    //        if ([notification.name isEqualToString:@"MoviesTableViewController_reloadDataUpdateFriendProfile"]) {
-    //
-    //        }
-    //    }else{
-    //        [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
-    //    }
-    
-    // [tblView reloadData];
-    
-    
-    // Friend Requests
-    
-    /*
-     Updating data for UITableView in background breaks animations
-     https://stackoverflow.com/questions/10831313/updating-data-for-uitableview-in-background-breaks-animations
-     */
-    [tblView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-    
-//    if ([NSThread isMainThread])
-//    {
-//        block();
-//    }
-//    else
-//    {
-//        dispatch_sync(dispatch_get_main_queue(), block);
-//    }
-    
-//    if ([NSThread isMainThread]){
-//        [tblView reloadData];
-//    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [tblView reloadData];
-        });
-//    }
+        [all_data setValue:friends forKey:@"friends"];
+        // #3 friends
+        
+        
+        // #4 groups
+        
+        GroupChatRepo *groupChatRepo  = [[GroupChatRepo alloc] init];
+        
+        NSMutableArray* groupChat_All =  [groupChatRepo getGroupChatAll];
+        /*
+         NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+         */
+        
+        NSMutableDictionary *groups = [[NSMutableDictionary alloc] init];
+        for (int i = 0; i<[groupChat_All count]; i++) {
+            NSArray* group = [groupChat_All objectAtIndex:i];
+            
+            NSString* group_id = [group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
+            NSData *data = [group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+            
+            [groups setObject:data forKey:group_id];
+        }
+        
+        [all_data setValue:groups forKey:@"groups"];
+        
+        // #4 groups
+        
+        // #5 Friend REQUEST
+        [all_data setValue:friend_request forKey:@"friend_request"];
+        NSLog(@"");
+        // #5 Friend REQUEST
+        
+        // #6 invite_group
+        /*
+         NSMutableDictionary *invite_group = [[NSMutableDictionary alloc] init];
+         [all_data setValue:invite_group forKey:@"invite_group"];
+         if ([data objectForKey:@"invite_group"]) {
+         [all_data setValue:[data objectForKey:@"invite_group"] forKey:@"invite_group"];
+         }
+         */
+        
+        // #6 invite_group
+        
+        // #7 invite_multi_chat
+        /*
+         NSMutableDictionary *invite_multi_chat = [[NSMutableDictionary alloc] init];
+         [all_data setValue:invite_multi_chat forKey:@"invite_multi_chat"];
+         if ([data objectForKey:@"invite_multi_chat"]) {
+         [all_data setValue:[data objectForKey:@"invite_multi_chat"] forKey:@"invite_multi_chat"];
+         }
+         */
+        
+        // #7 invite_multi_chat
+        
+        //    if (notification != nil) {
+        //        if ([notification.name isEqualToString:@"MoviesTableViewController_reloadDataUpdateFriendProfile"]) {
+        //
+        //        }
+        //    }else{
+        //        [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
+        //    }
+        
+        // [tblView reloadData];
+        
+        
+        // Friend Requests
+        
+        /*
+         Updating data for UITableView in background breaks animations
+         https://stackoverflow.com/questions/10831313/updating-data-for-uitableview-in-background-breaks-animations
+         */
+        [tblView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        
+        //    if ([NSThread isMainThread])
+        //    {
+        //        block();
+        //    }
+        //    else
+        //    {
+        //        dispatch_sync(dispatch_get_main_queue(), block);
+        //    }
+        
+        //    if ([NSThread isMainThread]){
+        //        [tblView reloadData];
+        //    }else{
+        // dispatch_async(dispatch_get_main_queue(), ^{
+        [tblView reloadData];
+        // });
+        //    }
+    });
 }
 
 #pragma mark - TableView methods
@@ -1212,7 +1225,14 @@
             // จะได้ friend_id
             NSString* key = [ref key];
             
+            // ลบ เพือน
             BOOL rs= [friendsRepo deleteFriend:key];
+            
+            // ลบ โปรไฟร์เพือน
+            rs = [friendPRepo deleteFriendProfileById:key];
+            /*
+             FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
+             */
             
             if (error == nil) {
                 dispatch_async(dispatch_get_main_queue(), ^{

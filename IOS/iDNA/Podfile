@@ -12,6 +12,8 @@ target 'iDNA' do
   pod 'Firebase/Core'
   pod 'Firebase/Messaging'
   pod 'Firebase/Database'
+  
+  pod 'Firebase/Crash'
 
 
   pod 'SWTableViewCell', '~> 0.3.7'
@@ -30,4 +32,6 @@ target 'iDNA' do
   # pod 'LGPlusButtonsView', '~> 1.1.0'
   
   pod 'ZXingObjC', '~> 3.2.2'
+  
+  pod 'FBSDKLoginKit'
 end

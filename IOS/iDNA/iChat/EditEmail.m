@@ -93,10 +93,61 @@
             
             NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
             if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                if ([jsonDict[@"is_edit"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-                    if ([profiles objectForKey:@"mails"]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([jsonDict[@"is_edit"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
+                        if ([profiles objectForKey:@"mails"]) {
+                            NSMutableDictionary * mails = [[profiles objectForKey:@"mails"] mutableCopy];
+                            
+                            if (![mails objectForKey:jsonDict[@"item"]]) {
+                                
+                                [mails setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                                
+                                NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                                [newProfile addEntriesFromDictionary:profiles];
+                                [newProfile removeObjectForKey:@"mails"];
+                                [newProfile setObject:mails forKey:@"mails"];
+                                
+                                
+                                NSArray *profile = [profilesRepo get];
+                                
+                                Profiles *pf = [[Profiles alloc] init];
+                                NSError * err;
+                                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                                pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                                // pf.create    = [timeStampObj stringValue];
+                                pf.update    = [timeStampObj stringValue];
+                                
+                                BOOL sv = [profilesRepo update:pf];
+                                
+                                NSLog(@"");
+                            }
+                        }else {
+                            NSMutableDictionary * mails = [[NSMutableDictionary alloc] init];
+                            
+                            [mails setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                            
+                            NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
+                            [newProfile addEntriesFromDictionary:profiles];
+                            [newProfile setObject:mails forKey:@"mails"];
+                            
+                            
+                            NSArray *profile = [profilesRepo get];
+                            
+                            Profiles *pf = [[Profiles alloc] init];
+                            NSError * err;
+                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                            // pf.create    = [timeStampObj stringValue];
+                            pf.update    = [timeStampObj stringValue];
+                            
+                            BOOL sv = [profilesRepo update:pf];
+                        }
+                    }else{
                         NSMutableDictionary * mails = [[profiles objectForKey:@"mails"] mutableCopy];
-                        
                         if (![mails objectForKey:jsonDict[@"item"]]) {
                             
                             [mails setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
@@ -106,7 +157,7 @@
                             [newProfile removeObjectForKey:@"mails"];
                             [newProfile setObject:mails forKey:@"mails"];
                             
-                        
+                            
                             NSArray *profile = [profilesRepo get];
                             
                             Profiles *pf = [[Profiles alloc] init];
@@ -120,68 +171,13 @@
                             
                             BOOL sv = [profilesRepo update:pf];
                             
-                            NSLog(@"");
                         }
-                    }else {
-                        NSMutableDictionary * mails = [[NSMutableDictionary alloc] init];
-                        
-                        [mails setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
-                        
-                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                        [newProfile addEntriesFromDictionary:profiles];
-                        [newProfile setObject:mails forKey:@"mails"];
-                        
-                        
-                        NSArray *profile = [profilesRepo get];
-                        
-                        Profiles *pf = [[Profiles alloc] init];
-                        NSError * err;
-                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                        // pf.create    = [timeStampObj stringValue];
-                        pf.update    = [timeStampObj stringValue];
-                        
-                        BOOL sv = [profilesRepo update:pf];
                     }
-                }else{
-                    NSMutableDictionary * mails = [[profiles objectForKey:@"mails"] mutableCopy];
-                    if (![mails objectForKey:jsonDict[@"item"]]) {
-                        
-                        [mails setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
-                        
-                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                        [newProfile addEntriesFromDictionary:profiles];
-                        [newProfile removeObjectForKey:@"mails"];
-                        [newProfile setObject:mails forKey:@"mails"];
-                        
-                        
-                        NSArray *profile = [profilesRepo get];
-                        
-                        Profiles *pf = [[Profiles alloc] init];
-                        NSError * err;
-                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                        // pf.create    = [timeStampObj stringValue];
-                        pf.update    = [timeStampObj stringValue];
-                        
-                        BOOL sv = [profilesRepo update:pf];
-                        
-                        NSLog(@"");
-                    }
-                }
-                
-                [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success"];
-                // [self.navigationController popViewControllerAnimated:YES];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success"];
                     [self.navigationController popViewControllerAnimated:YES];
                 });
             }else{
-                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
             }
         }];
         

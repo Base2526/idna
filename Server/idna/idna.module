@@ -215,6 +215,102 @@ function idna_mail($key, &$message, $params) {
   $platform         : ios, android
 */
 function idna_user_login(&$edit, $account) {
+  global $firebase;
+
+  if (check_header()) {
+    $getallheaders = getallheaders();
+
+      // watchdog(TAG, 'idna_user_login header: %header', array('%header'=> serialize($getallheaders)), WATCHDOG_INFO);
+
+    /*
+    เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
+    */
+    $profile = profile2_by_uid_load($account->uid, 'main');
+
+    $flag = TRUE;
+
+    if(isset($profile->field_device_access)){
+      foreach ($profile->field_device_access[LANGUAGE_NONE] as $key => $value) {
+        $item_load = field_collection_item_load($value['value']);
+
+        // watchdog(TAG, 'idna_user_login header 0009 : %header', array('%header'=> serialize($value['value'])), WATCHDOG_INFO);
+
+        if (strcasecmp($item_load->field_udid[LANGUAGE_NONE][0]['value'], $getallheaders['udid']) == 0) {
+          $val = array(
+              "is_login"  => '1',
+              "online"    => '1',
+              "update"    => time()
+            );
+          $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/profiles/device_access/' . $value['value'] . "/", $val);
+
+          $flag = FALSE;
+          break;
+        }
+      }
+    }
+
+    if ($flag) {
+      $values = array();
+      $values['field_name'] = 'field_device_access'; 
+      $values['field_udid'][LANGUAGE_NONE][0]['value']              = $getallheaders['udid'];
+      $values['field_platform'][LANGUAGE_NONE][0]['value']          = $getallheaders['platform'];
+      $values['field_bundle_identifier'][LANGUAGE_NONE][0]['value'] = $getallheaders['bundle_identifier'];
+
+      $values['field_device_name'][LANGUAGE_NONE][0]['value']       = $getallheaders['device_name'];
+      $values['field_model_number'][LANGUAGE_NONE][0]['value']      = $getallheaders['model_number'];
+
+      // Create the field collection entry and associate it with the profile
+      $field_entity = entity_create('field_collection_item', $values);
+      $field_entity->setHostEntity('profile2', $profile);
+      $field_entity->save();
+
+
+      $values = array(
+        "udid"              => $getallheaders['udid'],
+        "bundle_identifier" => $getallheaders['bundle_identifier'],
+        "is_login"          => '1',
+        "online"            => '1',
+        "device_name"       => $getallheaders['device_name'],
+        "create"            => time(),
+        "update"            => time()
+      );
+      $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/profiles/device_access/' . $field_entity->item_id . "/", $values);
+      
+
+
+      /*
+ $chat_id = generateRandomString(config_pages_get(CONFIG_PAGES_TYPE, 'field_defualt_length_chat_id', 20));
+
+    // เป็นการเพือนให้ตัวเรา
+    $user_profile = profile2_by_uid_load($uid, 'main');
+
+    $friend_values = array();
+    $friend_values['field_name'] = 'field_profile_friends'; // field collection name
+
+    $friend_values['field_friend_uid'][LANGUAGE_NONE][0]['value'] = $friend_id;
+    $friend_values['field_change_friend_name'][LANGUAGE_NONE][0]['value'] = '';
+    $friend_values['field_friend_status'][LANGUAGE_NONE][0]['tid'] = FRIEND_STATUS_WAIT_FOR_A_FRIEND;
+  
+    $field_entity = entity_create('field_collection_item', $friend_values);
+    $field_entity->setHostEntity('profile2', $user_profile);
+    $field_entity->save();
+
+    //  $field_entity->item_id;
+
+    $values = array(
+      "status"       => FRIEND_STATUS_WAIT_FOR_A_FRIEND,
+      "chat_id"      => $chat_id,
+      "item_id"      => $field_entity->item_id,
+      "create"       => time()
+    );
+    $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/friends/' . $friend_id . "/", $values);
+      */
+    }
+
+    
+  }
+
+  /*
   watchdog(TAG, 'User Login : %account', array('%account'=> serialize($account)), WATCHDOG_INFO);
 
   if (empty($_REQUEST['platform']) && empty($_REQUEST['bundleidentifier'])) {
@@ -224,7 +320,7 @@ function idna_user_login(&$edit, $account) {
     // $profile2_load_by_user = profile2_load_by_user($user_fields, NULL);
     // $profile =  profile2_load($profile2_load_by_user['main']->pid);
 
-/*
+
     $profile = profile2_by_uid_load($account->uid, 'main');
 
     
@@ -267,8 +363,9 @@ function idna_user_login(&$edit, $account) {
     );
 
     $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid .'/data/profile/devices/' . $_REQUEST['udid'], $values);
-    */
+
   }
+  */
 }
 
 /*
@@ -529,7 +626,6 @@ function idna_user_delete($account) {
     }
   }
 
-  // $firebase = new \Firebase\FirebaseLib(FIREBASE_DEFAULT_URL);
   $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid);
 }
 
@@ -2301,6 +2397,8 @@ function logout()
     return $result;
   }
 
+  global $firebase;
+
   $getallheaders = getallheaders();
 
   $uid = $_REQUEST['uid'];
@@ -2332,6 +2430,34 @@ function logout()
 
 	// Destroy the current session.
 	// module_invoke_all('user_logout', $profile);
+
+  /////////--------
+
+  /*
+  เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
+  */
+  $profile = profile2_by_uid_load($uid, 'main');
+
+  if(isset($profile->field_device_access)){
+    foreach ($profile->field_device_access[LANGUAGE_NONE] as $key => $value) {
+      $item_load = field_collection_item_load($value['value']);
+
+      // watchdog(TAG, 'idna_user_login header 0009 : %header', array('%header'=> serialize($value['value'])), WATCHDOG_INFO);
+
+      if (strcasecmp($item_load->field_udid[LANGUAGE_NONE][0]['value'], $getallheaders['udid']) == 0) {
+        $val = array(
+            "is_login"  => '0',
+            "online"    => '0',
+            "update"    => time()
+          );
+        $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/profiles/device_access/' . $value['value'] . "/", $val);
+
+        break;
+      }
+    }
+  }
+  /////////--------
+
 
   $user=user_load($uid);
 
@@ -2383,6 +2509,7 @@ function login(){
     return $result;
   }
 
+
   $name = $_REQUEST['name'];
   $pass = $_REQUEST['pass'];
   
@@ -2405,6 +2532,7 @@ function annmousu(){
   }
 
   $getallheaders = getallheaders();
+
 
   // เช็กว่ามี  user ที่มี email แล้วหรือไม
   if (user_load_by_mail($getallheaders['udid'] . '@annmousu') == "") {
@@ -4041,6 +4169,13 @@ function find_friend(){
 
         $friend_id = dec_enc('decrypt', $code);
 
+
+        if (!is_numeric($friend_id)) {
+          $result['result']     = FALSE;
+          $result['message']    = "error_reporting()";
+          return  $result;
+        }
+
         // กรณีเป้น ตัวเอง(My self)
         if (strcasecmp($uid, $friend_id) == 0) {
 
@@ -4063,7 +4198,6 @@ function find_friend(){
               
               $friend_status = $data_item_load->field_friend_status[LANGUAGE_NONE][0]['tid'];
               break;
-           
             }
         }
 
@@ -5370,7 +5504,7 @@ function edit_multi_email()
           $result['item']    = $value;
         }else{
           $result['result'] = FALSE;
-          $result['message'] = "Duplicate Email number";
+          $result['message'] = "Duplicate Email.";
         }
       break;
     }

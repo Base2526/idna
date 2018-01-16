@@ -1,9 +1,22 @@
 PODS:
+  - Bolts (1.9.0):
+    - Bolts/AppLinks (= 1.9.0)
+    - Bolts/Tasks (= 1.9.0)
+  - Bolts/AppLinks (1.9.0):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.9.0)
+  - FBSDKCoreKit (4.29.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.29.0):
+    - FBSDKCoreKit
   - Firebase (4.8.0):
     - Firebase/Core (= 4.8.0)
   - Firebase/Core (4.8.0):
     - FirebaseAnalytics (= 4.0.5)
     - FirebaseCore (= 4.0.13)
+  - Firebase/Crash (4.8.0):
+    - Firebase/Core
+    - FirebaseCrash (= 2.0.2)
   - Firebase/Database (4.8.0):
     - Firebase/Core
     - FirebaseDatabase (= 4.1.3)
@@ -17,6 +30,12 @@ PODS:
     - nanopb (~> 0.3)
   - FirebaseCore (4.0.13):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseCrash (2.0.2):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - Protobuf (~> 3.1)
   - FirebaseDatabase (4.1.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
@@ -50,8 +69,10 @@ PODS:
   - ZXingObjC/All (3.2.2)
 
 DEPENDENCIES:
+  - FBSDKLoginKit
   - Firebase
   - Firebase/Core
+  - Firebase/Crash
   - Firebase/Database
   - Firebase/Messaging
   - SDWebImage (~> 3.8)
@@ -59,9 +80,13 @@ DEPENDENCIES:
   - ZXingObjC (~> 3.2.2)
 
 SPEC CHECKSUMS:
+  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  FBSDKCoreKit: 6f139173dc63a1deaff4430a55f2fe5bb222d2af
+  FBSDKLoginKit: 56a057ca6822535ea0faa25f57a7c41edb697fd4
   Firebase: 710decbbc6d9d48530e9a5dba3209740c3532e05
   FirebaseAnalytics: 5b02a63ead2c3f0259cfc7f15e053e440587ecf8
   FirebaseCore: 3c02ec652db3d03fdc8bc6d9154af3e20d64b6f5
+  FirebaseCrash: cded0fc566c03651aea606a101bc156085f333ca
   FirebaseDatabase: 7088bfc4af2cc00231bb36e1404fc2d7509eb4dc
   FirebaseInstanceID: 81df5805a08001e69138664bdd02c6719a9ac80f
   FirebaseMessaging: dfdcd307c2382290a1e297a81d0f18370f5b1bcd
@@ -73,6 +98,6 @@ SPEC CHECKSUMS:
   SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
   ZXingObjC: 2c95a0dc52daac69b23ec78fad8fa2fec05f8981
 
-PODFILE CHECKSUM: 2a04bab9bef988e24bc67001c557c220a6f1afab
+PODFILE CHECKSUM: 7cad7253be80ec95f5b128a4ca8da4cbadcc7ef0
 
 COCOAPODS: 1.3.1

@@ -15,7 +15,13 @@
 
 #import "MainViewController.h"
 
-@interface PreLogin ()
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
+
+@interface PreLogin ()<FBSDKLoginButtonDelegate>
+{
+    FBSDKLoginButton *loginButton;
+}
 @end
 
 @implementation PreLogin
@@ -33,11 +39,82 @@
     btnAnnonymous.layer.cornerRadius = 5;
     btnAnnonymous.layer.borderWidth = 1;
     btnAnnonymous.layer.borderColor = [UIColor blueColor].CGColor;
+    
+    // https://stackoverflow.com/questions/35160329/custom-facebook-login-button-ios/35160568
+    loginButton = [[FBSDKLoginButton alloc] init];
+    // Optional: Place the button in the center of your view.
+    // loginButton.center = self.view.center;
+    loginButton.hidden = YES;
+    
+    loginButton.delegate = self;
+    loginButton.readPermissions = @[@"public_profile", @"email"];
+    
+    [self.view addSubview:loginButton];
+    
+    if ([FBSDKAccessToken currentAccessToken]) {
+        // User is logged in, do work such as go to next view controller.
+        NSLog(@"");
+        [self fetchUserInfo];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+    
+- (void)  loginButton:(FBSDKLoginButton *)loginButton
+    didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result
+                    error:(NSError *)error{
+        //use your custom code here
+        //redirect after successful login
+    
+    if (error)
+    {
+        // Process error
+        NSLog(@"");
+    }
+    else if (result.isCancelled)
+    {
+        // Handle cancellations
+        NSLog(@"");
+    }
+    else
+    {
+        if ([result.grantedPermissions containsObject:@"email"])
+        {
+            NSLog(@"result is:%@",result);
+            [self fetchUserInfo];
+        }
+    }
+}
+- (void) loginButtonDidLogOut:(FBSDKLoginButton *)loginButton{
+    //use your custom code here
+    //redirect after successful logout
+    NSLog(@"");
+}
+    
+-(void)fetchUserInfo {
+    
+// [FBSDKAccessToken setCurrentAccessToken:@""];
+        if ([FBSDKAccessToken currentAccessToken])
+        {
+            NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
+            
+            [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:@{@"fields": @"id, name, link, first_name, last_name, picture.type(large), email, birthday ,location ,friends ,hometown , friendlists"}]
+             startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+                 if (!error)
+                 {
+                     NSLog(@"resultis:%@",result);
+                 }
+                 else
+                 {
+                     NSLog(@"Error %@",error);
+                 }
+             }];
+            
+        }
+        
 }
 
 /*
@@ -99,7 +176,11 @@
     }];
     [nThread start];
 }
-
+    
+- (IBAction)onLoginFB:(id)sender {
+    [loginButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+}
+    
 -(void)synchronizeData:(NSNotification *) notification{
     
     [[Configs sharedInstance] SVProgressHUD_Dismiss];

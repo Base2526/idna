@@ -30,6 +30,10 @@
     // Do any additional setup after loading the view.
     self.title = @"CONTACTS";
     
+    // assert(false);
+    
+ 
+    
     childObservers = [[NSMutableArray alloc] init];
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     

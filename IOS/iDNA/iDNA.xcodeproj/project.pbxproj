@@ -94,6 +94,7 @@
 		6051292B1F7980E8008CB2B9 /* TopAlignedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 605129291F7980E7008CB2B9 /* TopAlignedLabel.m */; };
 		605129301F79E025008CB2B9 /* UpdateMyProfileThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 6051292F1F79E025008CB2B9 /* UpdateMyProfileThread.m */; };
 		605129331F79EB4C008CB2B9 /* CreateGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 605129321F79EB4C008CB2B9 /* CreateGroup.m */; };
+		60518803200DFC5300130842 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518802200DFC5200130842 /* UIDeviceHardware.m */; };
 		6052E8341FBA75A00038F5D1 /* ChatWall.m in Sources */ = {isa = PBXBuildFile; fileRef = 6052E8331FBA75A00038F5D1 /* ChatWall.m */; };
 		6057BA712004C43B002B09B2 /* FriendRequestCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6057BA6F2004C43B002B09B2 /* FriendRequestCell.m */; };
 		6057BA722004C43B002B09B2 /* FriendRequestCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6057BA702004C43B002B09B2 /* FriendRequestCell.xib */; };
@@ -355,6 +356,9 @@
 		60C679851FB8F7D700077098 /* FriendProfileRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C679841FB8F7D700077098 /* FriendProfileRepo.m */; };
 		60C67CED1FD446770007B4A6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C67CEB1FD4466E0007B4A6 /* UIKit.framework */; };
 		60C67CEF1FD446960007B4A6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C67CEE1FD446820007B4A6 /* Foundation.framework */; };
+		60CF734120084A1200076C10 /* FriendProfileView2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60CF733F20084A1100076C10 /* FriendProfileView2.m */; };
+		60CF7344200877A300076C10 /* Friend_ListEmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 60CF7342200877A200076C10 /* Friend_ListEmail.m */; };
+		60CF7347200879E000076C10 /* Friend_ListPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = 60CF7346200879DF00076C10 /* Friend_ListPhone.m */; };
 		60D633C71FB529CD00AECA2B /* Tab_iDNA.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D633C61FB529CD00AECA2B /* Tab_iDNA.m */; };
 		60D633CB1FB52A8900AECA2B /* Cell_H_TabiDNA.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D633C91FB52A8900AECA2B /* Cell_H_TabiDNA.m */; };
 		60D633CC1FB52A8900AECA2B /* Cell_H_TabiDNA.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60D633CA1FB52A8900AECA2B /* Cell_H_TabiDNA.xib */; };
@@ -588,6 +592,8 @@
 		6051292F1F79E025008CB2B9 /* UpdateMyProfileThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpdateMyProfileThread.m; sourceTree = "<group>"; };
 		605129311F79EB4C008CB2B9 /* CreateGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateGroup.h; sourceTree = "<group>"; };
 		605129321F79EB4C008CB2B9 /* CreateGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateGroup.m; sourceTree = "<group>"; };
+		60518801200DFC5100130842 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
+		60518802200DFC5200130842 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
 		6052E8321FBA75A00038F5D1 /* ChatWall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatWall.h; sourceTree = "<group>"; };
 		6052E8331FBA75A00038F5D1 /* ChatWall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatWall.m; sourceTree = "<group>"; };
 		6057BA6E2004C43B002B09B2 /* FriendRequestCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendRequestCell.h; sourceTree = "<group>"; };
@@ -1007,6 +1013,12 @@
 		60C679841FB8F7D700077098 /* FriendProfileRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendProfileRepo.m; sourceTree = "<group>"; };
 		60C67CEB1FD4466E0007B4A6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		60C67CEE1FD446820007B4A6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		60CF733F20084A1100076C10 /* FriendProfileView2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendProfileView2.m; sourceTree = "<group>"; };
+		60CF734020084A1100076C10 /* FriendProfileView2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendProfileView2.h; sourceTree = "<group>"; };
+		60CF7342200877A200076C10 /* Friend_ListEmail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Friend_ListEmail.m; sourceTree = "<group>"; };
+		60CF7343200877A300076C10 /* Friend_ListEmail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Friend_ListEmail.h; sourceTree = "<group>"; };
+		60CF7345200879DF00076C10 /* Friend_ListPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Friend_ListPhone.h; sourceTree = "<group>"; };
+		60CF7346200879DF00076C10 /* Friend_ListPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Friend_ListPhone.m; sourceTree = "<group>"; };
 		60D633C51FB529CD00AECA2B /* Tab_iDNA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tab_iDNA.h; sourceTree = "<group>"; };
 		60D633C61FB529CD00AECA2B /* Tab_iDNA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tab_iDNA.m; sourceTree = "<group>"; };
 		60D633C81FB52A8900AECA2B /* Cell_H_TabiDNA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cell_H_TabiDNA.h; sourceTree = "<group>"; };
@@ -1446,6 +1458,8 @@
 				600F84FD1FDD00CE0091163B /* MyProfile2.m */,
 				60B370831FBA692200E72714 /* FriendProfileView.h */,
 				60B370841FBA692200E72714 /* FriendProfileView.m */,
+				60CF734020084A1100076C10 /* FriendProfileView2.h */,
+				60CF733F20084A1100076C10 /* FriendProfileView2.m */,
 				603BB8B01F7A00D4006AC6D8 /* InviteFriends.h */,
 				603BB8B11F7A00D4006AC6D8 /* InviteFriends.m */,
 				605ED4E41F794F6F00AD621C /* UserDataUIAlertView.h */,
@@ -1478,10 +1492,14 @@
 				60C47C591FC1E2B700ECC5CC /* EditEmail.m */,
 				60C47C541FC1E19D00ECC5CC /* ListEmail.h */,
 				60C47C531FC1E19900ECC5CC /* ListEmail.m */,
+				60CF7343200877A300076C10 /* Friend_ListEmail.h */,
+				60CF7342200877A200076C10 /* Friend_ListEmail.m */,
 				60D634291FB5547D00AECA2B /* EditPhone.h */,
 				60D6342A1FB5547D00AECA2B /* EditPhone.m */,
 				60C47C571FC1E22600ECC5CC /* ListPhone.h */,
 				60C47C561FC1E22100ECC5CC /* ListPhone.m */,
+				60CF7345200879DF00076C10 /* Friend_ListPhone.h */,
+				60CF7346200879DF00076C10 /* Friend_ListPhone.m */,
 				60D634311FB5578700AECA2B /* Follower.h */,
 				60D634321FB5578700AECA2B /* Follower.m */,
 				60EDF3FC1FBB406F0097757A /* HideFriends.h */,
@@ -1584,6 +1602,8 @@
 		6051292C1F7980F0008CB2B9 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				60518801200DFC5100130842 /* UIDeviceHardware.h */,
+				60518802200DFC5200130842 /* UIDeviceHardware.m */,
 				60B92CA31FB66DC000F96698 /* CustomUIActionSheet.h */,
 				60B92CA41FB66DC000F96698 /* CustomUIActionSheet.m */,
 				6051292A1F7980E7008CB2B9 /* TopAlignedLabel.h */,
@@ -2231,6 +2251,7 @@
 				604A6FD51F7918E700807966 /* Resources */,
 				0C727C30B385F0FFC09959FA /* [CP] Embed Pods Frameworks */,
 				8A2252AE20A3A5F85997742F /* [CP] Copy Pods Resources */,
+				60D4D8E320076D73006759BA /* Upload symbols to Crash Reporting */,
 			);
 			buildRules = (
 			);
@@ -2486,6 +2507,20 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		60D4D8E320076D73006759BA /* Upload symbols to Crash Reporting */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload symbols to Crash Reporting";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Replace this with the GOOGLE_APP_ID from your GoogleService-Info.plist file\nGOOGLE_APP_ID=1:764371836749:ios:1a529487d3a7ee83\n\n# Replace the /Path/To/ServiceAccount.json with the path to the key you just downloaded\n\"${PODS_ROOT}\"/FirebaseCrash/upload-sym \"${PROJECT_DIR}/Keys/test-toonchat-firebase-crashreporting-aym65-c3e4f431b7.json\"";
+		};
 		8A2252AE20A3A5F85997742F /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2493,13 +2528,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-iDNA/Pods-iDNA-resources.sh",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Controllers/JSQMessagesViewController.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellIncoming.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesCollectionViewCellOutgoing.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib",
-				"${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -2563,6 +2592,7 @@
 				600F85171FDE563D0091163B /* FollowingRepo.m in Sources */,
 				600F84BA1FDBBF660091163B /* LGSideMenuGesturesHandler.m in Sources */,
 				60D6341F1FB5525600AECA2B /* EditNameMAProfile.m in Sources */,
+				60CF7347200879E000076C10 /* Friend_ListPhone.m in Sources */,
 				60E4A5011F7F6CE000536B58 /* GroupMembers.m in Sources */,
 				6057BA712004C43B002B09B2 /* FriendRequestCell.m in Sources */,
 				60C47C161FC1DE8400ECC5CC /* MCSampleCardCollectionViewCell.m in Sources */,
@@ -2669,6 +2699,7 @@
 				60E4A5041F7F6CF700536B58 /* GroupInvite.m in Sources */,
 				600F84BE1FDBBF660091163B /* LGSideMenuSegue.m in Sources */,
 				60414EED1FE89C0C0035F03B /* InviteFriendBySMS.m in Sources */,
+				60518803200DFC5300130842 /* UIDeviceHardware.m in Sources */,
 				60C47C611FC1E35100ECC5CC /* EditFriendDisplayNameThread.m in Sources */,
 				60B500ED1FFB6BCD00D37463 /* SPH_PARAM_List.m in Sources */,
 				604A70181F791C7500807966 /* HJMOHandler.m in Sources */,
@@ -2688,6 +2719,7 @@
 				606859851FD649EF0017B170 /* AddByID.m in Sources */,
 				60B92C781FB66A2D00F96698 /* AddPostThread.m in Sources */,
 				60DAB2BF1F84BF8300C93606 /* DeleteGroupChatThread.m in Sources */,
+				60CF734120084A1200076C10 /* FriendProfileView2.m in Sources */,
 				60C679741FB7C7FD00077098 /* SignUpThread.m in Sources */,
 				60E102691FE6068800637FB8 /* MXSegmentedPager.m in Sources */,
 				600F84FB1FDCDA9A0091163B /* UpdatePictureBGThread.m in Sources */,
@@ -2712,6 +2744,7 @@
 				60350E1A1F7EAC6400990C49 /* UIView+KeyBoardShowAndHidden.m in Sources */,
 				60E102831FE6287A00637FB8 /* MXClasssCell.m in Sources */,
 				60B92C881FB66B9A00F96698 /* WYPopoverController.m in Sources */,
+				60CF7344200877A300076C10 /* Friend_ListEmail.m in Sources */,
 				603BB8BF1F7A56CB006AC6D8 /* MessageRepo.m in Sources */,
 				60B92C831FB66AF700F96698 /* FriendID_Menu.m in Sources */,
 				605ED4ED1F794F7100AD621C /* MoviesTableViewController.m in Sources */,

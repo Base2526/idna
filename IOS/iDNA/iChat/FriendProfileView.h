@@ -9,26 +9,19 @@
 #import <UIKit/UIKit.h>
 #import "HJManagedImageV.h"
 #import "GKImagePicker.h"
+#import "TopAlignedLabel.h"
 
 @import Firebase;
 @import FirebaseMessaging;
 @import FirebaseDatabase;
 
-#import "TopAlignedLabel.h"
-@interface FriendProfileView : UIViewController
+@interface FriendProfileView : UIViewController<GKImagePickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (weak, nonatomic) IBOutlet HJManagedImageV *imageV;
-@property (weak, nonatomic) IBOutlet UITextField *txtFName;
-//@property (weak, nonatomic) IBOutlet UITextField *txtFEmail;
-@property (weak, nonatomic) IBOutlet TopAlignedLabel *lblEmail;
-@property (weak, nonatomic) IBOutlet UITextField *txtFStatus;
-@property (weak, nonatomic) IBOutlet UITextField *txtIsFavorite;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) GKImagePicker *imagePicker;
+@property (nonatomic, strong) UIPopoverController *popoverController;
 
 @property (strong, nonatomic) FIRDatabaseReference *ref;
-@property (weak, nonatomic) IBOutlet UIButton *btnClasss;
 
-- (IBAction)onSelectClasss:(id)sender;
-// new
 @property(nonatomic)NSString *friend_id;
 @end
-

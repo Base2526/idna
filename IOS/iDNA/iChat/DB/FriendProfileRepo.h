@@ -21,6 +21,7 @@
 - (BOOL)insert:(FriendProfile *)data;
 - (BOOL)update:(FriendProfile *)data;
 
+- (BOOL)deleteFriendProfileById:(NSString *)friend_id;
 /*
 
  */

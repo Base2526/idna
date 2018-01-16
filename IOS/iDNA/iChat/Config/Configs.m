@@ -30,6 +30,8 @@
 #import "Classs.h"
 #import "ClasssRepo.h"
 
+#import "UIDeviceHardware.h"
+
 //#define IDIOM
 //#define IPAD     UIUserInterfaceIdiomPad
 
@@ -224,7 +226,7 @@
     /*
      device name
      */
-    [request setValue:[[UIDevice currentDevice] name] forHTTPHeaderField:@"device_name"];
+    [request setValue:[UIDeviceHardware platformString] forHTTPHeaderField:@"device_name"];
     
     /*
      ดึง Bundle identifier
@@ -249,13 +251,18 @@
     [request setValue:[self getUniqueDeviceIdentifierAsString] forHTTPHeaderField:@"udid"];
     
     
+    /*
+     Model Number
+     https://stackoverflow.com/questions/11197509/how-to-get-device-make-and-model-on-ios
+     */
+    [request setValue:[self modelNumber] forHTTPHeaderField:@"model_number"];
+    
     return request;
 }
 
 
 -(NSString *)getUniqueDeviceIdentifierAsString
 {
-    
     NSString *appName=[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleNameKey];
     
     NSString *strApplicationUUID = [SAMKeychain passwordForService:appName account:@"incoding"];
@@ -284,6 +291,14 @@
     NSPredicate *phoneTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", phoneRegex];
     
     return [phoneTest evaluateWithObject:phoneNumber];
+}
+    
+- (NSString *) modelNumber{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
 }
 
 - (void)registerForRemoteNotifications
@@ -565,6 +580,10 @@
                 // [[(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] setObject:snapshot.value forKey:parent];
                 
                 // [self saveData:parent :snapshot.value];
+                
+                if (snapshot.value == (id)[NSNull null]){
+                    return;
+                }
                 
                 FriendProfileRepo *friendProfileRepo = [[FriendProfileRepo alloc] init];
                 

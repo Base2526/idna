@@ -2,6 +2,21 @@
 
 // require_once ( dirname(__FILE__) . '/configs.inc');
 
+
+/*
+  เป้นการเช็ด  BundleIdentifier ที่ยอมให้มีการ login เข้าใช้งานระบบเท่านั้น
+  BundleIdentifier : จะถูกส่งเข้ามาทุกครั้งทีมีการ login
+*/
+function checkBundleIdentifier($bi){
+  $val = array(BI_IOS_BASIC, BI_IOS_IDNA, BI_ANDROID_BASIC, BI_ANDROID_IDNA);
+
+  if (in_array(strtolower($bi), $val)) {
+    return TRUE;
+  }else{
+    return FALSE;
+  }
+}
+
 function URL_SERVER(){
     if(isset($_SERVER['HTTPS'])){
         $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
@@ -172,7 +187,7 @@ function check_header(){
   if (array_key_exists("bundle_identifier", $getallheaders) && array_key_exists("platform", $getallheaders)) {
     
     // กรณี bundle_identifier != "heart.idna" จะ retrun false
-    if (strcasecmp($getallheaders["bundle_identifier"], BI_IOS_IDNA) != 0) {
+    if (!checkBundleIdentifier($getallheaders["bundle_identifier"])) {
       return FALSE;
     }
 
