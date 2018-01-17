@@ -29,11 +29,14 @@
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import "MyFacebook.h"
 
 @interface MyProfile ()<FBSDKLoginButtonDelegate>{
     FBSDKLoginButton *loginButton;
     NSMutableDictionary *profiles;
     ProfilesRepo *profileRepo;
+    
+    FIRDatabaseReference *ref;
 }
 @end
 
@@ -48,6 +51,7 @@
         
     profileRepo = [[ProfilesRepo alloc] init];
     
+    ref         = [[FIRDatabase database] reference];
     /*
     ref = [[FIRDatabase database] reference];
     
@@ -131,11 +135,15 @@
     loginButton.delegate = self;
     loginButton.readPermissions = @[@"public_profile", @"email"];
     
-    [self.view addSubview:loginButton];
+    // [self.view addSubview:loginButton];
     
     if ([FBSDKAccessToken currentAccessToken]) {
         // User is logged in, do work such as go to next view controller.
-        [self fetchUserInfo];
+        
+        FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
+        [loginManager logOut];
+        
+        [FBSDKAccessToken setCurrentAccessToken:nil];
     }
 }
     
@@ -182,6 +190,50 @@
              if (!error)
              {
                  NSLog(@"resultis:%@",result);
+                 
+                 NSArray *pf = [profileRepo get];
+                 NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                 
+                 NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                 
+                 NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                 [newProfiles addEntriesFromDictionary:profiles];
+                 
+                 if([newProfiles objectForKey:@"facebook"]){
+                     [newProfiles removeObjectForKey:@"facebook"];
+                 }
+                 [newProfiles setValue:result forKey:@"facebook"];
+                 
+                 Profiles *pfs = [[Profiles alloc] init];
+                 NSError * err;
+                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                 pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                 NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                 pfs.update    = [timeStampObj stringValue];
+                 
+                 BOOL sv = [profileRepo update:pfs];
+                 
+                 NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+                 NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
+                 
+                 [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+                     
+                     [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                     if (error == nil) {
+                         dispatch_async(dispatch_get_main_queue(), ^{
+                             
+                             FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
+                             [loginManager logOut];
+                             
+                             [FBSDKAccessToken setCurrentAccessToken:nil];
+                             
+                             [self reloadData:nil];
+                         });
+                     }else{
+                         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update name."];
+                     }
+                 }];
              }
              else
              {
@@ -787,21 +839,53 @@
         }
         
         case 12:{
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_facebook"];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.accessoryType  = UITableViewCellAccessoryNone;
             
-            UILabel *label1 = [cell viewWithTag:10];
-            UILabel *label2 = [cell viewWithTag:11];
+            UILabel *subtext        = [cell viewWithTag:10];
+            HJManagedImageV *imageV = [cell viewWithTag:11];
+            UILabel *nametext       = [cell viewWithTag:12];
+            UILabel *emailtext      = [cell viewWithTag:13];
             
-            [label1 setText:@"Facebook :"];
-            [label2 setText:@""];
+            [subtext setText:@"Facebook :"];
+            [nametext setText:@""];
+            [emailtext setText:@""];
             
-//            if ([profiles objectForKey:@"company"]) {
-//                [label2 setText:[profiles objectForKey:@"company"]];
-//            }else{
-//                [label2 setText:@""];
-//            }
+            [imageV clear];
+            
+            if ([profiles objectForKey:@"facebook"]) {
+                NSDictionary *facebook = [profiles objectForKey:@"facebook"];
+                
+                if([facebook objectForKey:@"name"]){
+                    [nametext setText:[facebook objectForKey:@"name"]];
+                }else{
+                    [nametext setText:@""];
+                }
+                
+                if([facebook objectForKey:@"email"]){
+                    [emailtext setText:[facebook objectForKey:@"email"]];
+                }else{
+                    [emailtext setText:@""];
+                }
+                
+                if([facebook objectForKey:@"picture"]){
+                    NSDictionary *picture = [facebook objectForKey:@"picture"];
+                    
+                    if ([picture objectForKey:@"data"]) {
+                        [imageV clear];
+                        [imageV showLoadingWheel];
+                        
+                        [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@", [[picture objectForKey:@"data"] objectForKey:@"url"]  ]]];
+                        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
+                    }
+                }else{
+                    
+                }
+                
+            }else{
+                [nametext setText:@"not facebook"];
+            }
             
             return cell;
         }
@@ -944,7 +1028,14 @@
         
         case 12:{
             // facebook
-             [loginButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+            
+            if ([profiles objectForKey:@"facebook"]) {
+                UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                MyFacebook* myFacebook = [storybrd instantiateViewControllerWithIdentifier:@"MyFacebook"];
+                [self.navigationController pushViewController:myFacebook animated:YES];
+            }else{
+                [loginButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+            }
         }
         break;
             

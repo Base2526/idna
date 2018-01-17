@@ -32,6 +32,7 @@
 
 #import "Friends.h"
 #import "FriendsRepo.h"
+#import "LogoutThread.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -269,16 +270,17 @@
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     
-//    if([[Configs sharedInstance] isLogin]){
-//        __block NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
-//
-//        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-//            FIRDatabaseReference *childRef = [ref child:child];
-//            [childObservers addObject:childRef];
-//
-//
-//            BOOL flag = true;
-//            for(FIRDataSnapshot* snap in snapshot.children){
+    if([[Configs sharedInstance] isLogin]){
+        __block NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+
+        [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+            FIRDatabaseReference *childRef = [ref child:child];
+            [childObservers addObject:childRef];
+
+            // BOOL flag = true;
+            for(FIRDataSnapshot* snap in snapshot.children){
+                
+                
 //                if ([snap.key isEqualToString:@"online"]) {
 //                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"0"};
 //                    [ref updateChildValues:childUpdates];
@@ -286,17 +288,31 @@
 //                    flag = false;
 //                    break;
 //                }
-//            }
+                
+                if([snap.key isEqualToString:@"device_access"]){
+                    NSLog(@"snapshot.children : %@", snap.value);
+                    
+//                    for (NSString* key in snap.value) {
+//                        NSDictionary* val = [snap.value objectForKey:key];
+//                        if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
 //
-//            /*
-//             กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
-//             */
+//                        }
+//                    }
+                    
+                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/%@/online/", child, snap.key, [[Configs sharedInstance] getIDDeviceAccess:snap]]: @"0"};
+                    [ref updateChildValues:childUpdates];
+                }
+            }
+
+            /*
+             กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
+             */
 //            if (flag) {
 //                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"0"};
 //                [ref updateChildValues:childUpdates];
 //            }
-//        }];
-//    }
+        }];
+    }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -334,23 +350,30 @@
                 // NSLog(@">%@", snapshot.key);
                 // NSLog(@">%@", snap.key);
                 // NSLog(@">%@", snap.value);
-                if ([snap.key isEqualToString:@"online"]) {
-                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+//                if ([snap.key isEqualToString:@"online"]) {
+//                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/", child, snap.key]: @"1"};
+//                    [ref updateChildValues:childUpdates];
+//
+//                    flag = false;
+//
+//                    break;
+//                }
+                
+                if([snap.key isEqualToString:@"device_access"]){
+                    // NSLog(@"snapshot.children : %@", snap.value);
+                
+                    NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/%@/%@/online/", child, snap.key, [[Configs sharedInstance] getIDDeviceAccess:snap]]: @"1"};
                     [ref updateChildValues:childUpdates];
-                    
-                    flag = false;
-
-                    break;
                 }
             }
             
             /*
              กรณีไม่มี key online  ใน firebase จะเกิดกรณี user version เก่า
              */
-            if (flag) {
-                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"1"};
-                [ref updateChildValues:childUpdates];
-            }
+//            if (flag) {
+//                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/online/", child]: @"1"};
+//                [ref updateChildValues:childUpdates];
+//            }
         }];
     }
 }
@@ -816,13 +839,89 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     
     
     // device_access
-    
-    [[[ref child:child] child:@"device_access"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+    /*
+     จะเช็กทุกครั้งเมือเปิดเข้ามาทุกครั้ง
+     */
+    [[[[ref child:child] child:@"profiles"] child:@"device_access"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         
-        NSLog(@"%@, %@", snapshot.key, snapshot.value);
+        // NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
         NSDictionary *val = snapshot.value;
-        NSLog(@"");
+ 
+        if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
+            if([[val objectForKey:@"is_login"] isEqualToString:@"0"]){
+                
+                if ([[Configs sharedInstance] isLogin]) {
+                    LogoutThread * logoutThread = [[LogoutThread alloc] init];
+                    [logoutThread setCompletionHandler:^(NSData * data) {
+                        
+                        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+                        
+                        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                            
+                            NSMutableDictionary *idata  = jsonDict[@"data"];
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                
+                                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
+                                UINavigationController *navCon = [[UINavigationController alloc] initWithRootViewController:preLogin];
+                                
+                                self.window.rootViewController = navCon;
+                            });
+                        }else{
+                            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
+                        }
+                    }];
+                    [logoutThread setErrorHandler:^(NSString * data) {
+                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
+                    }];
+                    [logoutThread start];
+                }
+            }
+        }
+    }];
+    
+    [[[[ref child:child] child:@"profiles"] child:@"device_access"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        
+        // NSLog(@"%@, %@", snapshot.key, snapshot.value);
+        
+        NSDictionary *val = snapshot.value;
+        
+        // [self getUniqueDeviceIdentifierAsString]
+        
+        if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
+            if([[val objectForKey:@"is_login"] isEqualToString:@"0"]){
+                
+                if ([[Configs sharedInstance] isLogin]) {
+                    LogoutThread * logoutThread = [[LogoutThread alloc] init];
+                    [logoutThread setCompletionHandler:^(NSData * data) {
+                        
+                        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+                        
+                        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                            
+                            NSMutableDictionary *idata  = jsonDict[@"data"];
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                               
+                                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                                PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
+                                UINavigationController *navCon = [[UINavigationController alloc] initWithRootViewController:preLogin];
+                                
+                                self.window.rootViewController = navCon;
+                            });
+                        }else{
+                            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
+                        }
+                    }];
+                    [logoutThread setErrorHandler:^(NSString * data) {
+                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
+                    }];
+                    [logoutThread start];
+                }
+            }
+        }
     }];
     
     /*

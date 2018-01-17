@@ -31,6 +31,7 @@
 #import "ClasssRepo.h"
 
 #import "UIDeviceHardware.h"
+#import "Utility.h"
 
 //#define IDIOM
 //#define IPAD     UIUserInterfaceIdiomPad
@@ -225,8 +226,21 @@
     
     /*
      device name
+     
+     NSData *plainData = [plainString dataUsingEncoding:NSUTF8StringEncoding];
+     NSString *base64String = [plainData base64EncodedStringWithOptions:0];
      */
-    [request setValue:[UIDeviceHardware platformString] forHTTPHeaderField:@"device_name"];
+    
+    // Create NSData object
+    NSData *nsdata = [[[UIDevice currentDevice] name]
+                      dataUsingEncoding:NSUTF8StringEncoding];
+
+    // Get NSString from NSData object in Base64
+    NSString *name64Encoded = [nsdata base64EncodedStringWithOptions:0];
+    
+    // Print the Base64 encoded string
+    // NSLog(@"Encoded: %@", name64Encoded);
+    [request setValue:name64Encoded forHTTPHeaderField:@"device_name"];
     
     /*
      ดึง Bundle identifier
@@ -250,7 +264,7 @@
      */
     [request setValue:[self getUniqueDeviceIdentifierAsString] forHTTPHeaderField:@"udid"];
     
-    
+    // NSLog(@"%@", [request allHTTPHeaderFields]);
     /*
      Model Number
      https://stackoverflow.com/questions/11197509/how-to-get-device-make-and-model-on-ios
@@ -620,6 +634,16 @@
         
         // #5 ส่วนข้อมูลของ friends & profile friend
     }];
+}
+    
+-(NSString *)getIDDeviceAccess:(FIRDataSnapshot *)snap{    
+    for (NSString* key in snap.value) {
+        NSDictionary* val = [snap.value objectForKey:key];
+        if([[val objectForKey:@"udid"] isEqualToString:[self getUniqueDeviceIdentifierAsString]]){
+            return key;
+        }
+    }
+    return @"";
 }
 
 //-(void)synchronizeLogout{

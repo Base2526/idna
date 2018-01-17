@@ -220,7 +220,7 @@ function idna_user_login(&$edit, $account) {
   if (check_header()) {
     $getallheaders = getallheaders();
 
-      // watchdog(TAG, 'idna_user_login header: %header', array('%header'=> serialize($getallheaders)), WATCHDOG_INFO);
+    watchdog(TAG, 'idna_user_login header: %header', array('%header'=> serialize($getallheaders)), WATCHDOG_INFO);
 
     /*
     เป้น การ load friends ของ uid ขึ้นมาเช็ดว่า friend_id เป้น friend เราอยุ่หรือไม่
@@ -239,6 +239,8 @@ function idna_user_login(&$edit, $account) {
           $val = array(
               "is_login"  => '1',
               "online"    => '1',
+              "device_name"       => base64_decode($getallheaders['device_name']),
+              "model_number"      => $getallheaders['model_number'],
               "update"    => time()
             );
           $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $account->uid . '/profiles/device_access/' . $value['value'] . "/", $val);
@@ -256,7 +258,7 @@ function idna_user_login(&$edit, $account) {
       $values['field_platform'][LANGUAGE_NONE][0]['value']          = $getallheaders['platform'];
       $values['field_bundle_identifier'][LANGUAGE_NONE][0]['value'] = $getallheaders['bundle_identifier'];
 
-      $values['field_device_name'][LANGUAGE_NONE][0]['value']       = $getallheaders['device_name'];
+      $values['field_device_name'][LANGUAGE_NONE][0]['value']       = base64_decode($getallheaders['device_name']);
       $values['field_model_number'][LANGUAGE_NONE][0]['value']      = $getallheaders['model_number'];
 
       // Create the field collection entry and associate it with the profile
@@ -270,7 +272,8 @@ function idna_user_login(&$edit, $account) {
         "bundle_identifier" => $getallheaders['bundle_identifier'],
         "is_login"          => '1',
         "online"            => '1',
-        "device_name"       => $getallheaders['device_name'],
+        "device_name"       => base64_decode($getallheaders['device_name']),
+        "model_number"      => $getallheaders['model_number'],
         "create"            => time(),
         "update"            => time()
       );

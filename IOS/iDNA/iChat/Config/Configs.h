@@ -185,7 +185,10 @@
  */
 -(void)synchronizeLogout;
 
-
+/*
+ เป็นการหา item_id ของ Device Access
+ */
+-(NSString *)getIDDeviceAccess:(FIRDataSnapshot *)snap;
 
 
 // Cumstom SVProgressHUD

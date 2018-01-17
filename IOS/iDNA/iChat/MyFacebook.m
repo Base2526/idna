@@ -1,0 +1,160 @@
+//
+//  MyFacebook.m
+//  iDNA
+//
+//  Created by Somkid on 17/1/2561 BE.
+//  Copyright © 2561 klovers.org. All rights reserved.
+//
+
+#import "MyFacebook.h"
+#import "ProfilesRepo.h"
+#import "AppDelegate.h"
+#import "Configs.h"
+
+@interface MyFacebook (){
+    NSMutableDictionary *profiles;
+    ProfilesRepo *profileRepo;
+    
+    FIRDatabaseReference *ref;
+}
+
+@end
+
+@implementation MyFacebook
+@synthesize imageV, labelName, labelEmail;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    profileRepo = [[ProfilesRepo alloc] init];
+    ref         = [[FIRDatabase database] reference];
+    
+    [self reloadData:nil];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+    
+-(void)reloadData:(NSNotification *) notification{
+    NSArray *pf = [profileRepo get];
+    NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    NSDictionary *facebook = [profiles objectForKey:@"facebook"];
+    
+    if([facebook objectForKey:@"name"]){
+       [labelName setText:[facebook objectForKey:@"name"]];
+    }
+    
+    if([facebook objectForKey:@"email"]){
+       [labelEmail setText:[facebook objectForKey:@"email"]];
+    }
+    
+    if([facebook objectForKey:@"picture"]){
+        NSDictionary *picture = [facebook objectForKey:@"picture"];
+        
+        if ([picture objectForKey:@"data"]) {
+            [imageV clear];
+            [imageV showLoadingWheel];
+            
+            [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@", [[picture objectForKey:@"data"] objectForKey:@"url"]  ]]];
+            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
+        }
+    }
+    
+    NSLog(@"");
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+- (IBAction)onOpenMyFacebook:(id)sender {
+    
+    NSDictionary *facebook = [profiles objectForKey:@"facebook"];
+    
+    if([facebook objectForKey:@"link"]){
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[facebook objectForKey:@"link"]]];
+    }
+    
+//    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]]) {
+//
+//        NSString* encodedUrl = [[facebook objectForKey:@"id"] stringByAddingPercentEscapesUsingEncoding:
+//                                NSUTF8StringEncoding];
+//        //Ndom%20Nuon
+//        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"fb://profile/%@", @"Ndom%20Nuon"]];
+//        [[UIApplication sharedApplication] openURL:url];
+//
+//
+//        // [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.facebook.com/10214833017848875"]];
+//    }
+//    else {
+//
+//    }
+    
+    
+    
+}
+    
+- (IBAction)onLogout:(id)sender {
+    
+    NSString *child = [NSString stringWithFormat:@"%@%@/profiles/facebook", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU]];
+    
+    [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        
+        if (error == nil) {
+            // จะได้ friend_id
+            NSString* key = [ref key];
+            
+//            // ลบ เพือน
+//            BOOL rs= [friendsRepo deleteFriend:key];
+//            
+//            // ลบ โปรไฟร์เพือน
+//            rs = [friendPRepo deleteFriendProfileById:key];
+//            /*
+//             FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
+//             */
+            
+            if (error == nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    // NSArray *pf = [profileRepo get];
+                    // NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                    
+                    // NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    
+                    NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                    [newProfiles addEntriesFromDictionary:profiles];
+                    
+                    if([newProfiles objectForKey:@"facebook"]){
+                        [newProfiles removeObjectForKey:@"facebook"];
+                    }
+                    // [newProfiles setValue:result forKey:@"facebook"];
+                    
+                    Profiles *pfs = [[Profiles alloc] init];
+                    NSError * err;
+                    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                    pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                    pfs.update    = [timeStampObj stringValue];
+                    
+                    BOOL sv = [profileRepo update:pfs];
+                    
+                    
+                    [self.navigationController popViewControllerAnimated:NO];
+                });
+            }else{
+            }
+        }
+    }];
+}
+    @end

@@ -9,6 +9,15 @@
 #import "LogoutThread.h"
 #import "Configs.h"
 #import "AppConstant.h"
+#import "MessageRepo.h"
+#import "FriendProfileRepo.h"
+#import "GroupChatRepo.h"
+#import "MyApplicationsRepo.h"
+#import "ProfilesRepo.h"
+#import "FriendsRepo.h"
+#import "ClasssRepo.h"
+#import "FollowingRepo.h"
+#import "CenterRepo.h"
 @import FirebaseInstanceID;
 
 @implementation LogoutThread
@@ -45,6 +54,20 @@
     NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
         if (error == nil) {
+            
+            // Delete User ออกจาก
+            [[Configs sharedInstance] saveData:_USER :nil];
+            
+            [[[ProfilesRepo alloc] init] delete];
+            [[[FriendsRepo alloc] init] deleteFriendAll];
+            [[[MessageRepo alloc] init] deleteMessagesAll];
+            [[[FriendProfileRepo alloc] init] deleteFriendProfileAll];
+            [[[GroupChatRepo alloc] init] deleteGroupAll];
+            [[[MyApplicationsRepo alloc] init] deleteMyApplicationAll];
+            [[[ClasssRepo alloc] init] deleteClasssAll];
+            [[[FollowingRepo alloc] init] deleteFollowingAll];
+            [[[CenterRepo alloc] init] deleteCenterAll];
+            
             self.completionHandler(data);
         }else{
             self.errorHandler([error description]);

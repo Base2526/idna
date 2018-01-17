@@ -319,19 +319,6 @@
                  
                         NSMutableDictionary *idata  = jsonDict[@"data"];
                  
-                        // Delete User ออกจาก
-                        [[Configs sharedInstance] saveData:_USER :nil];
-                         
-                        [[[ProfilesRepo alloc] init] delete];
-                        [[[FriendsRepo alloc] init] deleteFriendAll];
-                        [[[MessageRepo alloc] init] deleteMessagesAll];
-                        [[[FriendProfileRepo alloc] init] deleteFriendProfileAll];
-                        [[[GroupChatRepo alloc] init] deleteGroupAll];
-                        [[[MyApplicationsRepo alloc] init] deleteMyApplicationAll];
-                        [[[ClasssRepo alloc] init] deleteClasssAll];
-                        [[[FollowingRepo alloc] init] deleteFollowingAll];
-                        [[[CenterRepo alloc] init] deleteCenterAll];
-    
                         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                         PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
                         UINavigationController *navPreLogin = [[UINavigationController alloc] initWithRootViewController:preLogin];

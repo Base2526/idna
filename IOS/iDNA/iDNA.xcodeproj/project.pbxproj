@@ -95,6 +95,7 @@
 		605129301F79E025008CB2B9 /* UpdateMyProfileThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 6051292F1F79E025008CB2B9 /* UpdateMyProfileThread.m */; };
 		605129331F79EB4C008CB2B9 /* CreateGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 605129321F79EB4C008CB2B9 /* CreateGroup.m */; };
 		60518803200DFC5300130842 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518802200DFC5200130842 /* UIDeviceHardware.m */; };
+		60518806200EE63C00130842 /* MyFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518805200EE63C00130842 /* MyFacebook.m */; };
 		6052E8341FBA75A00038F5D1 /* ChatWall.m in Sources */ = {isa = PBXBuildFile; fileRef = 6052E8331FBA75A00038F5D1 /* ChatWall.m */; };
 		6057BA712004C43B002B09B2 /* FriendRequestCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6057BA6F2004C43B002B09B2 /* FriendRequestCell.m */; };
 		6057BA722004C43B002B09B2 /* FriendRequestCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6057BA702004C43B002B09B2 /* FriendRequestCell.xib */; };
@@ -594,6 +595,8 @@
 		605129321F79EB4C008CB2B9 /* CreateGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateGroup.m; sourceTree = "<group>"; };
 		60518801200DFC5100130842 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
 		60518802200DFC5200130842 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
+		60518804200EE63C00130842 /* MyFacebook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyFacebook.h; sourceTree = "<group>"; };
+		60518805200EE63C00130842 /* MyFacebook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyFacebook.m; sourceTree = "<group>"; };
 		6052E8321FBA75A00038F5D1 /* ChatWall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatWall.h; sourceTree = "<group>"; };
 		6052E8331FBA75A00038F5D1 /* ChatWall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatWall.m; sourceTree = "<group>"; };
 		6057BA6E2004C43B002B09B2 /* FriendRequestCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendRequestCell.h; sourceTree = "<group>"; };
@@ -1524,6 +1527,8 @@
 				60B500F81FFEF9B700D37463 /* Gender.m */,
 				60B500FD1FFF177C00D37463 /* Birthday.h */,
 				60B500FE1FFF177C00D37463 /* Birthday.m */,
+				60518804200EE63C00130842 /* MyFacebook.h */,
+				60518805200EE63C00130842 /* MyFacebook.m */,
 			);
 			name = iDNA;
 			path = iChat;
@@ -2564,6 +2569,7 @@
 				60B500D41FFB6B6B00D37463 /* ChatViewController.m in Sources */,
 				60E102681FE6068800637FB8 /* MXSegmentedPagerController.m in Sources */,
 				60D633F41FB53D2400AECA2B /* CreateMyApplicationThread.m in Sources */,
+				60518806200EE63C00130842 /* MyFacebook.m in Sources */,
 				60FA69211FBFCC7A00A33DD0 /* LogoutThread.m in Sources */,
 				6087E6641FA0C8C400AE20E2 /* MainTabBarController.m in Sources */,
 				60C47C1C1FC1DEDA00ECC5CC /* UIImage+animatedGIF.m in Sources */,
