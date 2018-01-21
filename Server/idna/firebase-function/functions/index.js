@@ -33,7 +33,11 @@ var headers = {
 };
 
 
-var API_URL_IDNA 	= 'http://128.199.210.45';
+// Distribution
+// API_URL_IDNA            = @"http://128.199.210.45";
+
+// Development
+var API_URL_IDNA 	= 'http://188.166.208.70';
 var END_POINT_IDNA 	= '/api';
 var PATH_ROOT_IDNA  = 'idna';
 var PATH_USER_IDNA  = 'user'; 
@@ -206,8 +210,10 @@ exports.iDNA_User_for_Friend_Delete = functions.database.ref(PATH_ROOT_IDNA + '/
 			// เราต้อง parse value ก่อนถึงจะสามารถใช้งานได้
 			// var objectValue = JSON.parse(body);
 			// if (!objectValue.result) {
-			// 	console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
+			// 	
 			// }
+
+			// console.log('#1 : user_for_friend_delete : || ');
 
 			console.log(body);
 	});

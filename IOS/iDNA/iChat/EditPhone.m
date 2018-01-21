@@ -107,6 +107,7 @@
                             
                             NSArray *profile = [profilesRepo get];
                             
+                            /*
                             Profiles *pf = [[Profiles alloc] init];
                             NSError * err;
                             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
@@ -115,8 +116,16 @@
                             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                             // pf.create    = [timeStampObj stringValue];
                             pf.update    = [timeStampObj stringValue];
+                          
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                BOOL sv = [profilesRepo update:pf];
+                            });
+                            */
                             
-                            BOOL sv = [profilesRepo update:pf];
+                            NSError * err;
+                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                            
+                            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                         }
                     }else{
                         NSMutableDictionary * phones = [[NSMutableDictionary alloc] init];
@@ -130,6 +139,7 @@
                         
                         NSArray *profile = [profilesRepo get];
                         
+                        /*
                         Profiles *pf = [[Profiles alloc] init];
                         NSError * err;
                         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
@@ -138,7 +148,15 @@
                         NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                         pf.update    = [timeStampObj stringValue];
                         
-                        BOOL sv = [profilesRepo update:pf];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            BOOL sv = [profilesRepo update:pf];
+                        });
+                        */
+                        
+                        NSError * err;
+                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                        
+                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                     }
                 }else{
                     // edit phone number
@@ -155,6 +173,7 @@
                         
                         NSArray *profile = [profilesRepo get];
                         
+                        /*
                         Profiles *pf = [[Profiles alloc] init];
                         NSError * err;
                         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
@@ -162,8 +181,16 @@
                         NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
                         NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                         pf.update    = [timeStampObj stringValue];
+
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            BOOL sv = [profilesRepo update:pf];
+                        });
+                        */
                         
-                        BOOL sv = [profilesRepo update:pf];
+                        NSError * err;
+                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                        
+                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                     }
                 }
                 

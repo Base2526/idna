@@ -2124,6 +2124,20 @@ $users = $firebase->get('/users');
   echo $count_receive;
   */
 
+  // require_once ( dirname(__FILE__) . '/libraries/py/test.py');
+
+  // $command = escapeshellcmd(dirname(__FILE__) . '/libraries/py/test.py');
+  // $output = shell_exec($command);
+  // echo "TEST : " . $output;
+
+//   ob_start();
+// passthru(dirname(__FILE__) . '/libraries/py/test.py');
+// $output = ob_get_clean(); 
+
+$result = exec("/usr/bin/python2.7 ". dirname(__FILE__) . "/libraries/py/test.py");
+
+  var_dump($result);
+
   return "_klovers_test";
 }
 
@@ -2394,7 +2408,9 @@ function logout()
     return $result;
   }
 
-  if (empty($_REQUEST['uid'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (empty($param['uid'])) {
     $result['result'] = FALSE;
     $result['message']  = "function : logout, parameter";
     return $result;
@@ -2404,7 +2420,7 @@ function logout()
 
   $getallheaders = getallheaders();
 
-  $uid = $_REQUEST['uid'];
+  $uid = $param['uid'];
 
   // $profile = profile2_by_uid_load($uid, 'main');
 
@@ -2506,15 +2522,17 @@ function login(){
     return $result;
   }
 
-  if (empty($_REQUEST['name']) || empty($_REQUEST['pass'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (empty($param['name']) || empty($param['pass'])) {
     $result['result'] = FALSE;
     $result['message']  = "function : login, parameter";
+    $result['param']  = $param;
     return $result;
   }
 
-
-  $name = $_REQUEST['name'];
-  $pass = $_REQUEST['pass'];
+  $name = $param['name'];
+  $pass = $param['pass'];
   
   module_load_include('inc', 'services', 'resources/user_resource');
 
@@ -2535,7 +2553,6 @@ function annmousu(){
   }
 
   $getallheaders = getallheaders();
-
 
   // เช็กว่ามี  user ที่มี email แล้วหรือไม
   if (user_load_by_mail($getallheaders['udid'] . '@annmousu') == "") {
@@ -3985,15 +4002,20 @@ function recreate_qrcode(){
     return $result;
   }
 
-   if (!isset($_REQUEST['uid']) || !isset($_REQUEST['platform']) || !isset($_REQUEST['bundleidentifier'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (!isset($param['uid'])) {
     $result['result'] = FALSE;
+    $result['message'] = "Error : parameter";
     return $result;
   }
 
   global $firebase;
-  $uid                = $_REQUEST['uid'];
-  $platform           = $_REQUEST['platform'];
-  $bundleidentifier   = $_REQUEST['bundleidentifier'];
+  $getallheaders = getallheaders();
+
+  $uid                = $param['uid'];
+  $platform           = $getallheaders['platform'];
+  $bundleidentifier   = $getallheaders['bundle_identifier'];
 
   ///-----------
 
@@ -4037,21 +4059,23 @@ function find_friend(){
     return $result;
   }
 
-   if (!isset($_REQUEST['uid']) || !isset($_REQUEST['fction']) || !isset($_REQUEST['code'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (!isset($param['uid']) || !isset($param['fction']) || !isset($param['code'])) {
     $result['result'] = FALSE;
-    $result['_REQUEST'] = $_REQUEST;
+    $result['param'] = $param;
     return $result;
   }
 
   global $firebase;
-  $uid        = $_REQUEST['uid'];
+  $uid        = $param['uid'];
 
   /*
   0 = my id
   1 = qrcode
   */
-  $fction     = $_REQUEST['fction'];
-  $code       = $_REQUEST['code'];
+  $fction     = $param['fction'];
+  $code       = $param['code'];
 
   switch ($fction) {
     case '0':{
@@ -5222,15 +5246,17 @@ function edit_multi_phone()
 {
   $result = array();
 
-
   if (!check_header()) {
     $result['result']   = FALSE;
     $result['message']  = "check_header()";
     return $result;
   }
 
-  if (empty($_POST['fction']) || empty($_POST['uid'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (empty($param['fction']) || empty($param['uid'])) {
     $result['result'] = FALSE;
+    $result['message'] = "function edit_multi_phone : parameter";
     return $result;
   }
 
@@ -5246,7 +5272,13 @@ function edit_multi_phone()
   กรณีแก้ไข่ เราจะคิดเฉพาะ number_old, number_new 
   */
 
-  switch ($_POST['fction']) {
+  
+  $uid    = $param['uid'];
+  $fction = $param['fction'];
+  $item_id= $param['item_id'];
+  $number = $param['number'];
+
+  switch ($fction) {
     case 'add':
     {
         // #1 load profile friend
@@ -5255,7 +5287,7 @@ function edit_multi_phone()
         // $profile =  profile2_load($profile2_load_by_user['main']->pid);
         // #2 load profile friend
 
-        $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+        $profile = profile2_by_uid_load($uid, 'main');
 
         // #3 
         $flag = TRUE;
@@ -5263,7 +5295,7 @@ function edit_multi_phone()
         if(isset($profile->field_profile_multi_phone)){
           foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
               $data_item_load = field_collection_item_load($value['value']);
-              if($data_item_load->field_phone_number[LANGUAGE_NONE][0]['value'] == $_POST['number']){
+              if($data_item_load->field_phone_number[LANGUAGE_NONE][0]['value'] == $number){
                 
                 $flag = FALSE;
                 break;
@@ -5276,7 +5308,7 @@ function edit_multi_phone()
           $value = array();
           $value['field_name'] = 'field_profile_multi_phone'; // field collection name
 
-          $value['field_phone_number'][LANGUAGE_NONE][0]['value'] = $_POST['number'];
+          $value['field_phone_number'][LANGUAGE_NONE][0]['value'] = $number;
 
           // Create the field collection entry and associate it with the profile
           $field_entity = entity_create('field_collection_item', $value);
@@ -5298,7 +5330,7 @@ function edit_multi_phone()
           */
 
           $value = array(
-            "name"      => $_POST['number'],
+            "name"      => $number,
             "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
             "enabled"   => "1",  // เปิด หรือ ปิดการใช้
             "create"    => time(),
@@ -5308,7 +5340,7 @@ function edit_multi_phone()
 
           // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
 
-          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $field_entity->item_id, $value);
+          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $field_entity->item_id, $value);
 
           $result['result']  = TRUE;
           $result['is_edit']  = FALSE;
@@ -5329,17 +5361,17 @@ function edit_multi_phone()
       // $profile =  profile2_load($profile2_load_by_user['main']->pid);
       // #2 load profile friend
 
-      $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+      $profile = profile2_by_uid_load($uid, 'main');
 
       // check is phone number duplicat
       foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
           $data_item_load = field_collection_item_load($value['value']);
-          if($data_item_load->item_id == $_POST['item_id']){
+          if($data_item_load->item_id == $item_id){
             
             $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
 
             //Update value
-            $wrapper->field_phone_number->set($_POST['number']);
+            $wrapper->field_phone_number->set($number);
             $wrapper->save(TRUE);
 
             /*
@@ -5356,7 +5388,7 @@ function edit_multi_phone()
             */
 
             $value = array(
-              "name"      => $_POST['number'],
+              "name"      => $number,
               "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
               "enabled"   => "1",  // เปิด หรือ ปิดการใช้
               "update"    => time()
@@ -5365,7 +5397,7 @@ function edit_multi_phone()
 
           // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
 
-            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $data_item_load->item_id, $value);
+            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $data_item_load->item_id, $value);
 
             $result['result']   = TRUE;
             $result['is_edit']  = TRUE;
@@ -5386,16 +5418,16 @@ function edit_multi_phone()
       // $profile =  profile2_load($profile2_load_by_user['main']->pid);
       // #2 load profile friend
 
-      $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+      $profile = profile2_by_uid_load($uid, 'main');
       // #3 
       $flag = TRUE;
       // check is phone number duplicat
       foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
           $data_item_load = field_collection_item_load($value['value']);
-          if($data_item_load->item_id == $_POST['item_id']){
+          if($data_item_load->item_id == $item_id){
             entity_delete_multiple('field_collection_item', array($data_item_load->item_id));
 
-            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/phones/" . $data_item_load->item_id);
+            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $data_item_load->item_id);
             
             $result['result']   = TRUE;
             $result['item_id']  = $data_item_load->item_id;
@@ -5442,14 +5474,22 @@ function edit_multi_email()
     return $result;
   }
 
-  if (empty($_POST['fction']) || empty($_POST['uid'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (empty($param['fction']) || empty($param['uid'])) {
     $result['result'] = FALSE;
+    $result['message'] = "function edit_multi_email : parameter";
     return $result;
   }
 
   global $firebase;
 
-  switch ($_POST['fction']) {
+  $fction   = $param["fction"];
+  $uid      = $param["uid"];
+  $email    = $param["email"];
+  $item_id  = $param["item_id"];
+
+  switch ($fction) {
     case 'add':
     {
         // #1 load profile friend
@@ -5457,7 +5497,7 @@ function edit_multi_email()
         // $profile2_load_by_user = profile2_load_by_user($user_fields, NULL);
         // $profile =  profile2_load($profile2_load_by_user['main']->pid);
         // #2 load profile friend
-        $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+        $profile = profile2_by_uid_load($uid, 'main');
 
         // #3 
         $flag = TRUE;
@@ -5468,7 +5508,7 @@ function edit_multi_email()
         if(isset($profile->field_profile_multi_email)){
           foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
               $data_item_load = field_collection_item_load($value['value']);
-              if($data_item_load->field_email_text[LANGUAGE_NONE][0]['value'] == $_POST['email']){
+              if($data_item_load->field_email_text[LANGUAGE_NONE][0]['value'] == $email){
                 
                 $flag = FALSE;
                 break;
@@ -5481,7 +5521,7 @@ function edit_multi_email()
           $value = array();
           $value['field_name'] = 'field_profile_multi_email'; // field collection name
 
-          $value['field_email_text'][LANGUAGE_NONE][0]['value'] = $_POST['email'];
+          $value['field_email_text'][LANGUAGE_NONE][0]['value'] = $email;
 
           // Create the field collection entry and associate it with the profile
           $field_entity = entity_create('field_collection_item', $value);
@@ -5489,7 +5529,7 @@ function edit_multi_email()
           $field_entity->save();
 
           $value = array(
-            "name"      => $_POST['email'],
+            "name"      => $email,
             "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
             "enabled"   => "1",  // เปิด หรือ ปิดการใช้
             "create"    => time(),
@@ -5499,7 +5539,7 @@ function edit_multi_email()
 
           // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
 
-          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $field_entity->item_id, $value);
+          $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/mails/" . $field_entity->item_id, $value);
 
           $result['result']  = TRUE;
           $result['is_edit'] = FALSE;
@@ -5519,22 +5559,22 @@ function edit_multi_email()
       // $profile =  profile2_load($profile2_load_by_user['main']->pid);
       // #2 load profile friend
 
-      $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+      $profile = profile2_by_uid_load($uid, 'main');
 
       // #3 
       // check is phone number duplicat
       foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
           $data_item_load = field_collection_item_load($value['value']);
-          if($data_item_load->item_id == $_POST['item_id']){
+          if($data_item_load->item_id == $item_id){
             
             $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
 
             //Update value
-            $wrapper->field_email_text->set($_POST['email']);
+            $wrapper->field_email_text->set($email);
             $wrapper->save(TRUE);
 
             $value = array(
-              "name"      => $_POST['email'],
+              "name"      => $email,
               "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
               "enabled"   => "1",  // เปิด หรือ ปิดการใช้
               "update"    => time()
@@ -5542,7 +5582,7 @@ function edit_multi_email()
 
             // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $data_item_load->item_id, $value);
 
-            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $data_item_load->item_id, $value);
+            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/mails/" . $data_item_load->item_id, $value);
 
             $result['result']  = TRUE;
             $result['is_edit'] = TRUE;
@@ -5559,17 +5599,17 @@ function edit_multi_email()
       // $profile2_load_by_user = profile2_load_by_user($user_fields, NULL);
       // $profile =  profile2_load($profile2_load_by_user['main']->pid);
       // #2 load profile friend
-      $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+      $profile = profile2_by_uid_load($uid, 'main');
 
       // #3 
       $flag = TRUE;
       // check is phone number duplicat
       foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
           $data_item_load = field_collection_item_load($value['value']);
-          if($data_item_load->item_id == $_POST['item_id']){
+          if($data_item_load->item_id == $item_id){
             entity_delete_multiple('field_collection_item', array($data_item_load->item_id));
 
-            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $_REQUEST['uid'] ."/profiles/mails/" . $data_item_load->item_id);
+            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/mails/" . $data_item_load->item_id);
 
             $result['result'] = TRUE;
             $result['item_id'] = $data_item_load->item_id;
@@ -5973,14 +6013,16 @@ function add_friend(){
     return $result;
   }
 
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['friend_id'])) {
+  $param = json_decode(file_get_contents('php://input'), true);
+
+  if (empty($param['uid']) || empty($param['friend_id'])) {
     $result['result'] = FALSE;
     return $result;
   }
 
   global $firebase;
-  $uid        = $_REQUEST['uid'];
-  $friend_id  = $_REQUEST['friend_id'];
+  $uid        = $param['uid'];
+  $friend_id  = $param['friend_id'];
 
   // กรณีเป้น ตัวเอง(My self)
   if (strcasecmp($uid, $friend_id) == 0) {
@@ -6332,24 +6374,26 @@ function update_picture_profile(){
     $result['message']  = "check_header()";
     return $result;
   }
-
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
+  
+  if (empty($_REQUEST['uid']) || empty($_FILES)) {
     $result['result'] = FALSE;
-    $result['message']  = "function : update_picture_profile, parameter";
+    $result['message']  = "function : update_picture_bg, parameter";
     return $result;
   }
 
   global $firebase;
 
   $uid   = $_REQUEST['uid'];
-  $image = $_REQUEST['image'];
+  $image = $_FILES['image_key'];
 
-  $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+  $profile = profile2_by_uid_load($uid, 'main');
 
   if($image != ""){
 
     // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
-    $binary = base64_decode($image);
+    // $binary = base64_decode($image);
+
+    $binary = file_get_contents($image['tmp_name']);
 
     //Create the directory if it does not already exist, otherwise check the permissions
     $directory = 'public://';
@@ -6359,7 +6403,7 @@ function update_picture_profile(){
     $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
     
     //Saves a file to the specified destination and creates a database entry.
-    $file = klovers_file_save_data($_POST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+    $file = klovers_file_save_data($uid, $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
 
     // save รูป profile
     $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
@@ -6392,7 +6436,16 @@ function update_picture_bg(){
     return $result;
   }
 
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
+  // $param = json_decode(file_get_contents('php://input'), true);
+
+  // $result['result'] = TRUE;
+  // $result['_REQUEST']  = $_REQUEST;
+  // $result['_FILES']  = $_FILES;
+  // $result['param']  = $param;
+
+  // return $result;
+
+  if (empty($_REQUEST['uid']) || empty($_FILES)) {
     $result['result'] = FALSE;
     $result['message']  = "function : update_picture_bg, parameter";
     return $result;
@@ -6401,14 +6454,17 @@ function update_picture_bg(){
   global $firebase;
 
   $uid   = $_REQUEST['uid'];
-  $image = $_REQUEST['image'];
+  $image = $_FILES['image_key'];
 
-  $profile = profile2_by_uid_load($_REQUEST['uid'], 'main');
+  $profile = profile2_by_uid_load($uid, 'main');
 
   if($image != ""){
 
     // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
-    $binary = base64_decode($image);
+    // $binary = base64_decode($image);
+
+    $binary = file_get_contents($image['tmp_name']);
+
 
     //Create the directory if it does not already exist, otherwise check the permissions
     $directory = 'public://';
@@ -6418,7 +6474,7 @@ function update_picture_bg(){
     $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
     
     //Saves a file to the specified destination and creates a database entry.
-    $file = klovers_file_save_data($_POST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+    $file = klovers_file_save_data($uid, $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
 
     // save รูป profile
     $profile->field_picture_bg[LANGUAGE_NONE][0] = (array)$file;
@@ -8444,6 +8500,9 @@ function user_for_friend_delete(){
     $result['message']= "check_header()";
     return $result;
   }
+
+  watchdog(TAG, 'user_for_friend_delete header: %header', array('%header'=> serialize($_REQUEST)), WATCHDOG_INFO);
+
 
   if (empty($_REQUEST['uid']) || empty($_REQUEST['friend_id'])) {
     $result['result'] = FALSE;

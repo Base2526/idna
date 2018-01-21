@@ -25,10 +25,6 @@
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
-    //set http method
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-
     NSMutableString *dataToSend = [NSMutableString string];
     
     [dataToSend appendFormat:@"uid=%@&my_id=%@", [[Configs sharedInstance] getUIDU], my_id];

@@ -28,16 +28,13 @@
 #import "ChatWall.h"
 #import "GroupChatRepo.h"
 #import "GroupChat.h"
-
 #import "Tab_Home.h"
-
 #import "FriendsRepo.h"
-
 #import "ProfilesRepo.h"
 #import "AddFriend.h"
-
 #import "ChatViewController.h"
 #import "FriendRequestCell.h"
+#import "FriendWaitForAFriendCell.h"
 
 #define __count 5
 
@@ -63,6 +60,9 @@
 #pragma mark - View Life Cycle
 - (void)viewDidLoad{
     [super viewDidLoad];
+    
+    
+    
     
     /*
     SWRevealViewController *revealViewController = self.revealViewController;
@@ -117,7 +117,8 @@
     [tblView registerNib:[UINib nibWithNibName:@"FriendTableViewCell" bundle:nil] forCellReuseIdentifier:@"FriendTableViewCell"];
     [tblView registerNib:[UINib nibWithNibName:@"GroupTableViewCell" bundle:nil] forCellReuseIdentifier:@"GroupTableViewCell"];
     [tblView registerNib:[UINib nibWithNibName:@"FriendRequestCell" bundle:nil] forCellReuseIdentifier:@"FriendRequestCell"];
-
+    [tblView registerNib:[UINib nibWithNibName:@"FriendWaitForAFriendCell" bundle:nil] forCellReuseIdentifier:@"FriendWaitForAFriendCell"];
+    
     // NSDictionary *_data =  [[Configs sharedInstance] loadData:_DATA];
     // NSLog(@"");
     
@@ -128,10 +129,8 @@
     
     
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self reloadData:nil];
-    });
+        
+    [self reloadData:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -243,7 +242,11 @@
         
         NSMutableDictionary *friends = [[NSMutableDictionary alloc] init];
         
+        // สถานะรอการตอบรับคำขอเป้นเพือน
         NSMutableDictionary *friend_request = [[NSMutableDictionary alloc] init];
+        
+        // สถานะทีเราส่งคำขอเป้นเพือน
+        NSMutableDictionary *friend_wait_for_a_friend = [[NSMutableDictionary alloc] init];
         
         for (int i = 0; i < [fs count]; i++) {
             NSArray *val =  [fs objectAtIndex:i];
@@ -278,10 +281,21 @@
             //            }
             //        }
             
+            // สถานะรอการตอบรับคำขอเป้นเพือน
             if ([friend objectForKey:@"status"]) {
                 if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
                     if ([[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND_REQUEST]) {
                         [friend_request setObject:val forKey:friend];
+                    }
+                    flag = false;
+                }
+            }
+            
+            // สถานะทีเราส่งคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    if ([[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_WAIT_FOR_A_FRIEND]) {
+                        [friend_wait_for_a_friend setObject:val forKey:friend];
                     }
                     flag = false;
                 }
@@ -350,8 +364,11 @@
         
         // #5 Friend REQUEST
         [all_data setValue:friend_request forKey:@"friend_request"];
-        NSLog(@"");
         // #5 Friend REQUEST
+        
+        // #6 Friend WAIT_FOR_A_FRIEND
+        [all_data setValue:friend_wait_for_a_friend forKey:@"friend_wait_for_a_friend"];
+        // #6 Friend WAIT_FOR_A_FRIEND
         
         // #6 invite_group
         /*
@@ -446,6 +463,11 @@
             case 4:{
                 NSMutableArray *friend_request = [all_data valueForKey:@"friend_request"];
                 return  [friend_request count];
+            }
+                
+            case 5:{
+                NSMutableArray *friend_wait_for_a_friend = [all_data valueForKey:@"friend_wait_for_a_friend"];
+                return  [friend_wait_for_a_friend count];
             }
                 default:
                 return 0;
@@ -623,6 +645,7 @@
                     cell.lblChangeFriendsName.text = [item objectForKey:@"change_friends_name"];
                 }
                 
+                /*
                 cell.lblType.text = [item objectForKey:@"type"];
                 
                 cell.lblIsFavorites.text = @"NO";
@@ -647,6 +670,7 @@
                         cell.lblIsBlock.text = @"YES";
                     }
                 }
+                */
                 
                 cell.lblOnline.text = @"NO";
                 if([f objectForKey:@"online"]){
@@ -724,6 +748,7 @@
                     cell.lblChangeFriendsName.text = [item objectForKey:@"change_friends_name"];
                 }
                 
+                /*
                 cell.lblType.text = [item objectForKey:@"type"];
                 
                 cell.lblIsFavorites.text = @"NO";
@@ -748,6 +773,7 @@
                         cell.lblIsBlock.text = @"YES";
                     }
                 }
+                */
                 
                 // cell.lblOnline.text = @"NO";
                 cell.lblOnline.text = @"NO";
@@ -775,23 +801,14 @@
                 
                 FriendRequestCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FriendRequestCell"];
                 cell = [tableView dequeueReusableCellWithIdentifier:@"FriendRequestCell"];
-                
-                
-                // @"Favorite"
+
                 NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_request"];
-                
                 
                 NSArray *keys = [friend_request allKeys];
                 id key = [keys objectAtIndex:indexPath.row];
                 NSArray *val = [friend_request objectForKey:key];
                 
-                // NSArray *val = [friend_request ob]
-                
                 NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-//                NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-                
-                // NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                NSLog(@"");
                 
                 NSArray *fprofile = [friendPRepo get:friend_id];
                 
@@ -799,21 +816,6 @@
                 NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
                 
                 NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                
-//
-////
-//                NSData *data =  [[item objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-////
-////                if (data == nil) {
-////                    return  cell;
-////                }
-////
-////                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-//
-//
-////                NSData *data =  [[sortedValues objectAtIndex:indexPath.row] dataUsingEncoding:NSUTF8StringEncoding];
-//
-//                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                 
                 if ([f objectForKey:@"image_url"]) {
                     [cell.imageV clear];
@@ -827,7 +829,6 @@
                 if ([f objectForKey:@"name"]) {
                     [cell.labelName setText:[f objectForKey:@"name"]];
                 }
-                
                 
                 UITapGestureRecognizer *singleBtnConfirmTap =
                 [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -845,7 +846,50 @@
                 [cell.btnDeleteRequest addGestureRecognizer:singleBtnDeleteRequestTap];
                 
                 
-               
+                return cell;
+            }
+                
+                
+            case 5:{
+                
+                FriendWaitForAFriendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FriendWaitForAFriendCell"];
+                cell = [tableView dequeueReusableCellWithIdentifier:@"FriendWaitForAFriendCell"];
+                
+                NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_wait_for_a_friend"];
+                
+                
+                NSArray *keys = [friend_request allKeys];
+                id key = [keys objectAtIndex:indexPath.row];
+                NSArray *val = [friend_request objectForKey:key];
+                
+                NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+                
+                NSArray *fprofile = [friendPRepo get:friend_id];
+                
+                
+                NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                
+                if ([f objectForKey:@"image_url"]) {
+                    [cell.imageV clear];
+                    [cell.imageV showLoadingWheel]; // API_URL
+                    [cell.imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [f objectForKey:@"image_url"]]]];
+                    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:cell.imageV ];
+                }else{
+                    [cell.imageV clear];
+                }
+                
+                if ([f objectForKey:@"name"]) {
+                    [cell.labelName setText:[f objectForKey:@"name"]];
+                }
+                
+                UITapGestureRecognizer *singleBtnDeleteRequestTap =
+                [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                        action:@selector(handleSingleBtnCancelRequestTap:)];
+                
+                cell.btnCancelRequest.tag = indexPath.row;
+                [cell.btnCancelRequest addGestureRecognizer:singleBtnDeleteRequestTap];
                 
                 return cell;
             }
@@ -1015,7 +1059,13 @@
         if([friend_request count] == 0){
             return 0;
         }
+    }else if(section == 5){
+        NSMutableArray *friend_wait_for_a_friend = [all_data valueForKey:@"friend_wait_for_a_friend"];
+        if([friend_wait_for_a_friend count] == 0){
+            return 0;
+        }
     }
+    
     return 44.0f;
 }
 
@@ -1025,9 +1075,10 @@
         case 0:
         case 1:
         case 4:
+        case 5:
             return 100.0f;
         default:
-            return 200.0f;
+            return 140.0f;
     }
 }
 
@@ -1107,6 +1158,18 @@
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
         }
             break;
+        case 5:{
+            NSMutableArray *friend_request = [all_data valueForKey:@"friend_wait_for_a_friend"];
+            headerView.lbTitle.text = [NSString stringWithFormat:@"Friend Request Sent (%ld)", [friend_request count]];
+            if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:section]]){
+                headerView.btnShowHide.selected = YES;
+            }
+            [[headerView btnShowHide] setTag:section];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+        }
+            break;
+            
         default:{
             headerView.lbTitle.text = [NSString stringWithFormat:@"Section %ld", (long)section];
             if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:section]]){
@@ -1145,8 +1208,8 @@
     [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error == nil) {
             
-            Friends *fd  = [[Friends alloc] init];
-            fd.friend_id = friend_id;
+            // Friends *fd  = [[Friends alloc] init];
+            // fd.friend_id = friend_id;
             
             NSData *data =  [[val objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
             
@@ -1161,17 +1224,16 @@
             
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-            fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            // fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            fd.update    = [timeStampObj stringValue];
-            
-            BOOL rs= [friendsRepo update:fd];
+            // NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+            // NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+            // fd.update    = [timeStampObj stringValue];
         
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadData:nil];
-            });
+            
+            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+    
+            [self reloadData:nil];
         }
     }];
     
@@ -1185,6 +1247,19 @@
     }];
 }
 
+- (void)handleSingleBtnCancelRequestTap:(UITapGestureRecognizer *)recognizer{
+    NSLog (@"%d",[recognizer.view tag]);
+    
+    NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_wait_for_a_friend"];
+    
+    NSArray *keys = [friend_request allKeys];
+    id key = [keys objectAtIndex:[recognizer.view tag]];
+    NSArray *val = [friend_request objectForKey:key];
+    NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+    
+    [self deleteFriend:friend_id];
+}
+
 - (void)handleSingleBtnDeleteRequestTap:(UITapGestureRecognizer *)recognizer{
     NSLog (@"%d",[recognizer.view tag]);
     
@@ -1196,24 +1271,6 @@
     NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
     
     [self deleteFriend:friend_id];
-    
-    // NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@%@/status/", child, friend_id]: _FRIEND_STATUS_FRIEND};
-    
-    /*
-     // NSMutableDictionary *__groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
-     NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], group_id];
-     [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-     
-        if (error == nil) {
-            // จะได้ Group id
-            NSString* key = [ref key];
-     
-             if (error == nil) {
-             }else{
-             }
-        }
-     }];
-     */
 }
 
 -(void)deleteFriend:(NSString *)friend_id{
@@ -1235,9 +1292,7 @@
              */
             
             if (error == nil) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadData:nil];
-                });
+                [self reloadData:nil];
             }else{
             }
         }
@@ -1873,8 +1928,6 @@
     */
     
     if (indexPath.section == 0) {
-        
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
             
@@ -1884,7 +1937,60 @@
             [self presentViewController:navTabHome animated:YES completion:nil];
         });
 
+    }else if(indexPath.section == 2 || indexPath.section == 3){
+        
+        // ดึงข้อมูล
+        NSMutableDictionary *idata = [[NSMutableDictionary alloc] init];
+        switch (indexPath.section) {
+            case 2:
+            idata = [all_data objectForKey:@"favorite"];
+            break;
+            case 3:
+            idata = [all_data valueForKey:@"friends"];
+            break;
+            
+            default:
+            break;
+        }
+        
+        //                NSArray *keys = [idata allKeys];
+        //                id key = [keys objectAtIndex:indexPath.row];
+        //                id item = [idata objectForKey:key];
+        
+        NSLog(@"indexPath.row ---> %d", indexPath.row);
+        
+        ////---sort เราต้องการเรียงก่อนแสดงผล
+        NSArray *myKeys = [idata allKeys];
+        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+        }];
+        
+        
+        /*
+         NSArray *fprofile = [friendPRepo get:[sortedKeys objectAtIndex:indexPath.row]];
+         
+         
+         NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+         
+         
+         NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+         */
+        
+        // ดึงข้อมูล
+        
+        
+        
+        UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        
+        FriendProfileView* friendProfile = [storybrd instantiateViewControllerWithIdentifier:@"FriendProfileView"];
+        friendProfile.friend_id = [sortedKeys objectAtIndex:indexPath.row];
+        [self.navigationController pushViewController:friendProfile animated:YES];
     }
+    
+    /*
+     case 2:
+     case 3:
+     */
 }
 
 - (void)alertView:(UserDataUIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -2277,9 +2383,8 @@
                 GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
                 if ([groupChatRepo get:group_id] != nil){
                     BOOL sv = [groupChatRepo deleteGroup:group_id];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self reloadData:nil];
-                    });
+                   
+                    [self reloadData:nil];
                 }
                 
                 // NSMutableDictionary *__groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
@@ -2664,8 +2769,8 @@
     // NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    Friends *friend  = [[Friends alloc] init];
-    friend.friend_id = friend_id;
+//    Friends *friend  = [[Friends alloc] init];
+//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -2676,13 +2781,18 @@
     
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//
+//    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//    friend.update    = [timeStampObj stringValue];
     
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    friend.update    = [timeStampObj stringValue];
+//    BOOL rs= [friendRepo update:friend];
+//
+//    [self reloadData:nil];
     
-    BOOL rs= [friendRepo update:friend];
+    
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     
     [self reloadData:nil];
 }
@@ -2717,8 +2827,8 @@
     // NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    Friends *friend  = [[Friends alloc] init];
-    friend.friend_id = friend_id;
+//    Friends *friend  = [[Friends alloc] init];
+//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -2727,13 +2837,17 @@
     
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    friend.update    = [timeStampObj stringValue];
+//    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//    friend.update    = [timeStampObj stringValue];
     
-    BOOL rs= [friendRepo update:friend];
+    // BOOL rs= [friendRepo update:friend];
+    
+    // [self reloadData:nil];
+    
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     
     [self reloadData:nil];
 }
@@ -2765,8 +2879,8 @@
     
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    Friends *friend  = [[Friends alloc] init];
-    friend.friend_id = friend_id;
+//    Friends *friend  = [[Friends alloc] init];
+//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -2775,13 +2889,17 @@
     
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
     NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
     NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    friend.update    = [timeStampObj stringValue];
+//    friend.update    = [timeStampObj stringValue];
+//
+//    BOOL rs= [friendRepo update:friend];
+//    [self reloadData:nil];
     
-    BOOL rs= [friendRepo update:friend];
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+    
     [self reloadData:nil];
 }
 
@@ -2790,10 +2908,6 @@
 }
 
 - (IBAction)onCreateGroup:(id)sender {
-//    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-//    CreateGroup* createGroup = [storybrd instantiateViewControllerWithIdentifier:@"CreateGroup"];
-//    [self.navigationController pushViewController:createGroup animated:YES];
-    
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     AddFriend* addFriend = [storybrd instantiateViewControllerWithIdentifier:@"AddFriend"];
     [self.navigationController pushViewController:addFriend animated:YES];

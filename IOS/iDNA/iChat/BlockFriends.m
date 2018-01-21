@@ -188,8 +188,8 @@
     
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    Friends *friend  = [[Friends alloc] init];
-    friend.friend_id = friend_id;
+//    Friends *friend  = [[Friends alloc] init];
+//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -198,15 +198,21 @@
     
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-    friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    // friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    friend.update    = [timeStampObj stringValue];
+    // NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    // NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    // friend.update    = [timeStampObj stringValue];
     
-    BOOL rs= [friendRepo update:friend];
+    // BOOL rs= [friendRepo update:friend];
     
-    [self reloadData:nil];
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        BOOL rs= [friendRepo update:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+//
+//        [self reloadData:nil];
+//    });
 }
 
 

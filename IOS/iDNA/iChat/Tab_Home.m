@@ -34,29 +34,29 @@
     
     profilesRepo = [[ProfilesRepo alloc] init];
     /*
-    SWRevealViewController *revealViewController = self.revealViewController;
-    if ( revealViewController )
-    {
-        revealViewController.rightViewRevealWidth = kWIDTH;
-        revealViewController.rightViewRevealOverdraw = 0;
-        
-        [self.revealButton setTarget:revealViewController];
-        [self.revealButton setAction: @selector(revealToggle:)];
-        
-        [self.rightButton setTarget:revealViewController];
-        [self.rightButton setAction: @selector(rightRevealToggle:)];
-        
-        [self.revealViewController panGestureRecognizer];
-        [self.revealViewController tapGestureRecognizer];
-    }
-    */
+     SWRevealViewController *revealViewController = self.revealViewController;
+     if ( revealViewController )
+     {
+     revealViewController.rightViewRevealWidth = kWIDTH;
+     revealViewController.rightViewRevealOverdraw = 0;
+     
+     [self.revealButton setTarget:revealViewController];
+     [self.revealButton setAction: @selector(revealToggle:)];
+     
+     [self.rightButton setTarget:revealViewController];
+     [self.rightButton setAction: @selector(rightRevealToggle:)];
+     
+     [self.revealViewController panGestureRecognizer];
+     [self.revealViewController tapGestureRecognizer];
+     }
+     */
     
-//    UIGraphicsBeginImageContext(self.view.frame.size);
-//    [[UIImage imageNamed:@"man7.jpg"] drawInRect:self.view.bounds];
-//    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//    UIGraphicsEndImageContext();
-//
-//    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
+    //    UIGraphicsBeginImageContext(self.view.frame.size);
+    //    [[UIImage imageNamed:@"man7.jpg"] drawInRect:self.view.bounds];
+    //    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    //    UIGraphicsEndImageContext();
+    //
+    //    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -154,14 +154,14 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 //- (IBAction)onAddFriend:(id)sender {
 //    UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:nil
@@ -234,37 +234,36 @@
 
 //The event handling method
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer{
-//    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-//
-//    Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
-//    UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
-//    navTabHome.navigationBar.topItem.title = @"My Profile";
-//    [self presentViewController:navTabHome animated:YES completion:nil];
+    //    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    //
+    //    Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+    //    UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+    //    navTabHome.navigationBar.topItem.title = @"My Profile";
+    //    [self presentViewController:navTabHome animated:YES completion:nil];
     
     UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     // if (indexPath.section == 0) {
-        MyProfile* profile = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
-        [self.navigationController pushViewController:profile animated:YES];
+    MyProfile* profile = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
+    [self.navigationController pushViewController:profile animated:YES];
     // }
 }
 
 -(void)handleQRCodeTap:(UITapGestureRecognizer *)recognizer{
-
+    
     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].RECREATE_QRCODE ]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].RECREATE_QRCODE ]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     // NSLog(@"%@", [request allHTTPHeaderFields]);
+    /*
+     NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&platform=%@&bundleidentifier=%@", [[Configs sharedInstance] getUIDU], @"ios", [[Configs sharedInstance] getBundleIdentifier] ];
+     [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+     */
     
-    //set http method
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
-    // getBundleIdentifier
-    UIDevice *deviceInfo = [UIDevice currentDevice];
-    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&platform=%@&bundleidentifier=%@", [[Configs sharedInstance] getUIDU], @"ios", [[Configs sharedInstance] getBundleIdentifier] ];
-    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU]};
+    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
+    [request setHTTPBody:jsonBodyData];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
@@ -290,6 +289,7 @@
                 [newProfiles setValue:jsonDict[@"url_android_qrcode"] forKey:@"image_url_android_qrcode"];
                 [newProfiles setValue:jsonDict[@"url_ios_qrcode"] forKey:@"image_url_ios_qrcode"];
                 
+                /*
                 Profiles *pfs = [[Profiles alloc] init];
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -297,11 +297,16 @@
                 NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                 pfs.update    = [timeStampObj stringValue];
-                
-                BOOL sv = [profilesRepo update:pfs];
+                // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    BOOL sv = [profilesRepo update:pfs];
                     [self reloadData];
                 });
+                */
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             }else{
                 
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];

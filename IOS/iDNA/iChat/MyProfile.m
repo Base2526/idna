@@ -140,6 +140,10 @@
     if ([FBSDKAccessToken currentAccessToken]) {
         // User is logged in, do work such as go to next view controller.
         
+        NSLog(@"User name: %@",[FBSDKProfile currentProfile].name);
+        NSLog(@"User ID: %@",[FBSDKAccessToken currentAccessToken]);
+        
+        
         FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
         [loginManager logOut];
         
@@ -165,6 +169,10 @@
         }
         else
         {
+            NSLog(@"User ID: %@",[FBSDKAccessToken currentAccessToken]);
+            NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
+            
+            
             if ([result.grantedPermissions containsObject:@"email"])
             {
                 NSLog(@"result is:%@",result);
@@ -204,6 +212,7 @@
                  }
                  [newProfiles setValue:result forKey:@"facebook"];
                  
+                 /*
                  Profiles *pfs = [[Profiles alloc] init];
                  NSError * err;
                  NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -212,7 +221,19 @@
                  NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                  pfs.update    = [timeStampObj stringValue];
                  
-                 BOOL sv = [profileRepo update:pfs];
+                 // BOOL sv = [profileRepo update:pfs];
+                 
+                 // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
+                 
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     BOOL sv = [profileRepo update:pfs];
+                 });
+                 */
+                 
+                 NSError * err;
+                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                 [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                 
                  
                  NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
                  NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
@@ -1049,8 +1070,7 @@
     
     if (actionSheet.tag == 101) {
         switch (buttonIndex) {
-            case 0:
-            {
+            case 0:{
                 UIImagePickerController *picker = [[UIImagePickerController alloc] init];
                 picker.delegate = self;
                 picker.allowsEditing = YES;
@@ -1060,9 +1080,7 @@
             }
                 break;
                 
-            case 1:
-            {
-                NSLog(@"");
+            case 1:{
                 self.imagePicker = [[GKImagePicker alloc] init];
                 self.imagePicker.cropSize = CGSizeMake(280, 280);
                 self.imagePicker.delegate = self;
@@ -1161,7 +1179,7 @@
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            
                 NSArray *pf = [profileRepo get];
                 NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
                 
@@ -1172,6 +1190,7 @@
                 [newProfiles removeObjectForKey:@"image_url"];
                 [newProfiles setValue:jsonDict[@"url"] forKey:@"image_url"];
                 
+                /*
                 Profiles *pfs = [[Profiles alloc] init];
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -1180,8 +1199,20 @@
                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                 pfs.update    = [timeStampObj stringValue];
                 
-                BOOL sv = [profileRepo update:pfs];
+               // BOOL sv = [profileRepo update:pfs];
                 
+                // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    BOOL sv = [profileRepo update:pfs];
+                });
+                */
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadData:nil];
             });
         }
@@ -1205,27 +1236,39 @@
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSArray *pf = [profileRepo get];
-                NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-                
-                NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                
-                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
-                [newProfiles addEntriesFromDictionary:profiles];
-                [newProfiles removeObjectForKey:@"bg_url"];
-                [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
-                
-                Profiles *pfs = [[Profiles alloc] init];
-                NSError * err;
-                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-                pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                pfs.update    = [timeStampObj stringValue];
-                
-                BOOL sv = [profileRepo update:pfs];
+            NSArray *pf = [profileRepo get];
+            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
             
+            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+            [newProfiles addEntriesFromDictionary:profiles];
+            [newProfiles removeObjectForKey:@"bg_url"];
+            [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
+            
+            /*
+             Profiles *pfs = [[Profiles alloc] init];
+             NSError * err;
+             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+             pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+             NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+             pfs.update    = [timeStampObj stringValue];
+             
+             // BOOL sv = [profileRepo update:pfs];
+             
+             // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
+             
+             dispatch_async(dispatch_get_main_queue(), ^{
+             BOOL sv = [profileRepo update:pfs];
+             });
+             */
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadData:nil];
             });
         }

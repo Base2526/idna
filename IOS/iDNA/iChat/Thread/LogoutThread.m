@@ -34,20 +34,17 @@
     // NSString *token = [[FIRInstanceID instanceID] token];
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGOUT]];
-    
-    //initialize a request from url
-    // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
-    
+        
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
-    
-    //set http method
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
     
-    [dataToSend appendFormat:@"uid=%@", [[Configs sharedInstance] getUIDU]];
-    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+//    [dataToSend appendFormat:@"uid=%@", [[Configs sharedInstance] getUIDU]];
+//    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU]};
+    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
+    [request setHTTPBody:jsonBodyData];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];

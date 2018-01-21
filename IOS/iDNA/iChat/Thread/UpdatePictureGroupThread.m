@@ -24,10 +24,6 @@
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
-    //set http method
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
     NSString *imgString =@"";
     if (image != nil) {
         NSData *imageData = UIImageJPEGRepresentation(image, 0.5);

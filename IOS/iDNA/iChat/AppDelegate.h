@@ -14,6 +14,7 @@
 
 #import "HJObjManager.h"
 #import "Configs.h"
+#import "Profiles.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -30,7 +31,14 @@
  */
 - (void)observeEventType;
 
+- (void)updateProfile:(NSString*)data;
 
-- (void)initMainView;
+
+-(void)initMainView;
+
+/*
+ เป็นการ update ข้อมูลของเพือน
+ */
+-(void)updateFriend:(NSString *)friend_id:(NSString *)data;
 @end
 

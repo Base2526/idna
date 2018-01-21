@@ -176,6 +176,11 @@
 -(NSString *)getUIDU;
 
 /*
+ ดึง Token user
+ */
+-(NSString *)getUToken;
+
+/*
  จะ Sync ข้อมูลใหม่ทุกครั่งที่ login
 */
 -(void)synchronizeData;

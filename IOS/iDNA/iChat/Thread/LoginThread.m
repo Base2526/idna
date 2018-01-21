@@ -37,7 +37,7 @@
     /*
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@?udid=%@&platform=ios&bundleidentifier=%@&version=%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGIN, [[Configs sharedInstance] getUniqueDeviceIdentifierAsString], [[Configs sharedInstance] getBundleIdentifier], [[Configs sharedInstance] getVersionApplication] ]];
      */
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGIN]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGIN]];
     
     // NSLog(@">%@", [[Configs sharedInstance] getUniqueDeviceIdentifierAsString]);
     
@@ -47,7 +47,7 @@
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
     //set http method
-    [request setHTTPMethod:@"POST"];
+    // [request setHTTPMethod:@"POST"];
     /*
      postData.put("token", token);
      postData.put("client", clientId);
@@ -66,7 +66,7 @@
      // [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
      // [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     
-     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    // [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     // [request setValue:@"aAs9B_vHJ86yf5gjvXbFRfrPPBHV9ENHFIu8riaI7wM" forHTTPHeaderField:@"X-CSRF-Token"];
     
     //set post data of request
@@ -97,8 +97,13 @@
     
     NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
     
-    [dataToSend appendFormat:@"name=%@&pass=%@", username, password];
-    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+//    [dataToSend appendFormat:@"name=%@&pass=%@", username, password];
+//    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    
+    NSDictionary *jsonBodyDict = @{@"name":username, @"pass":password};
+    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
+    [request setHTTPBody:jsonBodyData];
     
     /*
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];

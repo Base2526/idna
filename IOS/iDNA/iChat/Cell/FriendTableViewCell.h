@@ -13,10 +13,10 @@
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imgPerson;
 @property (weak, nonatomic) IBOutlet UILabel *lblName;
 @property (weak, nonatomic) IBOutlet UILabel *lblChangeFriendsName;
-@property (weak, nonatomic) IBOutlet UILabel *lblType;
-@property (weak, nonatomic) IBOutlet UILabel *lblIsFavorites;
-@property (weak, nonatomic) IBOutlet UILabel *lblIsHide;
-@property (weak, nonatomic) IBOutlet UILabel *lblIsBlock;
+//@property (weak, nonatomic) IBOutlet UILabel *lblType;
+//@property (weak, nonatomic) IBOutlet UILabel *lblIsFavorites;
+//@property (weak, nonatomic) IBOutlet UILabel *lblIsHide;
+//@property (weak, nonatomic) IBOutlet UILabel *lblIsBlock;
 
 @property (weak, nonatomic) IBOutlet UILabel *lblOnline;
 

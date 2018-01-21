@@ -50,11 +50,14 @@
     }
 }
 
-- (BOOL) update:(Profiles *)data{
+- (BOOL) update:(NSString *)data{
     NSArray *profile = [self get];
     
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    
     //  แสดงว่ามีให้ทำการ udpate
-    NSString *query = [NSString stringWithFormat:@"UPDATE profiles set 'data'='%@', 'update'='%@' WHERE id='%d';", data.data, data.update, [[profile objectAtIndex: [self.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue]];
+    NSString *query = [NSString stringWithFormat:@"UPDATE profiles set 'data'='%@', 'update'='%@' WHERE id='%d';", data, [timeStampObj stringValue], [[profile objectAtIndex: [self.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue]];
     
     //  Execute the query.
     [self.dbManager executeQuery:query];
@@ -68,6 +71,29 @@
         return false;
     }
 }
+
+//- (BOOL) update:(int)profile_id:(NSString *)data{
+//    // NSArray *profile = [self get];
+//
+//    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//
+//    //[[profile objectAtIndex: [self.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue]
+//    //  แสดงว่ามีให้ทำการ udpate
+//    NSString *query = [NSString stringWithFormat:@"UPDATE profiles set 'data'='%@', 'update'='%@' WHERE id='%d';", data, [timeStampObj stringValue], profile_id];
+//
+//    //  Execute the query.
+//    [self.dbManager executeQuery:query];
+//
+//    //  If the query was succesfully executed then pop the view controller.
+//    if (self.dbManager.affectedRows != 0) {
+//        NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+//        return true;
+//    }else{
+//        NSLog(@"Could not execute the query");
+//        return false;
+//    }
+//}
 
 - (BOOL) delete{
     NSString *query = [NSString stringWithFormat:@"DELETE from profiles"];

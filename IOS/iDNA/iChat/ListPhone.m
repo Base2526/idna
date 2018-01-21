@@ -178,6 +178,7 @@
      if ([segue.identifier isEqualToString:@"EditPhone"]) {
          EditPhone* v = segue.destinationViewController;
          v.fction = @"add";
+         v.item_id = @"";
      }
 }
 
@@ -350,6 +351,7 @@
                             
                             NSArray *profile = [profilesRepo get];
                             
+                            /*
                             Profiles *pf = [[Profiles alloc] init];
                             NSError * err;
                             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
@@ -358,7 +360,18 @@
                             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                             pf.update    = [timeStampObj stringValue];
                             
-                            BOOL sv = [profilesRepo update:pf];
+                            // BOOL sv = [profilesRepo update:pf];
+                            // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pf];
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                BOOL sv = [profilesRepo update:pf];
+                            });
+                            */
+                            
+                            NSError * err;
+                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
+                            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                            
                         }
                         
                         dispatch_async(dispatch_get_main_queue(), ^{

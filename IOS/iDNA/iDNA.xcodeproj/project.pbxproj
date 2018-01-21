@@ -96,6 +96,7 @@
 		605129331F79EB4C008CB2B9 /* CreateGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 605129321F79EB4C008CB2B9 /* CreateGroup.m */; };
 		60518803200DFC5300130842 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518802200DFC5200130842 /* UIDeviceHardware.m */; };
 		60518806200EE63C00130842 /* MyFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518805200EE63C00130842 /* MyFacebook.m */; };
+		60518809200F09C900130842 /* FriendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 60518807200F09C800130842 /* FriendTableViewCell.m */; };
 		6052E8341FBA75A00038F5D1 /* ChatWall.m in Sources */ = {isa = PBXBuildFile; fileRef = 6052E8331FBA75A00038F5D1 /* ChatWall.m */; };
 		6057BA712004C43B002B09B2 /* FriendRequestCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6057BA6F2004C43B002B09B2 /* FriendRequestCell.m */; };
 		6057BA722004C43B002B09B2 /* FriendRequestCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6057BA702004C43B002B09B2 /* FriendRequestCell.xib */; };
@@ -115,7 +116,6 @@
 		605ED4EE1F794F7100AD621C /* UserDataUIAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED4E51F794F6F00AD621C /* UserDataUIAlertView.m */; };
 		605ED4EF1F794F7100AD621C /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED4E61F794F7000AD621C /* Movie.m */; };
 		605ED4F01F794F7100AD621C /* MyProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED4E81F794F7000AD621C /* MyProfile.m */; };
-		605ED4F71F794F9400AD621C /* FriendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED4F41F794F9200AD621C /* FriendTableViewCell.m */; };
 		605ED4FB1F794FA400AD621C /* ProfileTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 605ED4FA1F794FA300AD621C /* ProfileTableViewCell.m */; };
 		605ED4FD1F7950BB00AD621C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 605ED4FC1F7950BB00AD621C /* Main.storyboard */; };
 		605ED5001F79512200AD621C /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 605ED4FE1F79512200AD621C /* ProfileTableViewCell.xib */; };
@@ -299,6 +299,8 @@
 		60B92D6B1FB6774900F96698 /* icon_heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D171FB6774900F96698 /* icon_heart.png */; };
 		60B92D6C1FB6774900F96698 /* icon_ground_friend.png in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D181FB6774900F96698 /* icon_ground_friend.png */; };
 		60B92D6D1FB6774900F96698 /* 001_1.gif in Resources */ = {isa = PBXBuildFile; fileRef = 60B92D191FB6774900F96698 /* 001_1.gif */; };
+		60BAF62620109868005598DE /* FriendWaitForAFriendCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BAF62420109868005598DE /* FriendWaitForAFriendCell.m */; };
+		60BAF62720109868005598DE /* FriendWaitForAFriendCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60BAF62520109868005598DE /* FriendWaitForAFriendCell.xib */; };
 		60BFAB7B1FD0DC0C0079CB2E /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BFAB7A1FD0DC0C0079CB2E /* Comment.m */; };
 		60BFAB7E1FD0E3500079CB2E /* ManageClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BFAB7D1FD0E3500079CB2E /* ManageClass.m */; };
 		60C47BE01FC180AE00ECC5CC /* MyApplications.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C47BDF1FC180AE00ECC5CC /* MyApplications.m */; };
@@ -597,6 +599,8 @@
 		60518802200DFC5200130842 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
 		60518804200EE63C00130842 /* MyFacebook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyFacebook.h; sourceTree = "<group>"; };
 		60518805200EE63C00130842 /* MyFacebook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyFacebook.m; sourceTree = "<group>"; };
+		60518807200F09C800130842 /* FriendTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendTableViewCell.m; sourceTree = "<group>"; };
+		60518808200F09C900130842 /* FriendTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendTableViewCell.h; sourceTree = "<group>"; };
 		6052E8321FBA75A00038F5D1 /* ChatWall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatWall.h; sourceTree = "<group>"; };
 		6052E8331FBA75A00038F5D1 /* ChatWall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatWall.m; sourceTree = "<group>"; };
 		6057BA6E2004C43B002B09B2 /* FriendRequestCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendRequestCell.h; sourceTree = "<group>"; };
@@ -633,8 +637,6 @@
 		605ED4E61F794F7000AD621C /* Movie.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
 		605ED4E71F794F7000AD621C /* MyProfile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyProfile.h; sourceTree = "<group>"; };
 		605ED4E81F794F7000AD621C /* MyProfile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyProfile.m; sourceTree = "<group>"; };
-		605ED4F41F794F9200AD621C /* FriendTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendTableViewCell.m; sourceTree = "<group>"; };
-		605ED4F51F794F9300AD621C /* FriendTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendTableViewCell.h; sourceTree = "<group>"; };
 		605ED4F91F794FA300AD621C /* ProfileTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProfileTableViewCell.h; sourceTree = "<group>"; };
 		605ED4FA1F794FA300AD621C /* ProfileTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProfileTableViewCell.m; sourceTree = "<group>"; };
 		605ED4FC1F7950BB00AD621C /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -906,6 +908,9 @@
 		60B92D171FB6774900F96698 /* icon_heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_heart.png; sourceTree = "<group>"; };
 		60B92D181FB6774900F96698 /* icon_ground_friend.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_ground_friend.png; sourceTree = "<group>"; };
 		60B92D191FB6774900F96698 /* 001_1.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 001_1.gif; sourceTree = "<group>"; };
+		60BAF62320109868005598DE /* FriendWaitForAFriendCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendWaitForAFriendCell.h; sourceTree = "<group>"; };
+		60BAF62420109868005598DE /* FriendWaitForAFriendCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendWaitForAFriendCell.m; sourceTree = "<group>"; };
+		60BAF62520109868005598DE /* FriendWaitForAFriendCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendWaitForAFriendCell.xib; sourceTree = "<group>"; };
 		60BFAB791FD0DC0C0079CB2E /* Comment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Comment.h; sourceTree = "<group>"; };
 		60BFAB7A1FD0DC0C0079CB2E /* Comment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Comment.m; sourceTree = "<group>"; };
 		60BFAB7C1FD0E3500079CB2E /* ManageClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ManageClass.h; sourceTree = "<group>"; };
@@ -1469,8 +1474,6 @@
 				605ED4E51F794F6F00AD621C /* UserDataUIAlertView.m */,
 				605ED4DB1F794F6D00AD621C /* UserDataUILongPressGestureRecognizer.h */,
 				605ED4DE1F794F6E00AD621C /* UserDataUILongPressGestureRecognizer.m */,
-				605ED4F51F794F9300AD621C /* FriendTableViewCell.h */,
-				605ED4F41F794F9200AD621C /* FriendTableViewCell.m */,
 				605ED4F91F794FA300AD621C /* ProfileTableViewCell.h */,
 				605ED4FA1F794FA300AD621C /* ProfileTableViewCell.m */,
 				60D633EB1FB53CCD00AECA2B /* FieldDisplayMyApplication.h */,
@@ -2192,6 +2195,8 @@
 				60D6340F1FB53F6800AECA2B /* MyAppMyPostHeaderCell.xib */,
 				60D633DC1FB5379000AECA2B /* RecipeViewCell.h */,
 				60D633DD1FB5379000AECA2B /* RecipeViewCell.m */,
+				60518808200F09C900130842 /* FriendTableViewCell.h */,
+				60518807200F09C800130842 /* FriendTableViewCell.m */,
 				605ED4FF1F79512200AD621C /* FriendTableViewCell.xib */,
 				605ED4FE1F79512200AD621C /* ProfileTableViewCell.xib */,
 				60E4A4F71F7F546900536B58 /* GroupTableViewCell.h */,
@@ -2200,6 +2205,9 @@
 				6057BA6E2004C43B002B09B2 /* FriendRequestCell.h */,
 				6057BA6F2004C43B002B09B2 /* FriendRequestCell.m */,
 				6057BA702004C43B002B09B2 /* FriendRequestCell.xib */,
+				60BAF62320109868005598DE /* FriendWaitForAFriendCell.h */,
+				60BAF62420109868005598DE /* FriendWaitForAFriendCell.m */,
+				60BAF62520109868005598DE /* FriendWaitForAFriendCell.xib */,
 				60EFBAD41F83E81A00EA11D9 /* FriendHeaderTableViewCell.h */,
 				60EFBAD51F83E81A00EA11D9 /* FriendHeaderTableViewCell.m */,
 				60EFBAD61F83E81A00EA11D9 /* FriendHeaderTableViewCell.xib */,
@@ -2256,7 +2264,6 @@
 				604A6FD51F7918E700807966 /* Resources */,
 				0C727C30B385F0FFC09959FA /* [CP] Embed Pods Frameworks */,
 				8A2252AE20A3A5F85997742F /* [CP] Copy Pods Resources */,
-				60D4D8E320076D73006759BA /* Upload symbols to Crash Reporting */,
 			);
 			buildRules = (
 			);
@@ -2468,6 +2475,7 @@
 				60B92D1C1FB6774900F96698 /* ic-store.png in Resources */,
 				60B92D5C1FB6774900F96698 /* mood5.jpg in Resources */,
 				60B92D1E1FB6774900F96698 /* ic-share.png in Resources */,
+				60BAF62720109868005598DE /* FriendWaitForAFriendCell.xib in Resources */,
 				60B92D1F1FB6774900F96698 /* ic-video-call.png in Resources */,
 				60B92D3E1FB6774900F96698 /* icon_web.png in Resources */,
 				60B92D311FB6774900F96698 /* icon_peoples.png in Resources */,
@@ -2511,20 +2519,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		60D4D8E320076D73006759BA /* Upload symbols to Crash Reporting */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload symbols to Crash Reporting";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Replace this with the GOOGLE_APP_ID from your GoogleService-Info.plist file\nGOOGLE_APP_ID=1:764371836749:ios:1a529487d3a7ee83\n\n# Replace the /Path/To/ServiceAccount.json with the path to the key you just downloaded\n\"${PODS_ROOT}\"/FirebaseCrash/upload-sym \"${PROJECT_DIR}/Keys/test-toonchat-firebase-crashreporting-aym65-c3e4f431b7.json\"";
 		};
 		8A2252AE20A3A5F85997742F /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2609,7 +2603,6 @@
 				60C47BF31FC1DC2200ECC5CC /* RecipeCollectionHeaderView.m in Sources */,
 				60C6797B1FB7C8F400077098 /* AnNmousURegisterThread.m in Sources */,
 				60C679691FB7C68800077098 /* AnNmousURegister.m in Sources */,
-				605ED4F71F794F9400AD621C /* FriendTableViewCell.m in Sources */,
 				6052E8341FBA75A00038F5D1 /* ChatWall.m in Sources */,
 				60C47BF71FC1DC5E00ECC5CC /* IDReusableView.m in Sources */,
 				600F85081FDD2FC00091163B /* Tab_iDNA_MyApp.m in Sources */,
@@ -2642,6 +2635,7 @@
 				60EFBAD71F83E81A00EA11D9 /* FriendHeaderTableViewCell.m in Sources */,
 				60D6341C1FB5521200AECA2B /* DeleteMyApplicationThread.m in Sources */,
 				60D633DE1FB5379000AECA2B /* RecipeViewCell.m in Sources */,
+				60518809200F09C900130842 /* FriendTableViewCell.m in Sources */,
 				60E102621FE6068800637FB8 /* MXScrollView.m in Sources */,
 				60E102701FE606D900637FB8 /* MXContacts.m in Sources */,
 				60D633DA1FB52D3800AECA2B /* Cell_Item_Following_TabiDNA.m in Sources */,
@@ -2729,6 +2723,7 @@
 				60C679741FB7C7FD00077098 /* SignUpThread.m in Sources */,
 				60E102691FE6068800637FB8 /* MXSegmentedPager.m in Sources */,
 				600F84FB1FDCDA9A0091163B /* UpdatePictureBGThread.m in Sources */,
+				60BAF62620109868005598DE /* FriendWaitForAFriendCell.m in Sources */,
 				60414EEF1FE89C0C0035F03B /* ResultSearchFriend.m in Sources */,
 				606CAB761FD2793F00F134B9 /* SelectFriendClasss.m in Sources */,
 				60D634141FB551CA00AECA2B /* UpdateMyAppProfileThread.m in Sources */,

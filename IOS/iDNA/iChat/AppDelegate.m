@@ -58,6 +58,9 @@
 
 @interface AppDelegate (){
     NSMutableArray *childObservers, *childObserver_Friends;
+    
+    ProfilesRepo* profilesRepo;
+    FriendsRepo* friendRepo;
 }
 
 @end
@@ -232,6 +235,10 @@
     [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
     // ---- FB
+    
+    
+    profilesRepo = [[ProfilesRepo alloc] init];
+    friendRepo = [[FriendsRepo alloc] init];
     
     return YES;
 }
@@ -740,21 +747,24 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
         // NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
         
-        Friends *friend  = [[Friends alloc] init];
-        friend.friend_id = snapshot.key;
+        // Friends *friend  = [[Friends alloc] init];
+        // friend.friend_id = snapshot.key;
         // friend.data      = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         
         NSError * err;
         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-        friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        // friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
-        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-        friend.update    = [timeStampObj stringValue];
+        // NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        // NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        // friend.update    = [timeStampObj stringValue];
         
-        BOOL rs= [friendRepo update:friend];
+        // BOOL rs= [friendRepo update:friend];
+        
+        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        
     }];
     
     /*
@@ -846,6 +856,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         
         // NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
+        if(![snapshot.value isKindOfClass:[NSDictionary class]]){
+            return;
+        }
+        
         NSDictionary *val = snapshot.value;
  
         if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
@@ -883,6 +897,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     }];
     
     [[[[ref child:child] child:@"profiles"] child:@"device_access"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        
+        if(![snapshot.value isKindOfClass:[NSDictionary class]]){
+            return;
+        }
         
         // NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
@@ -996,6 +1014,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             
             ProfilesRepo*profileRepo = [[ProfilesRepo alloc] init];
             
+            /*
             NSArray *profile = [profileRepo get];
             
             Profiles *pf = [[Profiles alloc] init];
@@ -1007,7 +1026,14 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             // pf.create    = [timeStampObj stringValue];
             pf.update    = [timeStampObj stringValue];
             
-            BOOL sv = [profileRepo update:pf];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                BOOL sv = [profileRepo update:pf];
+            });
+            */
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+            [self updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
            
         }else if ([snapshot.key isEqualToString:@"friends"]) {
             
@@ -1769,6 +1795,20 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     
     [self.window makeKeyAndVisible];
     
+}
+
+// [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile];
+- (void)updateProfile:(NSString*)data{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL sv = [profilesRepo update:data];
+    });
+}
+
+// [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriendProfile];
+-(void)updateFriend:(NSString *)friend_id:(NSString *)data{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL rs= [friendRepo update:friend_id :data];
+    });
 }
 
 @end

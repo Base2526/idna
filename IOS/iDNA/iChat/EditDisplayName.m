@@ -103,6 +103,7 @@
             [newProfiles removeObjectForKey:@"name"];
             [newProfiles setValue:strName forKey:@"name"];
             
+            /*
             Profiles *pfs = [[Profiles alloc] init];
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -111,7 +112,14 @@
             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
             pfs.update    = [timeStampObj stringValue];
             
-            BOOL sv = [profileRepo update:pfs];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                BOOL sv = [profileRepo update:pfs];
+            });
+            */
+            
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             
             NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
             NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};

@@ -93,8 +93,8 @@
                 [[Configs sharedInstance] saveData:_DATA :newDict];
                 */
                 
-                Friends *fd  = [[Friends alloc] init];
-                fd.friend_id = friend_id;
+//                Friends *fd  = [[Friends alloc] init];
+//                fd.friend_id = friend_id;
                 
                 NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
                 [newDict addEntriesFromDictionary:friend];
@@ -107,13 +107,16 @@
                 
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-                fd.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSString* data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                 
-                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                fd.update    = [timeStampObj stringValue];
+//                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//                fd.update    = [timeStampObj stringValue];
+//
+                // BOOL rs= [friendRepo update:fd];
                 
-                BOOL rs= [friendRepo update:fd];
+               
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :data];
                 
                 [self.navigationController popViewControllerAnimated:YES];
             }

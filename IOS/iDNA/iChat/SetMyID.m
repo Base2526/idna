@@ -80,6 +80,7 @@
                 }
                 [newProfiles setValue:strName forKey:@"my_id"];
                 
+                /*
                 Profiles *pfs = [[Profiles alloc] init];
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -87,12 +88,16 @@
                 NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                 pfs.update    = [timeStampObj stringValue];
-                
-                BOOL sv = [profilesRepo update:pfs];
-                
+         
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    BOOL sv = [profilesRepo update:pfs];
                     [self.navigationController popViewControllerAnimated:YES];
                 });
+                */
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             }else{
                 [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
             }

@@ -18,7 +18,9 @@
 
 - (NSArray *)get;
 - (BOOL)insert:(Profiles *)data;
-- (BOOL)update:(Profiles *)data;
+- (BOOL)update:(NSString *)data;
+
+// - (BOOL)update:(int)profile_id:(NSString *)data;
 
 - (BOOL)delete;
 @end

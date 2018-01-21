@@ -81,9 +81,13 @@
     
     NSDictionary *facebook = [profiles objectForKey:@"facebook"];
     
-    if([facebook objectForKey:@"link"]){
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[facebook objectForKey:@"link"]]];
-    }
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"fb://profile/%@", @"573395209427571"]];
+    [[UIApplication sharedApplication] openURL:url];
+//    if([facebook objectForKey:@"link"]){
+//        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[facebook objectForKey:@"link"]]];
+//    }
+    
+    // https://www.facebook.com/next.station.5
     
 //    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"fb://"]]) {
 //
@@ -94,7 +98,7 @@
 //        [[UIApplication sharedApplication] openURL:url];
 //
 //
-//        // [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.facebook.com/10214833017848875"]];
+//        // [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.facebook.com/573395209427571"]];
 //    }
 //    else {
 //
@@ -139,6 +143,7 @@
                     }
                     // [newProfiles setValue:result forKey:@"facebook"];
                     
+                    /*
                     Profiles *pfs = [[Profiles alloc] init];
                     NSError * err;
                     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
@@ -146,10 +151,13 @@
                     NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
                     NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
                     pfs.update    = [timeStampObj stringValue];
+                     */
                     
-                    BOOL sv = [profileRepo update:pfs];
+                    NSError * err;
+                    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
                     
-                    
+                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                
                     [self.navigationController popViewControllerAnimated:NO];
                 });
             }else{

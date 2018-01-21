@@ -22,17 +22,12 @@
     // [data release];
     
     // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].EDIT_MULTI_PHONE]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].EDIT_MULTI_PHONE]];
     
     //initialize a request from url
     // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
-    
-    //set http method
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
     
     /*
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -52,8 +47,12 @@
     
     NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [preferences objectForKey:_UID],imgString];
     
-    [dataToSend appendFormat:@"uid=%@&fction=%@&item_id=%@&number=%@", [[Configs sharedInstance] getUIDU], fction, item_id, number];
-    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    // [dataToSend appendFormat:@"uid=%@&fction=%@&item_id=%@&number=%@", [[Configs sharedInstance] getUIDU], fction, item_id, number];
+    // [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU], @"fction":fction, @"item_id":item_id, @"number":number};
+    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
+    [request setHTTPBody:jsonBodyData];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];

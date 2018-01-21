@@ -622,6 +622,7 @@
                     cell.lblChangeFriendsName.text = [item objectForKey:@"change_friends_name"];
                 }
                 
+                /*
                 cell.lblType.text = [item objectForKey:@"type"];
                 
                 cell.lblIsFavorites.text = @"NO";
@@ -646,6 +647,7 @@
                         cell.lblIsBlock.text = @"YES";
                     }
                 }
+                */
                 
                 cell.lblOnline.text = @"NO";
                 if([f objectForKey:@"online"]){
@@ -692,6 +694,7 @@
                     cell.lblChangeFriendsName.text = [item objectForKey:@"change_friends_name"];
                 }
                 
+                /*
                 cell.lblType.text = [item objectForKey:@"type"];
                 
                 cell.lblIsFavorites.text = @"NO";
@@ -716,6 +719,7 @@
                         cell.lblIsBlock.text = @"YES";
                     }
                 }
+                */
                 
                 // cell.lblOnline.text = @"NO";
                 cell.lblOnline.text = @"NO";
@@ -769,10 +773,10 @@
                 NSDictionary * member= [item objectForKey:@"members"];
                 
                 cell.lblChangeFriendsName.text = [NSString stringWithFormat:@"%d people", [member count] ] ;
-                cell.lblType.text = @"";
-                cell.lblIsFavorites.text = @"";
-                cell.lblIsHide.text = @"";
-                cell.lblIsBlock.text = @"";
+//                cell.lblType.text = @"";
+//                cell.lblIsFavorites.text = @"";
+//                cell.lblIsHide.text = @"";
+//                cell.lblIsBlock.text = @"";
                 cell.lblOnline.text = @"";
                 
                 // UserDataUILongPressGestureRecognizer
@@ -808,10 +812,10 @@
                 NSDictionary * member= [item objectForKey:@"members"];
                 
                 cell.lblChangeFriendsName.text = [NSString stringWithFormat:@"%d people", [member count] ] ;
-                cell.lblType.text = @"";
-                cell.lblIsFavorites.text = @"";
-                cell.lblIsHide.text = @"";
-                cell.lblIsBlock.text = @"";
+//                cell.lblType.text = @"";
+//                cell.lblIsFavorites.text = @"";
+//                cell.lblIsHide.text = @"";
+//                cell.lblIsBlock.text = @"";
                 cell.lblOnline.text = @"";
                 
                 // UserDataUILongPressGestureRecognizer
@@ -852,10 +856,10 @@
                 NSDictionary * member= [item objectForKey:@"members"];
                 
                 cell.lblChangeFriendsName.text = [NSString stringWithFormat:@"%d people", [member count] ] ;
-                cell.lblType.text = @"";
-                cell.lblIsFavorites.text = @"";
-                cell.lblIsHide.text = @"";
-                cell.lblIsBlock.text = @"";
+//                cell.lblType.text = @"";
+//                cell.lblIsFavorites.text = @"";
+//                cell.lblIsHide.text = @"";
+//                cell.lblIsBlock.text = @"";
                 cell.lblOnline.text = @"";
                 
                 // UserDataUILongPressGestureRecognizer

@@ -7,13 +7,13 @@
 //
 
 #import "PreLogin.h"
-#import "AnNmousUThread.h"
+//#import "AnNmousUThread.h"
 #import "SVProgressHUD.h"
 #import "AppConstant.h"
 #import "Configs.h"
 #import "MainTabBarController.h"
-
 #import "MainViewController.h"
+#import "AppConstant.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -128,53 +128,64 @@
 */
 
 - (IBAction)onAnnmousu:(id)sender {
-    
     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
     
-    AnNmousUThread * nThread = [[AnNmousUThread alloc] init];
-    [nThread setCompletionHandler:^(NSData * data) {
-        
-        [[Configs sharedInstance] SVProgressHUD_Dismiss];
-        
-        
-        NSObject* obj= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-        
-        if ([obj isKindOfClass:[NSArray class]]) {
-            
-            NSArray *objArray = (NSArray *)obj;
-            NSString* text = [objArray objectAtIndex:0];
-        }
-        
-        NSDictionary *jsonDict = (NSDictionary *)obj;
-        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            
-            NSMutableDictionary *idata  = jsonDict[@"data"];
-        
-            if (![idata isKindOfClass:[NSDictionary class]]) {
-                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[NSString stringWithFormat:@"%@", idata]];
-            }else{
-                if ([idata count] > 0) {
-                    [[Configs sharedInstance] saveData:_USER :idata];
-                    
-                    [[NSNotificationCenter defaultCenter] addObserver:self
-                                                             selector:@selector(synchronizeData:)
-                                                                     name:@"synchronizeData"
-                                                                   object:nil];
-                        
-                    [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait Synchronize data"];
-                    [[Configs sharedInstance] synchronizeData];
-                }else{
-                    [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Login Error"];
-                }
-            }
-        }else{
-            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
-        }
-    }];
-    [nThread setErrorHandler:^(NSString * data) {
-        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
-    }];
-    [nThread start];
+    NSMutableData *data = [[NSMutableData alloc] init];
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL, [Configs sharedInstance].ANNMOUSU]];
+    
+    NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request
+                                                               fromData:data completionHandler:^(NSData *data,NSURLResponse *response,NSError *error) {
+                                                                   
+                                                                   [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                                                                   if (error == nil) {
+                                                                       
+                                                                       NSObject* obj= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+                                                                       
+                                                                       if ([obj isKindOfClass:[NSArray class]]) {
+                                                                           
+                                                                           NSArray *objArray = (NSArray *)obj;
+                                                                           NSString* text = [objArray objectAtIndex:0];
+                                                                       }
+                                                                       
+                                                                       NSDictionary *jsonDict = (NSDictionary *)obj;
+                                                                       if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                                                                           
+                                                                           NSMutableDictionary *idata  = jsonDict[@"data"];
+                                                                           
+                                                                           if (![idata isKindOfClass:[NSDictionary class]]) {
+                                                                               [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[NSString stringWithFormat:@"%@", idata]];
+                                                                           }else{
+                                                                               if ([idata count] > 0) {
+                                                                                   [[Configs sharedInstance] saveData:_USER :idata];
+                                                                                   
+                                                                                   [[NSNotificationCenter defaultCenter] addObserver:self
+                                                                                                                            selector:@selector(synchronizeData:)
+                                                                                                                                name:@"synchronizeData"
+                                                                                                                              object:nil];
+                                                                                   
+                                                                                   [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait Synchronize data"];
+                                                                                   [[Configs sharedInstance] synchronizeData];
+                                                                               }else{
+                                                                                   [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Login Error"];
+                                                                               }
+                                                                           }
+                                                                       }else{
+                                                                           [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
+                                                                       }
+                                                                   }else{
+                                                                       // self.errorHandler([error description]);
+                                                                       
+                                                                       [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[error description]];
+                                                                   }
+                                                               }];
+    
+    // 5
+    [uploadTask resume];
 }
     
 - (IBAction)onLoginFB:(id)sender {

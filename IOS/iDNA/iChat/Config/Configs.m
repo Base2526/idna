@@ -58,7 +58,12 @@
     self = [super init];
     if (self) {
         // sindex.php
-        self.API_URL            = @"http://128.199.210.45";
+        // Distribution
+        // self.API_URL            = @"http://128.199.210.45";
+        
+        // Development
+        self.API_URL            = @"http://188.166.208.70";
+        
         self.END_POINT          = @"/api";
         
         self.FIREBASE_ROOT_PATH    = @"idna/";
@@ -192,7 +197,6 @@
  เช็กว่า user login หรือไม่
  */
 -(BOOL)isLogin{
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     if (![self getUIDU]){
         return false;
     }
@@ -203,8 +207,14 @@
  ดึง UID User
  */
 -(NSString *)getUIDU{
-    NSDictionary *user = [self loadData:_USER] ;
     return [[self loadData:_USER] objectForKey:@"user"][@"uid"];
+}
+
+/*
+ ดึง token user
+ */
+-(NSString *)getUToken{
+    return [[Configs sharedInstance] loadData:_USER][@"token"];
 }
 
 /*
@@ -271,9 +281,13 @@
      */
     [request setValue:[self modelNumber] forHTTPHeaderField:@"model_number"];
     
+    //set http method
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    // Accept: application/json
     return request;
 }
-
 
 -(NSString *)getUniqueDeviceIdentifierAsString
 {
