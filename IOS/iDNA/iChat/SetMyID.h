@@ -13,5 +13,4 @@
 - (IBAction)onSave:(id)sender;
 
 @property (strong, nonatomic) NSString *message;
-
 @end

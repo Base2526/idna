@@ -7,17 +7,10 @@
 //
 
 #import "EditDisplayName.h"
-
-#import "EditDisplayNameThread.h"
-#import "EditFriendDisplayNameThread.h"
 #import "AppConstant.h"
 #import "Configs.h"
-#import "Profiles.h"
-#import "ProfilesRepo.h"
 
 @interface EditDisplayName (){
-    ProfilesRepo *profileRepo;
-    
     NSMutableDictionary *profiles;
 }
 @end
@@ -27,33 +20,43 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     ref         = [[FIRDatabase database] reference];
-    profileRepo = [[ProfilesRepo alloc] init];
 
     self.btnSave.enabled = NO;
     self.textFieldName.delegate = self;
     // [self.textFieldName setText:self.name];
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
     
-    if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
-        // แสดงว่าเป้น User
-        // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
-        
-        NSArray *pf = [profileRepo get];
-        NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-       [self.textFieldName setText:[profiles objectForKey:@"name"]];
-        
-    }else{
-        // แสดงว่าเป้น Friend
-    }
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
+        // แสดงว่าเป้น User
+        // NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
+        
+        profiles = [[Configs sharedInstance] getUserProfiles];
+        
+        [self.textFieldName setText:[profiles objectForKey:@"name"]];
+    }else{
+        // แสดงว่าเป้น Friend
+    }
 }
 
 /*
@@ -93,30 +96,11 @@
         
         if ([[[Configs sharedInstance] getUIDU] isEqualToString:uid]) {
             
-            NSArray *pf = [profileRepo get];
-            NSData *data =  [[pf objectAtIndex:[profileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-            
-            NSMutableDictionary *profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            
             NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
             [newProfiles addEntriesFromDictionary:profiles];
             [newProfiles removeObjectForKey:@"name"];
             [newProfiles setValue:strName forKey:@"name"];
-            
-            /*
-            Profiles *pfs = [[Profiles alloc] init];
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-            pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            pfs.update    = [timeStampObj stringValue];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                BOOL sv = [profileRepo update:pfs];
-            });
-            */
-            
+           
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
             [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];

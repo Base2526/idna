@@ -8,7 +8,7 @@
 #import "MainViewController.h"
 #import "UIViewController+LGSideMenuController.h"
 #import "ViewController.h"
-#import "Tab_Home.h"
+#import "MyProfile.h"
 #import "Configs.h"
 #import "AppDelegate.h"
 
@@ -121,11 +121,7 @@
     MainViewController *mainViewController = (MainViewController *)self.sideMenuController;
 
     [mainViewController hideLeftViewAnimated:YES completionHandler:^(void) {
-       
-        
         if (indexPath.section == 0) {
-            
-           
         }
     }];
     /*
@@ -171,16 +167,19 @@
 
 //The event handling method
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer{
-    
-    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         
-    Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
-    UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
-    navTabHome.navigationBar.topItem.title = @"My Profile";
-    [self presentViewController:navTabHome animated:YES completion:^{
-        MainViewController *mainViewController = (MainViewController *)self.sideMenuController;
+        MyProfile* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
+        tabHome.isMenu = @"1";
+        
+        UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+        navTabHome.navigationBar.topItem.title = @"My Profile";
+        [self presentViewController:navTabHome animated:YES completion:^{
+            MainViewController *mainViewController = (MainViewController *)self.sideMenuController;
             
-        [mainViewController hideLeftViewAnimated:YES completionHandler:nil];
-    }];
+            [mainViewController hideLeftViewAnimated:YES completionHandler:nil];
+        }];
+    });
 }
 @end

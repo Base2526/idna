@@ -18,13 +18,12 @@
 
 @interface GroupInvite (){
     NSMutableDictionary *group;
-    
     GroupChatRepo *groupChatRepo;
-    FriendProfileRepo *friendPRepo;
+    FriendProfileRepo *friendProfileRepo;
+    FriendsRepo *friendsRepo;
 }
 
 @property(nonatomic, strong)NSMutableDictionary *friends;
-
 @property (nonatomic, strong) NSMutableDictionary *selectedIndex;
 @end
 
@@ -38,33 +37,34 @@
     ref = [[FIRDatabase database] reference];
     
     groupChatRepo = [[GroupChatRepo alloc] init];
-    friendPRepo   = [[FriendProfileRepo alloc] init];
+    friendProfileRepo   = [[FriendProfileRepo alloc] init];
+    friendsRepo = [[FriendsRepo alloc] init];
     
     selectedIndex = [NSMutableDictionary dictionary];
 
     // friends = [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"] mutableCopy];
     
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
     friends = [[NSMutableDictionary alloc] init];
     
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
-        
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        [friends setObject:friend forKey:friend_id];
-    }
+    
     
     barBtnInvite.enabled = NO;
 }
 
+//-(void)viewWillAppear:(BOOL)animated{
+//    [self reloadData:nil];
+//}
+
 -(void)viewWillAppear:(BOOL)animated{
-    [self reloadData];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_GROUP
+                                               object:nil];
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_GROUP object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -72,47 +72,70 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)reloadData{
-    NSArray *_group = [groupChatRepo get:group_id];
-    NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-    NSMutableDictionary *items = [data dataUsingEncoding:NSUTF8StringEncoding];
+-(void)reloadData:(NSNotification *) notification{
     
-    group = [NSJSONSerialization JSONObjectWithData:items options:0 error:nil];
-    
-    NSDictionary * members = [group objectForKey:@"members"];
-    for (NSString *item_id in members) {
-        NSDictionary *val = [members objectForKey:item_id];
-        [friends removeObjectForKey:[val objectForKey:@"friend_id"]];
-    }
-    
-    // เราต้องกรอบ user hid, block ออกด้วย
-    for (NSString* key in friends) {
-        NSDictionary* value = [friends objectForKey:key];
+    dispatch_async(dispatch_get_main_queue(), ^{
         
-        if ([value objectForKey:@"hide"]) {
-            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
+        
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
+        
+        
+        
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            // [friends setObject:friend forKey:friend_id];
+            
+            Boolean flag = true;
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            
+            // สถานะรอการตอบรับคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
                 
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                friends = newFriends;
+                // สถานะทีเราส่งคำขอเป้นเพือน
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
+            }
+            
+            if (flag) {
+                [friends setObject:friend forKey:friend_id];
             }
         }
-        if ([value objectForKey:@"block"]) {
-            if ([[value objectForKey:@"block"] isEqualToString:@"1"]) {
-                // [friends removeObjectForKey:key];
-                
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                friends = newFriends;
-            }
+        
+        NSArray *_group = [groupChatRepo get:group_id];
+        NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+        NSMutableDictionary *items = [data dataUsingEncoding:NSUTF8StringEncoding];
+        
+        group = [NSJSONSerialization JSONObjectWithData:items options:0 error:nil];
+        
+        NSDictionary * members = [group objectForKey:@"members"];
+        for (NSString *item_id in members) {
+            NSDictionary *val = [members objectForKey:item_id];
+            [friends removeObjectForKey:[val objectForKey:@"friend_id"]];
         }
-    }
+        
+        [self.tableView reloadData];
+    });
 }
 
 /*
@@ -141,21 +164,6 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
     }
     
-    // cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
-    
-    // @"Friends";
-    // NSMutableDictionary *friends = [data objectForKey:@"friends"];
-    
-    /*
-    NSArray *keys = [friends allKeys];
-    id key = [keys objectAtIndex:indexPath.row];
-    id item = [friends objectForKey:key];
-    
-    NSMutableDictionary *f = [[Configs sharedInstance] loadData:key];
-    */
-    
-    // NSMutableDictionary *favorite = [all_data objectForKey:@"favorite"];
-    
     ////---sort เราต้องการเรียงก่อนแสดงผล
     NSArray *myKeys = [friends allKeys];
     NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -167,15 +175,10 @@
         id object = [friends objectForKey:key];
         [sortedValues addObject:object];
     }
-    NSDictionary *item = [sortedValues objectAtIndex:indexPath.row];
     ////---sort
     
-    NSArray *fprofile = [friendPRepo get:[sortedKeys objectAtIndex:indexPath.row]];
-    NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    if (data == nil) {
-        return  cell;
-    }
+    NSArray *fprofile = [friendProfileRepo get:[sortedKeys objectAtIndex:indexPath.row]];
+    NSData *data =  [[fprofile objectAtIndex:[friendProfileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
@@ -207,8 +210,14 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     if (selectedIndex[indexPath] == nil) {
-        NSArray *keys = [friends allKeys];
-        [selectedIndex setObject:[keys objectAtIndex:indexPath.row] forKey:indexPath];
+        // NSArray *keys = [friends allKeys];
+        
+        NSArray *myKeys = [friends allKeys];
+        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+        }];
+                
+        [selectedIndex setObject:[sortedKeys objectAtIndex:indexPath.row] forKey:indexPath];
         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
     }else{
         [selectedIndex removeObjectForKey:indexPath];
@@ -244,49 +253,49 @@
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
             
-            NSMutableDictionary *members = [group objectForKey:@"members"];
-            
-            NSMutableDictionary *resultMembers = jsonDict[@"members"];
-            for (NSString* key in resultMembers) {
-                NSDictionary* value = [resultMembers objectForKey:key];
-
-                NSMutableDictionary *tempFriend = [[NSMutableDictionary alloc] init];
-                [tempFriend addEntriesFromDictionary:members];
-                [tempFriend removeObjectForKey:key];
-                [tempFriend setObject:value forKey:key];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSMutableDictionary *members = [group objectForKey:@"members"];
                 
-                members = tempFriend;
-            }
-            
-            GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-             
-            NSArray *_group = [groupChatRepo get:group_id];
-            NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-             
-            NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-             
-            NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-            [tgroup addEntriesFromDictionary:items];
-            [tgroup removeObjectForKey:@"members"];
-            [tgroup setObject:members forKey:@"members"];
-             
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
-            groupChat.create   =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"create"]];
-             
-            // แปลกข้อมูลก่อนบันทึก local
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-             
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.update    = [timeStampObj stringValue];
+                NSMutableDictionary *resultMembers = jsonDict[@"members"];
+                for (NSString* key in resultMembers) {
+                    NSDictionary* value = [resultMembers objectForKey:key];
+                    
+                    NSMutableDictionary *tempFriend = [[NSMutableDictionary alloc] init];
+                    [tempFriend addEntriesFromDictionary:members];
+                    [tempFriend removeObjectForKey:key];
+                    [tempFriend setObject:value forKey:key];
+                    
+                    members = tempFriend;
+                }
+                
+                NSArray *_group = [groupChatRepo get:group_id];
+                NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+                
+                NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+                
+                NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
+                [tgroup addEntriesFromDictionary:items];
+                [tgroup removeObjectForKey:@"members"];
+                [tgroup setObject:members forKey:@"members"];
+                
+//                GroupChat *groupChat = [[GroupChat alloc] init];
+//                groupChat.group_id =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
+//                groupChat.create   =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"create"]];
+//
+                // แปลกข้อมูลก่อนบันทึก local
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
+//                groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//
+//                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//                groupChat.update    = [timeStampObj stringValue];
              
              // Update local database
-            [groupChatRepo update:groupChat];
+            // [groupChatRepo update:groupChat];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateGroup:group_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+            
                 [self.navigationController popViewControllerAnimated:YES];
             });
         }

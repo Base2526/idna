@@ -11,41 +11,44 @@
 #import "SVProgressHUD.h"
 #import "AppConstant.h"
 #import "Configs.h"
-#import "ProfilesRepo.h"
+
+@import Firebase;
+@import FirebaseMessaging;
+@import FirebaseDatabase;
 
 @interface EditPhone (){
-    ProfilesRepo *profilesRepo;
+    FIRDatabaseReference *ref;
     NSMutableDictionary *profiles;
 }
-
 @end
 
 @implementation EditPhone
-
+@synthesize fction, item_id;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    ref         = [[FIRDatabase database] reference];
+    
     self.btnSave.enabled = NO;
     self.textFieldName.delegate = self;
     
-    if (![self.fction isEqualToString:@"add"]) {
+    if (![fction isEqualToString:@"add"]) {
         self.title =@"Edit Phone";
         [self.textFieldName setText:self.number];
     }else{
         self.title =@"Add Phone";
     }
     
-    profilesRepo = [[ProfilesRepo alloc] init];
-    
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    [self reloadData:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    profiles = [[Configs sharedInstance] getUserProfiles];
 }
 
 /*
@@ -83,44 +86,27 @@
         
         [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
         
-        EditPhoneThread *eThread = [[EditPhoneThread alloc] init];
-        [eThread setCompletionHandler:^(NSData *data) {
-            
-            NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-            
-            [[Configs sharedInstance] SVProgressHUD_Dismiss];
-            
-            if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                if ([jsonDict[@"is_edit"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-                    // add new phone number
+        if ([fction isEqualToString:@"add"]) {
+            // Add
+            EditPhoneThread *eThread = [[EditPhoneThread alloc] init];
+            [eThread setCompletionHandler:^(NSData *data) {
+                
+                NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+                
+                [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                
+                if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
                     if ([profiles objectForKey:@"phones"]) {
                         NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
                         
-                        if (![phones objectForKey:jsonDict[@"item"]]) {
+                        if (![phones objectForKey:jsonDict[@"item_id"]]) {
                             
-                            [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                            [phones setValue:jsonDict[@"value"] forKey:jsonDict[@"item_id"]];
                             
                             NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
                             [newProfile addEntriesFromDictionary:profiles];
                             [newProfile removeObjectForKey:@"phones"];
                             [newProfile setObject:phones forKey:@"phones"];
-                            
-                            NSArray *profile = [profilesRepo get];
-                            
-                            /*
-                            Profiles *pf = [[Profiles alloc] init];
-                            NSError * err;
-                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                            // pf.create    = [timeStampObj stringValue];
-                            pf.update    = [timeStampObj stringValue];
-                          
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                BOOL sv = [profilesRepo update:pf];
-                            });
-                            */
                             
                             NSError * err;
                             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
@@ -130,88 +116,80 @@
                     }else{
                         NSMutableDictionary * phones = [[NSMutableDictionary alloc] init];
                         
-                        [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
+                        [phones setValue:jsonDict[@"value"] forKey:jsonDict[@"item_id"]];
                         
                         NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
                         [newProfile addEntriesFromDictionary:profiles];
                         // [newProfile removeObjectForKey:@"phones"];
                         [newProfile setObject:phones forKey:@"phones"];
                         
-                        NSArray *profile = [profilesRepo get];
-                        
-                        /*
-                        Profiles *pf = [[Profiles alloc] init];
-                        NSError * err;
-                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                        pf.update    = [timeStampObj stringValue];
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            BOOL sv = [profilesRepo update:pf];
-                        });
-                        */
-                        
                         NSError * err;
                         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
                         
                         [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                     }
-                }else{
-                    // edit phone number
-                    NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
                     
-                    if (![phones objectForKey:jsonDict[@"item"]]) {
-                        
-                        [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
-                        
-                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                        [newProfile addEntriesFromDictionary:profiles];
-                        [newProfile removeObjectForKey:@"phones"];
-                        [newProfile setObject:phones forKey:@"phones"];
-                        
-                        NSArray *profile = [profilesRepo get];
-                        
-                        /*
-                        Profiles *pf = [[Profiles alloc] init];
-                        NSError * err;
-                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                        pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                        pf.update    = [timeStampObj stringValue];
-
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            BOOL sv = [profilesRepo update:pf];
-                        });
-                        */
-                        
-                        NSError * err;
-                        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                        
-                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-                    }
+                    [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success"];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    });
+                }else{
+                    [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"message"]];
                 }
-                
-                [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success"];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.navigationController popViewControllerAnimated:YES];
-                });
-                
-            }else{
-                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
-            }
-        }];
-        
-        [eThread setErrorHandler:^(NSString *text) {
-            NSLog(@"%@", text);
-            [[Configs sharedInstance] SVProgressHUD_Dismiss];
+            }];
             
-            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:text];
-        }];
-        // self.number
-        [eThread start:self.fction :self.item_id : text];
+            [eThread setErrorHandler:^(NSString *message) {
+                [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:message];
+            }];
+            // self.number
+            [eThread start:fction :item_id : text];
+        }else{
+            // Edit
+            if ([profiles objectForKey:@"phones"]) {
+                NSMutableDictionary *phones = [profiles objectForKey:@"phones"];
+                
+                NSMutableDictionary *newPhones = [[NSMutableDictionary alloc] init];
+                [newPhones addEntriesFromDictionary:phones];
+                // [newPhones removeObjectForKey:self.item_id];
+                
+                NSMutableDictionary *phone  = [phones objectForKey:item_id];
+                NSMutableDictionary *newPhone = [[NSMutableDictionary alloc] init];
+                [newPhone addEntriesFromDictionary:phone];
+                [newPhone removeObjectForKey:@"name"];
+                [newPhone setValue:text forKey:@"name"];
+                
+                [newPhones removeObjectForKey:item_id];
+                [newPhones setValue:newPhone forKey:item_id];
+                
+                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                [newProfiles addEntriesFromDictionary:profiles];
+                [newProfiles removeObjectForKey:@"phones"];
+                [newProfiles setValue:newPhones forKey:@"phones"];
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                
+                NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
+                NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
+                
+                [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+                    
+                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                    
+                    NSLog(@"%@", ref.key);
+                    if (error == nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self.navigationController popViewControllerAnimated:NO];
+                        });
+                    }else{
+                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update phone."];
+                    }
+                }];
+            }
+        }
     }
 }
 @end

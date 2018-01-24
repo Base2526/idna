@@ -34,6 +34,8 @@
 #import "FriendsRepo.h"
 #import "LogoutThread.h"
 
+#import "GroupChatRepo.h"
+
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
 #endif
@@ -61,6 +63,7 @@
     
     ProfilesRepo* profilesRepo;
     FriendsRepo* friendRepo;
+    GroupChatRepo* groupChatRepo;
 }
 
 @end
@@ -237,8 +240,9 @@
     // ---- FB
     
     
-    profilesRepo = [[ProfilesRepo alloc] init];
-    friendRepo = [[FriendsRepo alloc] init];
+    profilesRepo    = [[ProfilesRepo alloc] init];
+    friendRepo      = [[FriendsRepo alloc] init];
+    groupChatRepo   = [[GroupChatRepo alloc] init];
     
     return YES;
 }
@@ -550,6 +554,37 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     }];
 }
 
+- (void)forceLogout{
+    if ([[Configs sharedInstance] isLogin]) {
+        
+        LogoutThread * logoutThread = [[LogoutThread alloc] init];
+        [logoutThread setCompletionHandler:^(NSData * data) {
+            
+            NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
+            
+            if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                
+                NSMutableDictionary *idata  = jsonDict[@"data"];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                    PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
+                    UINavigationController *navCon = [[UINavigationController alloc] initWithRootViewController:preLogin];
+                    
+                    self.window.rootViewController = navCon;
+                });
+            }else{
+                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
+            }
+        }];
+        [logoutThread setErrorHandler:^(NSString * data) {
+            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
+        }];
+        [logoutThread start];
+    }
+}
+
 - (void)observeEventType /* : (NSArray *)values*/{
     
     if (childObserver_Friends != nil) {
@@ -562,6 +597,11 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     childObserver_Friends = [[NSMutableArray alloc] init];
     NSString *child = [NSString stringWithFormat:@"%@%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     
+    /* กรณี เราโดนลบจากหลังบ้านให้ มีการ force logout */
+    [[ref child:child] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+        [self forceLogout];
+    }];
+    
     ////////////////////////////////////////////  friends  /////////////////////////////////////////////////
     /*
      กรณีมีการ เพิ่มเพือนใหม่
@@ -569,8 +609,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
-        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
-        
+        /*
         if([friendRepo get:snapshot.key] == nil){
             // NSArray *val =  [friendRepo get:snapshot.key];
             
@@ -586,9 +625,16 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             friend.create    = [timeStampObj stringValue];
             friend.update    = [timeStampObj stringValue];
             
-            BOOL sv = [friendRepo insert:friend];
+            // BOOL sv = [friendRepo insert:friend];
+            
+            [self updateFriend:snapshot.key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             NSLog(@"");
         }
+        */
+        
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+        [self updateFriend:snapshot.key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
         
         
         FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
@@ -740,8 +786,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[[ref child:child] child:@"friends"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@, %@", snapshot.key, snapshot.value);
         
-        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
-        
         NSArray *val =  [friendRepo get:snapshot.key];
         
         NSString* friend_id =[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
@@ -761,10 +805,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         
         // BOOL rs= [friendRepo update:friend];
         
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
-        
+        [self updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     }];
     
     /*
@@ -787,10 +828,9 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 //        [newDict setObject:newFriends forKey:@"friends"];
 //        [[Configs sharedInstance] saveData:_DATA :newDict];
         
-        FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
         [friendRepo deleteFriend:snapshot.key];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_GROUP object:self userInfo:@{}];
     }];
     ////////////////////////////////////////////  Friends  /////////////////////////////////////////////////
     
@@ -864,34 +904,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
  
         if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
             if([[val objectForKey:@"is_login"] isEqualToString:@"0"]){
-                
-                if ([[Configs sharedInstance] isLogin]) {
-                    LogoutThread * logoutThread = [[LogoutThread alloc] init];
-                    [logoutThread setCompletionHandler:^(NSData * data) {
-                        
-                        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                        
-                        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                            
-                            NSMutableDictionary *idata  = jsonDict[@"data"];
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                                PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
-                                UINavigationController *navCon = [[UINavigationController alloc] initWithRootViewController:preLogin];
-                                
-                                self.window.rootViewController = navCon;
-                            });
-                        }else{
-                            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
-                        }
-                    }];
-                    [logoutThread setErrorHandler:^(NSString * data) {
-                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
-                    }];
-                    [logoutThread start];
-                }
+                [self forceLogout];
             }
         }
     }];
@@ -910,34 +923,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
         
         if([[val objectForKey:@"udid"] isEqualToString:[[Configs sharedInstance] getUniqueDeviceIdentifierAsString]]){
             if([[val objectForKey:@"is_login"] isEqualToString:@"0"]){
-                
-                if ([[Configs sharedInstance] isLogin]) {
-                    LogoutThread * logoutThread = [[LogoutThread alloc] init];
-                    [logoutThread setCompletionHandler:^(NSData * data) {
-                        
-                        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                        
-                        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-                            
-                            NSMutableDictionary *idata  = jsonDict[@"data"];
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                               
-                                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                                PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
-                                UINavigationController *navCon = [[UINavigationController alloc] initWithRootViewController:preLogin];
-                                
-                                self.window.rootViewController = navCon;
-                            });
-                        }else{
-                            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
-                        }
-                    }];
-                    [logoutThread setErrorHandler:^(NSString * data) {
-                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
-                    }];
-                    [logoutThread start];
-                }
+                [self forceLogout];
             }
         }
     }];
@@ -947,94 +933,20 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
      */
     [[ref child:child] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         
-        NSLog(@"%@, %@", snapshot.key, snapshot.value);
+        // NSLog(@"%@, %@", snapshot.key, snapshot.value);
 //        NSLog(@"");
         /*
          จะได้ %@ => จาก toonchat/%@/ เราจะรู้เป็น friend_id
          */
-//        NSString* parent = snapshot.ref.parent.key;
-//        
-//        // update profile friend
-//        [[self friendsProfile] setObject:snapshot.value forKey:parent];
-//        
-//        [childObserver_Friends addObject:[ref child:child]];
-
-        /*if ([snapshot.key isEqualToString:@"profiles"] || [snapshot.key isEqualToString:@"friends"]) {
-            
-            
-            NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-            NSLog(@"");
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                //load your data here.
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    //update UI in main thread.
-                    
-                    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-                    [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-                    [newDict removeObjectForKey:snapshot.key];
-                    
-                    [newDict setObject:snapshot.value forKey:snapshot.key];
-                    
-                    [[Configs sharedInstance] saveData:_DATA :newDict];
-                    
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
-                    
-                });
-            });
-            
-         }*/
+        
         if ([snapshot.key isEqualToString:@"profiles"]) {
             
-            /*
-             NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-             NSLog(@"");
-             dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                 //load your data here.
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     //update UI in main thread.
-                     
-                     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-                     [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-                     [newDict removeObjectForKey:snapshot.key];
-                     
-                     [newDict setObject:snapshot.value forKey:snapshot.key];
-                     
-                     [[Configs sharedInstance] saveData:_DATA :newDict];
-                     
-                     
-                     [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
-                     
-                 });
-             });
-            */
-            
-            
             NSLog(@"%@, %@", snapshot.key, snapshot.value);
-            
-            ProfilesRepo*profileRepo = [[ProfilesRepo alloc] init];
-            
-            /*
-            NSArray *profile = [profileRepo get];
-            
-            Profiles *pf = [[Profiles alloc] init];
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            // pf.create    = [timeStampObj stringValue];
-            pf.update    = [timeStampObj stringValue];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                BOOL sv = [profileRepo update:pf];
-            });
-            */
             
             NSError * err;
             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
             [self updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-           
+            
         }else if ([snapshot.key isEqualToString:@"friends"]) {
             
             /*
@@ -1179,81 +1091,34 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[[ref child:child] child:@"groups"] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
+    
+        NSError * err;
+        NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
         
-        // GroupChatRepo
-        
-        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-        if ([groupChatRepo get:snapshot.key] == nil){
-            
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id = snapshot.key;
-            
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            
-            
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.create    = [timeStampObj stringValue];
-            groupChat.update    = [timeStampObj stringValue];
-            
-            BOOL sv = [groupChatRepo insert:groupChat];
-            
-        }else{
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id = snapshot.key;
-            
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            
-            
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.create    = [timeStampObj stringValue];
-            groupChat.update    = [timeStampObj stringValue];
-            
-            BOOL sv = [groupChatRepo update:groupChat];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        [self updateGroup:snapshot.key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     }];
     
     [[[ref child:child] child:@"groups"] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
         
-        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-        GroupChat *groupChat = [[GroupChat alloc] init];
-        groupChat.group_id = snapshot.key;
-        
         NSError * err;
         NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
-        groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
-        
-        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-        groupChat.create    = [timeStampObj stringValue];
-        groupChat.update    = [timeStampObj stringValue];
-        
-        BOOL sv = [groupChatRepo update:groupChat];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+        [self updateGroup:snapshot.key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     }];
     
     [[[ref child:child] child:@"groups"] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
         NSLog(@"%@-%@", snapshot.key, snapshot.value);
         NSLog(@"");
-        
-        GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
-        
-        if ([groupChatRepo get:snapshot.key] != nil) {
-            [groupChatRepo deleteGroup:snapshot.key];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
-        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([groupChatRepo get:snapshot.key] != nil) {
+                [groupChatRepo deleteGroup:snapshot.key];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_GROUP object:self userInfo:@{}];
+            }
+        });
     }];
     ////////////////////////////////////////////  Groups  /////////////////////////////////////////////////
     
@@ -1722,11 +1587,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 }
 
 -(void)friendUpdateData:(FIRDataSnapshot *) snapshot{
-    
     if([snapshot.key isEqualToString:@"image_url"] || [snapshot.key isEqualToString:@"mail"] || [snapshot.key isEqualToString:@"name"] || [snapshot.key isEqualToString:@"online"] || [snapshot.key isEqualToString:@"platform"] || [snapshot.key isEqualToString:@"status_message"] || [snapshot.key isEqualToString:@"udid"] || [snapshot.key isEqualToString:@"version"] || [snapshot.key isEqualToString:@"mails"] || [snapshot.key isEqualToString:@"phones"]){
      
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"friendUpdateData >> %@, %@, %@",snapshot.ref.parent.parent.key,snapshot.key, snapshot.value);
+            // NSLog(@"friendUpdateData >> %@, %@, %@",snapshot.ref.parent.parent.key,snapshot.key, snapshot.value);
             FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
             FriendProfile *friendProfile = [[FriendProfile alloc] init];
             
@@ -1778,7 +1642,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
             
            //  dispatch_async(dispatch_get_main_queue(), ^{
                 //update UI in main thread.
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"Tab_Contacts_reloadData" object:self userInfo:@{}];
+            [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_FRIEND object:self userInfo:@{}];
             // });
         });
     }
@@ -1794,20 +1658,29 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     self.window.rootViewController = mainViewController;
     
     [self.window makeKeyAndVisible];
-    
 }
 
-// [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile];
 - (void)updateProfile:(NSString*)data{
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL sv = [profilesRepo update:data];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_PROFILES object:self userInfo:@{}];
     });
 }
 
-// [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriendProfile];
 -(void)updateFriend:(NSString *)friend_id:(NSString *)data{
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL rs= [friendRepo update:friend_id :data];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_FRIEND object:self userInfo:@{}];
+    });
+}
+
+- (void)updateGroup:(NSString *)group_id:(NSString *)data{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL rs= [groupChatRepo update:group_id :data];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:RELOAD_DATA_GROUP object:self userInfo:@{}];
     });
 }
 

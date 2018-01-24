@@ -56,10 +56,14 @@ var PATH_CREATE_MY_APPLICATIOM_POST_LIKE = '/create_my_application_post_like';
 var PATH_UPDATE_MY_APPLICATIOM_POST_LIKE = '/update_my_application_post_like';
 
 
-var PATH_DELETE_GROUP_CHAT   		= '/delete_group_chat';
-var PATH_DELETE_MEMBER_GROUP_CHAT   = '/delete_member_group_chat';
+var PATH_DELETE_GROUP_CHAT   			 = '/delete_group_chat';
+var PATH_DELETE_MEMBER_GROUP_CHAT   	 = '/delete_member_group_chat';
 
-var PATH_DELETE_POST_MY_APPLICATION  = '/delete_post';
+var PATH_DELETE_POST_MY_APPLICATION  	 = '/delete_post';
+
+
+var PATH_DELETE_MAIL  					 = '/edit_multi_email';
+var PATH_DELETE_PHONE  					 = '/edit_multi_phone';
 
 // Refer : https://stackoverflow.com/questions/43486278/how-do-i-structure-cloud-functions-for-firebase-to-deploy-multiple-functions-fro
 exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/{type}/').onWrite(event => {
@@ -76,7 +80,6 @@ exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{
 	
 	switch(event.params.type) {
 		case 'profiles':{
-			// console.log('#1 : iDNA profiles');
 			
 			/*
 			กรณีแก้ใขข้อมูลจาก firebase โดยตรงจึงเป้นต้องวิ่งไป update ข้อมูลที่ drupal ด้วย
@@ -93,6 +96,8 @@ exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{
 						if (!objectValue.result) {
 							// console.log('#1 : iDNA profiles > edit & updated, Erorr : ' + err);
 						}
+
+						// console.log('#1 : iDNA profiles xx');
 				});
 			}
 		}
@@ -108,20 +113,48 @@ exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{
 		}
 		break;
 
-		// case 'groups':{
-
-		// 	if (crnt.val() && !prev.val()) {
-		// 		// กรณี profile user มีการ add
-		// 		console.log('#3 : iDNA groups');
-		// 	}else{
-		// 		// กรณี profile user มีการ edit | Update
-		// 		console.log(event.data.current.val());
-		// 		console.log('#3 : iDNA groups > กรณี profile user มีการ edit | Update');
-		// 	}
-		// }
-		// break;
-
 	}
+});
+
+/*
+	Delete Mail & Phone
+*/
+exports.iDNA_User_for_Email_Phone_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/profiles/{type}/{item_id}').onDelete(event => {		
+
+	var URI;
+	switch(event.params.type) {
+		case 'mails':{
+			URI = PATH_DELETE_MAIL;
+		}
+		break;
+
+		case 'phones':{
+			URI = PATH_DELETE_PHONE;
+		}
+		break;
+	}
+
+	var options = {
+	  uri: API_URL_IDNA + END_POINT_IDNA + URI,
+	  method: 'POST',
+	  headers: headers,
+	  json: {
+	  	"fction" 	: "delete",
+	    "uid"		: event.params.uid,
+	    "item_id" 	: event.params.item_id
+	  }
+	};
+
+	request(options, function (error, response, body) {
+
+		if (error == null){
+			if (body.result) {
+
+			}else{
+				console.log(body.message);
+			}
+		}
+	});
 });
 
 /*

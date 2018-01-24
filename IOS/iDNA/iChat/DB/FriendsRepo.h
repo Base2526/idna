@@ -18,7 +18,7 @@
 
 - (BOOL)check:(NSString *)friend_id;
 - (NSArray *)get:(NSString *)friend_id;
-- (BOOL)insert:(Friends *)data;
+// - (BOOL)insert:(Friends *)data;
 // - (BOOL)update:(Friends *)data;
 - (BOOL)update:(NSString* )friend_id :(NSString *)data;
 - (NSMutableArray *) getFriendsAll;

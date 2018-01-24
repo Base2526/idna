@@ -28,7 +28,20 @@
     profileRepo = [[ProfilesRepo alloc] init];
     ref         = [[FIRDatabase database] reference];
     
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
+    
+    
     [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -42,29 +55,34 @@
     
     profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
-    NSDictionary *facebook = [profiles objectForKey:@"facebook"];
-    
-    if([facebook objectForKey:@"name"]){
-       [labelName setText:[facebook objectForKey:@"name"]];
-    }
-    
-    if([facebook objectForKey:@"email"]){
-       [labelEmail setText:[facebook objectForKey:@"email"]];
-    }
-    
-    if([facebook objectForKey:@"picture"]){
-        NSDictionary *picture = [facebook objectForKey:@"picture"];
+    if([profiles objectForKey:@"facebook"]){
+        NSDictionary *facebook = [profiles objectForKey:@"facebook"];
         
-        if ([picture objectForKey:@"data"]) {
-            [imageV clear];
-            [imageV showLoadingWheel];
-            
-            [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@", [[picture objectForKey:@"data"] objectForKey:@"url"]  ]]];
-            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
+        if([facebook objectForKey:@"name"]){
+            [labelName setText:[facebook objectForKey:@"name"]];
         }
+        
+        if([facebook objectForKey:@"email"]){
+            [labelEmail setText:[facebook objectForKey:@"email"]];
+        }
+        
+        if([facebook objectForKey:@"picture"]){
+            NSDictionary *picture = [facebook objectForKey:@"picture"];
+            
+            if ([picture objectForKey:@"data"]) {
+                [imageV clear];
+                [imageV showLoadingWheel];
+                
+                [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@", [[picture objectForKey:@"data"] objectForKey:@"url"]  ]]];
+                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
+            }
+        }
+    }else{
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.navigationController popViewControllerAnimated:YES];
+        });
     }
-    
-    NSLog(@"");
 }
 
 /*
@@ -158,7 +176,9 @@
                     
                     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                 
-                    [self.navigationController popViewControllerAnimated:NO];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.navigationController popViewControllerAnimated:YES];
+                    });
                 });
             }else{
             }

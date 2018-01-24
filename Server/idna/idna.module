@@ -309,8 +309,6 @@ function idna_user_login(&$edit, $account) {
     $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/friends/' . $friend_id . "/", $values);
       */
     }
-
-    
   }
 
   /*
@@ -1555,6 +1553,7 @@ function idna_services_resources()
         'access arguments append' => FALSE,
       ),
     ),
+
     'create_my_card'=>array(
       'create' =>array(
         'help'=>'idna Create My Card',
@@ -5345,10 +5344,10 @@ function edit_multi_phone()
           $result['result']  = TRUE;
           $result['is_edit']  = FALSE;
           $result['item_id'] = $field_entity->item_id;
-          $result['item']    = $value;
+          $result['value']    = $value;
         }else{
           $result['result'] = FALSE;
-          $result['message'] = "Duplicate";
+          $result['message'] = "Duplicate phone.";
         }
       break;
     }
@@ -5387,6 +5386,7 @@ function edit_multi_phone()
             $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/phones/' . $data_item_load->item_id, $value);
             */
 
+            /*
             $value = array(
               "name"      => $number,
               "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
@@ -5398,11 +5398,12 @@ function edit_multi_phone()
           // $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $field_entity->item_id, $value);
 
             $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $data_item_load->item_id, $value);
+            */
 
             $result['result']   = TRUE;
             $result['is_edit']  = TRUE;
             $result['item_id']  = $data_item_load->item_id;
-            $result['item']     = $value;
+            $result['value']     = $value;
 
             return $result;
             break;
@@ -5427,7 +5428,7 @@ function edit_multi_phone()
           if($data_item_load->item_id == $item_id){
             entity_delete_multiple('field_collection_item', array($data_item_load->item_id));
 
-            $firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $data_item_load->item_id);
+            // firebase->delete(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/phones/" . $data_item_load->item_id);
             
             $result['result']   = TRUE;
             $result['item_id']  = $data_item_load->item_id;
@@ -5489,7 +5490,7 @@ function edit_multi_email()
   $email    = $param["email"];
   $item_id  = $param["item_id"];
 
-  switch ($fction) {
+  switch (strtolower($fction)) {
     case 'add':
     {
         // #1 load profile friend
@@ -5559,38 +5560,46 @@ function edit_multi_email()
       // $profile =  profile2_load($profile2_load_by_user['main']->pid);
       // #2 load profile friend
 
-      $profile = profile2_by_uid_load($uid, 'main');
+      try {
+        $profile = profile2_by_uid_load($uid, 'main');
 
-      // #3 
-      // check is phone number duplicat
-      foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
-          $data_item_load = field_collection_item_load($value['value']);
-          if($data_item_load->item_id == $item_id){
-            
-            $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
+        $result['profile'] = get_object_vars($profile);
 
-            //Update value
-            $wrapper->field_email_text->set($email);
-            $wrapper->save(TRUE);
+        // #3 
+        // check is phone number duplicat
+        foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
+            $data_item_load = field_collection_item_load($value['value']);
+            if($data_item_load->item_id == $item_id){
+              
+              $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
 
-            $value = array(
-              "name"      => $email,
-              "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
-              "enabled"   => "1",  // เปิด หรือ ปิดการใช้
-              "update"    => time()
-            );
+              //Update value
+              $wrapper->field_email_text->set($email);
+              $wrapper->save(TRUE);
 
-            // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $data_item_load->item_id, $value);
+              $value = array(
+                "name"      => $email,
+                "level"     => "1",  // ลำดับชั้น 0: mail ที่ใช้ลงทะเบียน
+                "enabled"   => "1",  // เปิด หรือ ปิดการใช้
+                "update"    => time()
+              );
 
-            $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/mails/" . $data_item_load->item_id, $value);
+              // $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $user_fields->uid . '/data/profile/mails/' . $data_item_load->item_id, $value);
 
-            $result['result']  = TRUE;
-            $result['is_edit'] = TRUE;
-            $result['item_id'] = $data_item_load->item_id;
-            $result['item']    = $value;
-            return $result;
-            break;
-          }
+              $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH .  $uid ."/profiles/mails/" . $data_item_load->item_id, $value);
+
+              $result['result']  = TRUE;
+              $result['is_edit'] = TRUE;
+              $result['item_id'] = $data_item_load->item_id;
+              $result['item']    = $value;
+              return $result;
+              break;
+            }
+        }
+      } catch (Exception $e) {
+        $result['result']  = TRUE;
+        $result['message'] = $e->getMessage();
+        return $result;
       }
       break;
     }
@@ -6523,10 +6532,12 @@ function update_profile(){
   $uid    = $_REQUEST['uid'];
   $data   = $_REQUEST['data'];
 
+  
   // Load Profile ขึ้นมาเพือจะทำการแก้ไข
   $profile = profile2_by_uid_load($uid, 'main');
 
   $check = 0;
+  // name
   if (array_key_exists('name', $data)) {
     if (strcmp($profile->field_profile_name[LANGUAGE_NONE][0]['value'], $data['name']) != 0) {
       # code...
@@ -6543,12 +6554,54 @@ function update_profile(){
     }
   }
 
+  // My ID 
+  if (array_key_exists('my_id', $data)) {
+    if (strcmp($profile->field_profile_heart_id[LANGUAGE_NONE][0]['value'], $data['my_id']) != 0) {
+      # code...
+      $profile->field_profile_heart_id[LANGUAGE_NONE][0]['value'] = $data['my_id'];
+      $check++;
+    }
+  }
+
+  // status message
   if (array_key_exists('status_message', $data)) {
     if (strcmp($profile->field_profile_status_message[LANGUAGE_NONE][0]['value'], $data['status_message']) != 0) {
       # code...
       $profile->field_profile_status_message[LANGUAGE_NONE][0]['value'] = $data['status_message'];
 
       $check++;
+    }
+  }
+
+  // mails
+  if (array_key_exists("mails", $data)) {
+    if(isset($profile->field_profile_multi_email)){
+      foreach ($profile->field_profile_multi_email[LANGUAGE_NONE] as $key => $value) {
+        $data_item_load = field_collection_item_load($value['value']);
+
+        if(strcmp($data_item_load->field_email_text[LANGUAGE_NONE][0]['value'], $data['mails'][$value['value']]['name'])!= 0){
+
+          $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
+          $wrapper->field_email_text->set($data['mails'][$value['value']]['name']);        
+          $wrapper->save();
+        }
+      }
+    }
+  }
+
+  // phone 
+  if (array_key_exists("phones", $data)) {
+    if(isset($profile->field_profile_multi_phone)){
+      foreach ($profile->field_profile_multi_phone[LANGUAGE_NONE] as $key => $value) {
+        $data_item_load = field_collection_item_load($value['value']);
+
+        if(strcmp($data_item_load->field_phone_number[LANGUAGE_NONE][0]['value'], $data['phones'][$value['value']]['name'])!= 0){
+
+          $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);
+          $wrapper->field_phone_number->set($data['phones'][$value['value']]['name']);        
+          $wrapper->save();
+        }
+      }
     }
   }
 
@@ -6612,6 +6665,7 @@ function update_profile(){
   $result['result'] = TRUE;
   return  $result;
 }
+
 
 function create_my_card()
 {
@@ -8048,8 +8102,6 @@ function reset_heart()
 function create_group_chat(){
   $result = array();
 
-  global $firebase;
-
   if (!check_header()) {
     $result['result'] = FALSE;
     $result['message']= "check_header()";
@@ -8062,10 +8114,12 @@ function create_group_chat(){
     return $result;
   }
 
+  global $firebase;
+
   $uid    = $_REQUEST['uid'];
   $name   = $_REQUEST['name'];
   $image  = $_REQUEST['image'];
-  
+
   // chat_id เป้น id ที่ไว้สำหรับอ้างอิงเป้น chat id  
   $chat_id = generateRandomString(config_pages_get(CONFIG_PAGES_TYPE, 'field_defualt_length_chat_id', 20));
 
@@ -8154,7 +8208,9 @@ function create_group_chat(){
 
   $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . PATH_GROUPS . '/' . $group_id . '/' , $value);
 
-  $result['result'] = TRUE;
+  $result['result']   = TRUE;
+  $result['item_id']  = $group_id;
+  $result['value']    = $value;
 
   return  $result;
 }
@@ -8613,8 +8669,6 @@ function delete_member_group_chat(){
 function update_picture_group(){ 
   $result = array();
 
-  global $firebase;
-
   if (!check_header()) {
     $result['result'] = FALSE;
     $result['message']= "check_header()";
@@ -8626,6 +8680,7 @@ function update_picture_group(){
     $result['message']  = "function : update_picture_group, parameter";
     return $result;
   }
+  global $firebase;
 
   $uid      = $_REQUEST['uid'];
   $group_id = $_REQUEST['group_id'];
@@ -8644,7 +8699,7 @@ function update_picture_group(){
     $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
     
     //Saves a file to the specified destination and creates a database entry.
-    $file = klovers_file_save_data($_POST['uid'], $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+    $file = klovers_file_save_data($uid, $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
 
     // save รูป profile
     // $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
@@ -8688,8 +8743,6 @@ function update_picture_group(){
 function group_invite_new_members(){
   $result = array();
 
-  global $firebase;
-
   if (!check_header()) {
     $result['result'] = FALSE;
     $result['message']= "check_header()";
@@ -8702,10 +8755,11 @@ function group_invite_new_members(){
     return $result;
   }
 
+  global $firebase;
+
   $uid      = $_REQUEST['uid'];
   $group_id = $_REQUEST['group_id'];
   $members  = $_REQUEST['members'];
-
 
   // load field_profile_group by id ขึ้นมาเพือ insert  field_members_group ลงไป
   $data_group = field_collection_item_load($group_id);

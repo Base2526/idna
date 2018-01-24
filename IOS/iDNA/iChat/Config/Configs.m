@@ -33,12 +33,13 @@
 #import "UIDeviceHardware.h"
 #import "Utility.h"
 
+#import "ProfilesRepo.h"
+
 //#define IDIOM
 //#define IPAD     UIUserInterfaceIdiomPad
 
-@implementation Configs
-{
-    
+@implementation Configs{
+    ProfilesRepo *profilesPepo;
 }
 
 + (Configs *)sharedInstance
@@ -189,6 +190,7 @@
         self.timeOut    = 100.0f;
         
         self.DBFileName = @"db.sql";
+        
     }
     return self;
 }
@@ -207,7 +209,9 @@
  ดึง UID User
  */
 -(NSString *)getUIDU{
-    return [[self loadData:_USER] objectForKey:@"user"][@"uid"];
+    
+    NSDictionary *u = [self loadData:_USER];
+    return [u objectForKey:@"user"][@"uid"];
 }
 
 /*
@@ -464,6 +468,8 @@
     // NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     
+    
+    
     NSString *child = [NSString stringWithFormat:@"%@%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     
     [[ref child:child] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -579,8 +585,7 @@
         
         __block int count = 0;
         for (NSString* key in friends) {
-            NSDictionary* val = [friends objectForKey:key];
-
+            /*
             Friends *friend = [[Friends alloc] init];
             friend.friend_id = key;
             
@@ -592,8 +597,13 @@
             NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
             friend.create    = [timeStampObj stringValue];
             friend.update    = [timeStampObj stringValue];
+            */
             
-            BOOL sv = [friendsRepo insert:friend];
+            NSError * err;
+            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:[friends objectForKey:key] options:0 error:&err];
+            
+            // BOOL sv = [friendsRepo insert:friend];
+            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             
             NSString *fchild = [NSString stringWithFormat:@"%@%@/profiles", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], key];
             [[ref child:fchild] observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -658,6 +668,18 @@
         }
     }
     return @"";
+}
+
+/*
+ ดึง Profile User
+ */
+-(NSMutableDictionary *)getUserProfiles{
+    profilesPepo = [[ProfilesRepo alloc] init];
+    
+    NSArray *pf = [profilesPepo get];
+    NSData *data =  [[pf objectAtIndex:[profilesPepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    
+    return [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 }
 
 //-(void)synchronizeLogout{

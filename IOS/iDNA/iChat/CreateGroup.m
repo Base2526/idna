@@ -11,14 +11,18 @@
 #import "HJManagedImageV.h"
 #import "AppDelegate.h"
 #import "CreateGroupChatThread.h"
-
 #import "FriendProfileRepo.h"
 #import "FriendsRepo.h"
 
+@import Firebase;
+@import FirebaseMessaging;
+@import FirebaseDatabase;
+
 @interface CreateGroup (){
-    // NSMutableDictionary *friends;
+    FIRDatabaseReference *ref;
+    FriendProfileRepo *friendProfileRepo;
     
-    FriendProfileRepo *friendPRepo;
+    FriendsRepo *friendsRepo;
 }
 
 @property (nonatomic, strong) NSMutableDictionary *selectedIndex;
@@ -26,7 +30,7 @@
 @end
 
 @implementation CreateGroup
-@synthesize selectedIndex, txtFName, friends, ref, ImageVGroup;
+@synthesize selectedIndex, txtFName, friends, ImageVGroup;
 @synthesize imagePicker;
 @synthesize popoverController;
 
@@ -35,83 +39,22 @@
     // Do any additional setup after loading the view.
     self.title =@"Create Group";
     
-    friendPRepo = [[FriendProfileRepo alloc] init];
+    friendProfileRepo = [[FriendProfileRepo alloc] init];
     friends = [NSMutableDictionary dictionary];
     selectedIndex = [NSMutableDictionary dictionary];
     
     ref = [[FIRDatabase database] reference];
-
-    friends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
+    
+    friendsRepo = [[FriendsRepo alloc] init];
+    
+    friends = [[NSMutableDictionary alloc] init];
     
     ImageVGroup.userInteractionEnabled = YES;
     [ImageVGroup addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectImage:)]];
     
-    /*
-    for (NSString* key in friends) {
-        NSDictionary* value = [friends objectForKey:key];
-        
-        if ([value objectForKey:@"hide"]) {
-            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
-                
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                
-                friends = newFriends;
-                
-            }
-        }
-        if ([value objectForKey:@"block"]) {
-            if ([[value objectForKey:@"block"] isEqualToString:@"1"]) {
-                // [friends removeObjectForKey:key];
-                
-                NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-                [newFriends addEntriesFromDictionary:friends];
-                
-                [newFriends removeObjectForKey:key];
-                
-                
-                friends = newFriends;
-            }
-        }
-    }
-    */
     
-    
-    
-    /// -------->
-    
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
-    friends = [[NSMutableDictionary alloc] init];
-    
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
-        
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        Boolean flag = true;
-        if ([friend objectForKey:@"hide"]) {
-            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
-                flag = false;
-            }
-        }
-        if ([friend objectForKey:@"block"]) {
-            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
-                flag = false;
-            }
-        }
-        
-        if (flag) {
-            [friends setObject:friend forKey:friend_id];
-        }
-    }
+    [txtFName setReturnKeyType:UIReturnKeyDone];
+    txtFName.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -119,6 +62,78 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [txtFName resignFirstResponder];
+    return YES;
+}
+
+// กรณีเปิด จะมีการ hide Tabbar
+-(BOOL)hidesBottomBarWhenPushed{
+    return YES;
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(reloadData:)
+//                                                 name:RELOAD_DATA_PROFILES
+//                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    // [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [friends removeAllObjects];
+        
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            Boolean flag = true;
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            
+            // สถานะรอการตอบรับคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
+            }
+            
+            // สถานะทีเราส่งคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
+            }
+            
+            if (flag) {
+                [friends setObject:friend forKey:friend_id];
+            }
+        }
+        
+        [self.tableView reloadData];
+    });
+}
 /*
 #pragma mark - Navigation
 
@@ -160,9 +175,9 @@
     NSString* key = [keys objectAtIndex:indexPath.row];
     NSMutableDictionary* item = [friends objectForKey:key];
     
-    NSArray *fprofile = [friendPRepo get:key];
+    NSArray *fprofile = [friendProfileRepo get:key];
     
-    NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data =  [[fprofile objectAtIndex:[friendProfileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     if (data == nil) {
         return  cell;
@@ -209,6 +224,8 @@
         [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
     }
     self.title =[NSString stringWithFormat:@"Create Group(%d)", [selectedIndex count]];
+    
+    [txtFName resignFirstResponder];
 }
 
 - (IBAction)onCreateGroup:(id)sender {
@@ -217,53 +234,6 @@
     
     if ([str_name length] > 0 && [selectedIndex count] > 0) {
         
-        /*
-        NSDictionary *_message = @{
-                                   @"sender_id" : [friend objectForKey:@"friend_id"],
-                                   @"create": [FIRServerValue timestamp],
-                                   @"text": @"Hello",
-                                   @"type": @"private"};
-        
-        NSString *ccmessage = [NSString stringWithFormat:@"toonchat_message/%@/", [friend objectForKey:@"chat_id"]];
-        
-        // [[[[_ref child:@"users"] child:user.uid] child:@"username"] setValue:username];
-        [[[ref child:ccmessage] childByAutoId] setValue:_message withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-            NSLog(@"");
-        }];
-        */
-        
-        /*
-         create: 1501491311878
-         is_owner:true
-         members => 913 => status:"pedding"
-         name: "Aa@"
-         owner_id:"912"
-
-         */
-        
-        /*
-        NSMutableDictionary* members =[NSMutableDictionary dictionary];
-        
-        for (NSString* key in selectedIndex) {
-            id value = [selectedIndex objectForKey:key];
-            // do stuff
-            [members setObject:@{@"status":@"pedding"} forKey:value];
-        }
-        
-        NSMutableDictionary *new_group = @{
-                                   @"create" : [FIRServerValue timestamp],
-                                   @"is_owner": @true,
-                                   @"members": members,
-                                   @"name": str_name,
-                                   @"owner_id" : [[Configs sharedInstance] getUIDU]
-                                   };
-        
-        NSString *create_group = [NSString stringWithFormat:@"toonchat/%@/groups/", [[Configs sharedInstance] getUIDU]];
-        [[[ref child:create_group] childByAutoId] setValue:new_group withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-            
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
-        */
         
         NSMutableDictionary* members =[NSMutableDictionary dictionary];
         for (NSString* key in selectedIndex) {
@@ -280,17 +250,14 @@
             
             [[Configs sharedInstance] SVProgressHUD_Dismiss];
             
-            /*
             if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
                 
-                [imageV clear];
-                [imageV showLoadingWheel];
-                [imageV setUrl:[NSURL URLWithString:jsonDict[@"url"]]];
-                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
-                
-                [self updateURI:jsonDict[@"url"]];
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:jsonDict[@"value"] options:0 error:&err];
+                // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+     
+                [(AppDelegate*)[[UIApplication sharedApplication] delegate] updateGroup:jsonDict[@"item_id"] :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             }
-            */
             
             [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
         
@@ -305,6 +272,8 @@
         [createGroup start:str_name :[ImageVGroup image] : members];
     }else{
         NSLog(@"Name group empty or Not select Friend?");
+        
+        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Name group empty or Not select Friend?"];
     }
 }
 

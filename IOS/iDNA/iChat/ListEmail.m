@@ -16,14 +16,11 @@
 #import "CustomAlertView.h"
 #import "EditEmailThread.h"
 
-#import "ProfilesRepo.h"
-
 @interface ListEmail (){
     NSMutableDictionary *mails;
     NSMutableArray *sectionTitleArray;
     NSMutableArray *fieldSelected;
     
-    ProfilesRepo *profilesRepo;
     NSMutableDictionary *profiles;
 }
 @end
@@ -39,7 +36,6 @@
     sectionTitleArray = [NSMutableArray arrayWithObjects: @"Email Register", @"Email", nil];
     
     ref         = [[FIRDatabase database] reference];
-    profilesRepo = [[ProfilesRepo alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -47,16 +43,18 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)viewWillAppear:(BOOL)animated{
+-(void) viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)
-                                                 name:@"reloadData"
+                                                 name:RELOAD_DATA_PROFILES
                                                object:nil];
+    
+    
     [self reloadData:nil];
 }
 
--(void)viewDidDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadData" object:nil];
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 #pragma mark - Navigation
@@ -72,44 +70,6 @@
         v.item_id = @"";
     }
 }
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-//    return 30;
-//}
-
-/*
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-
-    UIView *headerView              = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 30)];
-    
-    headerView.tag                  = section;
-    headerView.backgroundColor      = [UIColor brownColor];
-    UILabel *headerString           = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width-20-30, 30)];
-    
-   
-    headerString.textAlignment      = NSTextAlignmentLeft;
-    headerString.textColor          = [UIColor blackColor];
-    [headerView addSubview:headerString];
-    
-    switch (section) {
-        case 0:
-        {
-             headerString.text = [NSString stringWithFormat:@"%@", [sectionTitleArray objectAtIndex:section]];
-        }
-            break;
-        case 1:{
-            NSArray *_val = [mails objectForKey:[sectionTitleArray objectAtIndex:1]];
-            headerString.text = [NSString stringWithFormat:@"%@ (%d)", [sectionTitleArray objectAtIndex:section], [_val count]];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return headerView;
-}
-*/
 
 #pragma mark - Table view data source
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -127,96 +87,10 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    // return  3;//[data_profile2 count];
-    
-    /*
-    switch (section) {
-        case 0:
-        {
-            return 1;
-        }
-            break;
-            
-        case 1:
-        {
-            return [[mails objectForKey:[sectionTitleArray objectAtIndex:1]] count];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return 0;
-    */
-    
     return [mails count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    /*
-    switch (indexPath.section) {
-        case 0:
-        {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-            UILabel *label = (UILabel *)[cell viewWithTag:10];
-            
-            
-            
-            NSDictionary* data =  [mails objectForKey:[sectionTitleArray objectAtIndex:0]];
-            if ([[[data objectForKey:@"name"] componentsSeparatedByString:@"@"][1] isEqualToString:@"annmousu"]) {
-                label.text = @"Not Register";
-            }else{
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                cell.accessoryType = UITableViewCellAccessoryNone;
-                label.text =[data objectForKey:@"name"];
-            }
-
-            [cell addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onRegisterTapped:)]];
-            return cell;
-        }
-            break;
-            
-        case 1:
-        {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-            
-            UILabel *label = (UILabel *)[cell viewWithTag:10];
-            
-            // NSDictionary* item = [all_data objectAtIndex:indexPath.row];
-            // label.text = [item objectForKey:@"value"];
-            
-            NSDictionary *_items = [mails objectForKey:[sectionTitleArray objectAtIndex:1]];
-            // id aKey = [keys objectAtIndex:indexPath.row];
-            // id anObject = [[all_data objectForKey:[sectionTitleArray objectAtIndex:1]] objectForKey:aKey];
-            
-            NSArray *keys = [_items allKeys];
-            id aKey = [keys objectAtIndex:indexPath.row];
-            id anObject = [_items objectForKey:aKey];
-            
-            label.text = [anObject objectForKey:@"name"];
-            
-            if ([fieldSelected containsObject:indexPath])
-            {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            else
-            {
-                cell.accessoryType = UITableViewCellAccessoryNone;
-            }
-            return cell;
-            
-        }
-            break;
-            
-        default:
-            break;
-    }
-    */
-    // return nil;
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     UILabel *label = (UILabel *)[cell viewWithTag:10];
@@ -248,44 +122,10 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    /*
-    switch (indexPath.section) {
-        case 0:
-        {
-        
-        }
-            break;
-        case 1:
-        {
-            //the below code will allow multiple selection
-            if ([fieldSelected containsObject:indexPath]){
-                [fieldSelected removeObject:indexPath];
-            }else{
-                [fieldSelected addObject:indexPath];
-            }
-        }
-            break;
-            
-        default:
-            break;
-    }
-    */
-    
     [self reloadData:nil];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-//    switch (indexPath.section) {
-//        case 1:
-//        {
-//            return YES;
-//        }
-//            break;
-//
-//        default:
-//            break;
-//    }
     return YES;
 }
 
@@ -429,7 +269,7 @@
                  */
 
                 [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
-                
+                /*
                 EditEmailThread *editPhone = [[EditEmailThread alloc] init];
                 [editPhone setCompletionHandler:^(NSData *data) {
                     
@@ -451,36 +291,14 @@
                             [newProfile removeObjectForKey:@"mails"];
                             [newProfile setObject:mails forKey:@"mails"];
                             
-                            /*
-                            NSArray *profile = [profilesRepo get];
-                            
-                            Profiles *pf = [[Profiles alloc] init];
-                            NSError * err;
-                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                            pf.update    = [timeStampObj stringValue];
-                            
-                            // BOOL sv = [profilesRepo update:pf];
-                            
-                            // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pf];
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                BOOL sv = [profilesRepo update:pf];
-                            });
-                            */
+                 
                             
                             NSError * err;
                             NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
                             [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                         }
                         
-                        
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            // code here
-                            [self reloadData:nil];
-                        });
+                        [self reloadData:nil];
                     }else{
                         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
                     }
@@ -494,6 +312,44 @@
                 }];
                 // self.number
                 [editPhone start:@"delete" :aKey : @""];
+                */
+                
+                [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
+                
+                if([profiles objectForKey:@"mails"]){
+                    NSString *child = [NSString stringWithFormat:@"%@%@/profiles/mails/%@", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], aKey];
+                    
+                    [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+                        
+                        [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                        if (error == nil) {
+                            // จะได้ item_id
+                            NSString* key = [ref key];
+                            
+                            if([profiles objectForKey:@"mails"]){
+                                NSMutableDictionary *mails = [profiles objectForKey:@"mails"];
+                                
+                                NSMutableDictionary *newMails = [[NSMutableDictionary alloc] init];
+                                [newMails addEntriesFromDictionary:mails];
+                                [newMails removeObjectForKey:key];
+                                
+                                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                                [newProfiles addEntriesFromDictionary:profiles];
+                                [newProfiles removeObjectForKey:@"mails"];
+                                [newProfiles setValue:newMails forKey:@"mails"];
+                                
+                                NSError * err;
+                                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                                
+                                if (error == nil) {
+                                    [self reloadData:nil];
+                                }else{
+                                }
+                            }
+                        }
+                    }];
+                }
             }
             
             break;
@@ -504,63 +360,13 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    /*
-    if([[[Configs sharedInstance] loadData:_DATA] objectForKey:@"mails"]){
-        mails = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"mails"];
-        if ([mails count] > 0) {
-            self._table.hidden = NO;
-            // self.emptyMessage.hidden = YES;
-        }
-    }else{
-        mails = [[NSMutableDictionary alloc] init];
-        self._table.hidden = YES;
-        // self.emptyMessage.hidden = NO;
-    }
-    */
-    
-    
-    // self._table.hidden = YES;
-    
-    /*
-    if ([[[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] objectForKey:@"profile"] objectForKey:@"mails"]) {
-        NSDictionary* mails = [[[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] objectForKey:@"profile"] objectForKey:@"mails"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        profiles = [[Configs sharedInstance] getUserProfiles];
         
-        NSLog(@"%@", mails);
-        if ([mails count] > 0) {
-            self._table.hidden = NO;
-            
-            for (NSString* key in mails) {
-                NSDictionary* value = [mails objectForKey:key];
-                if ([[value objectForKey:@"enabled"] isEqualToString:@"1"]) {
-                    if ([[value objectForKey:@"level"] isEqualToString:@"0"]) {
-                        [all_data setValue:value forKey:[sectionTitleArray objectAtIndex:0]];
-                        
-                        // Email
-                        NSMutableDictionary*_mails = [mails mutableCopy];
-                        [_mails removeObjectForKey:key];
-
-                        [all_data setValue:_mails forKey:[sectionTitleArray objectAtIndex:1]];
-                        break;
-                    }
-                }
-            }
+        if ([profiles objectForKey:@"mails"]) {
+            mails = [profiles objectForKey:@"mails"];
         }
-    }
-    */
-    
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    if ([profiles objectForKey:@"mails"]) {
-        mails = [profiles objectForKey:@"mails"];
-    }
-    
-    // [self._table reloadData];
-    
-    [self._table reloadData];
+        [self._table reloadData];
+    });
 }
-
-
 @end

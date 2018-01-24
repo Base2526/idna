@@ -13,10 +13,8 @@
 #import "AddByID.h"
 #import "MyProfile.h"
 #import "Profiles.h"
-#import "ProfilesRepo.h"
 
 @interface Tab_Home (){
-    ProfilesRepo* profilesRepo;
     NSMutableDictionary *profile;
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
@@ -30,33 +28,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-    
-    profilesRepo = [[ProfilesRepo alloc] init];
-    /*
-     SWRevealViewController *revealViewController = self.revealViewController;
-     if ( revealViewController )
-     {
-     revealViewController.rightViewRevealWidth = kWIDTH;
-     revealViewController.rightViewRevealOverdraw = 0;
-     
-     [self.revealButton setTarget:revealViewController];
-     [self.revealButton setAction: @selector(revealToggle:)];
-     
-     [self.rightButton setTarget:revealViewController];
-     [self.rightButton setAction: @selector(rightRevealToggle:)];
-     
-     [self.revealViewController panGestureRecognizer];
-     [self.revealViewController tapGestureRecognizer];
-     }
-     */
-    
-    //    UIGraphicsBeginImageContext(self.view.frame.size);
-    //    [[UIImage imageNamed:@"man7.jpg"] drawInRect:self.view.bounds];
-    //    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    //    UIGraphicsEndImageContext();
-    //
-    //    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,93 +35,75 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewWillAppear:(BOOL)animated{
-    [self reloadData];
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
+    
+    
+    [self reloadData:nil];
 }
 
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
+}
 
--(void)reloadData{
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+-(void)reloadData:(NSNotification *) notification{
     
-    profile = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    /*
-     NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
-     [newProfiles addEntriesFromDictionary:profiles];
-     [newProfiles removeObjectForKey:@"bg_url"];
-     [newProfiles setValue:jsonDict[@"url"] forKey:@"bg_url"];
-     
-     Profiles *pfs = [[Profiles alloc] init];
-     NSError * err;
-     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-     pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-     NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-     NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-     pfs.update    = [timeStampObj stringValue];
-     
-     BOOL sv = [profilesRepo update:[[pf objectAtIndex: [profileRepo.dbManager.arrColumnNames indexOfObject:@"id"]] integerValue] :pfs];
-     
-     */
-    
-    // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-    
-    // #1 profile
-    // NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
-    
-    // NSDictionary *profiles = [data objectForKey:@"profiles"];
-    // NSLog(@"");
-    
-    // NSMutableDictionary *profiles = [data objectForKey:@"profiles"];
-    if ([profile objectForKey:@"image_url"]) {
-        [imageProfile clear];
-        [imageProfile showLoadingWheel];
-        [imageProfile setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url"]]]];
-        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageProfile];
-    }else{}
-    
-    labelName.text = [NSString stringWithFormat:@"Name : %@", [profile objectForKey:@"name"]];
-    labelEmail.text = [NSString stringWithFormat:@"Email : %@", [profile objectForKey:@"mail"]];
-    
-    if ([profile objectForKey:@"status_message"]) {
-        labelSMessage.text = [NSString stringWithFormat:@"SM : %@", [profile objectForKey:@"status_message"]];
-    }else{
-        labelSMessage.text = @"SM :";
-    }
-    
-    // BG
-    if ([profile objectForKey:@"bg_url"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        profile = [[Configs sharedInstance] getUserProfiles];
         
-        imageBG.callbackOnSetImage = (id)self;
-        [imageBG clear];
-        [imageBG showLoadingWheel];
-        [imageBG setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"bg_url"]]]];
-        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageBG];
-    }else{}
-    
-    if ([profile objectForKey:@"image_url_ios_qrcode"]) {
-        [imageV_qrcode clear];
-        [imageV_qrcode showLoadingWheel];
-        [imageV_qrcode setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url_ios_qrcode"]]]];
-        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV_qrcode ];
-    }
-    
-    /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
-    UITapGestureRecognizer *qrcodeTap =
-    [[UITapGestureRecognizer alloc] initWithTarget:self
-                                            action:@selector(handleQRCodeTap:)];
-    
-    imageV_qrcode.userInteractionEnabled = YES;
-    [imageV_qrcode addGestureRecognizer:qrcodeTap];
-    
-    /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
-    
-    UITapGestureRecognizer *singleFingerTap =
-    [[UITapGestureRecognizer alloc] initWithTarget:self
-                                            action:@selector(handleSingleTap:)];
-    
-    imageV_edit.userInteractionEnabled = YES;
-    [imageV_edit addGestureRecognizer:singleFingerTap];
+        if ([profile objectForKey:@"image_url"]) {
+            [imageProfile clear];
+            [imageProfile showLoadingWheel];
+            [imageProfile setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url"]]]];
+            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageProfile];
+        }else{}
+        
+        labelName.text = [NSString stringWithFormat:@"Name : %@", [profile objectForKey:@"name"]];
+        labelEmail.text = [NSString stringWithFormat:@"Email : %@", [profile objectForKey:@"mail"]];
+        
+        if ([profile objectForKey:@"status_message"]) {
+            labelSMessage.text = [NSString stringWithFormat:@"SM : %@", [profile objectForKey:@"status_message"]];
+        }else{
+            labelSMessage.text = @"SM :";
+        }
+        
+        // BG
+        if ([profile objectForKey:@"bg_url"]) {
+            
+            imageBG.callbackOnSetImage = (id)self;
+            [imageBG clear];
+            [imageBG showLoadingWheel];
+            [imageBG setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"bg_url"]]]];
+            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageBG];
+        }else{}
+        
+        if ([profile objectForKey:@"image_url_ios_qrcode"]) {
+            [imageV_qrcode clear];
+            [imageV_qrcode showLoadingWheel];
+            [imageV_qrcode setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,[profile objectForKey:@"image_url_ios_qrcode"]]]];
+            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV_qrcode ];
+        }
+        
+        /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
+        UITapGestureRecognizer *qrcodeTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleQRCodeTap:)];
+        
+        imageV_qrcode.userInteractionEnabled = YES;
+        [imageV_qrcode addGestureRecognizer:qrcodeTap];
+        
+        /* recreate qrcode แก้ปัญหา  user เก่าๆ qrcode ยังผิดอยู่เราจำเป้นต้อง recreate qrcode ให้ใหม่ */
+        
+        UITapGestureRecognizer *singleFingerTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleSingleTap:)];
+        
+        imageV_edit.userInteractionEnabled = YES;
+        [imageV_edit addGestureRecognizer:singleFingerTap];
+    });
 }
 
 /*

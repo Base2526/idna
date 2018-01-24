@@ -12,6 +12,4 @@
 @interface Gender : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) NSString *item_id;
-
-
 @end

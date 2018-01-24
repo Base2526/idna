@@ -24,4 +24,7 @@
 @property (strong, nonatomic) FIRDatabaseReference *ref;
 
 @property(nonatomic)NSString *friend_id;
+
+- (IBAction)onChat:(id)sender;
+
 @end

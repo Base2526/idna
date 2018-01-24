@@ -18,8 +18,10 @@
 
 - (BOOL)check:(NSString *)group_id;
 - (NSArray *)get:(NSString *)group_id;
-- (BOOL)insert:(GroupChat *)data;
-- (BOOL)update:(GroupChat *)data;
+// - (BOOL)insert:(GroupChat *)data;
+// - (BOOL)update:(GroupChat *)data;
+
+- (BOOL)update:(NSString* )group_id :(NSString *)data;
 
 - (NSMutableArray *) getGroupChatAll;
 

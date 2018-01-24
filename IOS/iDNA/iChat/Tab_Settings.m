@@ -22,66 +22,39 @@
 #import "ClasssRepo.h"
 #import "FollowingRepo.h"
 #import "CenterRepo.h"
-
-
 #import "UserDataUIAlertView.h"
-
 #import "ManageClass.h"
 #import "CreateGroup.h"
-
 #import "FriendsRepo.h"
 #import "Friends.h"
-
+#import "ListDeviceLogin.h"
 
 // #import "SWRevealViewController.h"
 
 @interface Tab_Settings (){
+    FriendsRepo *friendsRepo;
     NSMutableArray *all_data;
-    
     NSMutableDictionary *friends;
 }
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *rightButton;
-
 #define kWIDTH          UIScreen.mainScreen.bounds.size.width
-
 @end
 
 @implementation Tab_Settings
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-    /*
-    SWRevealViewController *revealViewController = self.revealViewController;
-    if ( revealViewController )
-    {
-        revealViewController.rightViewRevealWidth = kWIDTH;
-        revealViewController.rightViewRevealOverdraw = 0;
-        
-        [self.revealButton setTarget:revealViewController];
-        [self.revealButton setAction: @selector(revealToggle:)];
-        
-        [self.rightButton setTarget:revealViewController];
-        [self.rightButton setAction: @selector(rightRevealToggle:)];
-        
-        [self.revealViewController panGestureRecognizer];
-        [self.revealViewController tapGestureRecognizer];
-    }
-    */
-    
-    // hide, block, logout
+    friendsRepo = [[FriendsRepo alloc] init];
     
     all_data = [[NSMutableArray alloc] init];
     [all_data addObject:@"Hide"];
     [all_data addObject:@"Block"];
     [all_data addObject:@"Manage class"];
     [all_data addObject:@"Create Group"];
+    [all_data addObject:@"Force Logout"];
     [all_data addObject:@"Logout"];
-    
     
     [self reloadData:nil];
     
@@ -97,7 +70,7 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+    
     NSMutableArray * fs = [friendsRepo getFriendsAll];
     
     friends = [[NSMutableDictionary alloc] init];
@@ -228,8 +201,14 @@
             [labelName setText:[NSString stringWithFormat:@"%@", name]];
         }
             break;
-        // Logout
+            
         case 4:{
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [labelName setText:[NSString stringWithFormat:@"%@", name]];
+        }
+            break;
+        // Logout
+        case 5:{
             cell.accessoryType = UITableViewCellAccessoryNone;
             [labelName setText:name];
         }
@@ -270,8 +249,15 @@
             [self.navigationController pushViewController:createGroup animated:YES];
         }
             break;
-        
+            
         case 4:{
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            ListDeviceLogin * ldLogin = [storybrd instantiateViewControllerWithIdentifier:@"ListDeviceLogin"];
+            [self.navigationController pushViewController:ldLogin animated:YES];
+        }
+            break;
+        
+        case 5:{
             UserDataUIAlertView *alert = [[UserDataUIAlertView alloc] initWithTitle:@"Logout"
                                                        message:@"Are you sure logout?"
                                                       delegate:self
@@ -332,6 +318,8 @@
                      [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
                  }];
                  [logoutThread start];
+                
+                
                 
             }
                 break;

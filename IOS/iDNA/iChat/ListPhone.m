@@ -13,155 +13,33 @@
 #import "CustomAlertView.h"
 #import "EditPhoneThread.h"
 
-#import "ProfilesRepo.h"
-
 @interface ListPhone (){
+    FIRDatabaseReference *ref;
+    
     NSMutableArray *fieldSelected;
     NSMutableDictionary *phones;
-    // NSMutableArray *childObservers;
-    
-     NSMutableDictionary *profiles;
-    
-    ProfilesRepo*profilesRepo;
+    NSMutableDictionary *profiles;
 }
 @end
 
 @implementation ListPhone
-@synthesize ref;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    // ref = [[FIRDatabase database] reference];
-    // childObservers = [[NSMutableArray alloc] init];
     fieldSelected = [[NSMutableArray alloc] init];
-    
-    
-    /*
-    NSString *child = [NSString stringWithFormat:@"heart-id/user-login/%@/data/profile/phones/", [[Configs sharedInstance] getUIDU]];
-    [[ref child:child] observeEventType:FIRDataEventTypeChildChanged withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-        NSLog(@"%@-%@", snapshot.key, snapshot.value);
-        
-        // Firebase *childRef = [ref childByAppendingPath...];
-        FIRDatabaseReference *childRef = [ref child:child];
-        [childObservers addObject:childRef];
-        
-        NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-        
-        NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-        
-        NSMutableDictionary*phones = [[profile objectForKey:@"phones"] mutableCopy];
-        
-        [phones removeObjectForKey:snapshot.key];
-        [phones setObject:snapshot.value forKey:snapshot.key];
-        
-        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-        [newProfile addEntriesFromDictionary:profile];
-        [newProfile removeObjectForKey:@"phones"];
-        [newProfile setObject:phones forKey:@"phones"];
-        
-        NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-        [newData addEntriesFromDictionary:data];
-        [newData removeObjectForKey:@"profile"];
-        [newData setObject:newProfile forKey:@"profile"];
-        
-        [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-        
-        [self reloadData];
-    }];
-    [[ref child:child] observeEventType:FIRDataEventTypeChildAdded withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-        NSLog(@"%@-%@", snapshot.key, snapshot.value);
-        
-        FIRDatabaseReference *childRef = [ref child:child];
-        [childObservers addObject:childRef];
-        
-        BOOL flag = TRUE;
-        for (NSString* key in phones) {
-            if ([key isEqualToString:snapshot.key]) {
-                flag = FALSE;
-                break;
-            }
-        }
-        
-        if (flag) {
-            
-            NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-            
-            NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-            
-            // NSMutableDictionary*phones = [[NSMutableDictionary alloc] init];
-            NSMutableDictionary*phones = [[NSMutableDictionary alloc] init];
-            if ([profile objectForKey:@"phones"]) {
-                phones = [[profile objectForKey:@"phones"] mutableCopy];
-            }
-            
-            // [phones removeObjectForKey:jsonDict[@"item_id"]];
-            [phones setObject:snapshot.value forKey:snapshot.key];
-            
-            NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-            [newProfile addEntriesFromDictionary:profile];
-            [newProfile removeObjectForKey:@"phones"];
-            [newProfile setObject:phones forKey:@"phones"];
-            
-            NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-            [newData addEntriesFromDictionary:data];
-            [newData removeObjectForKey:@"profile"];
-            [newData setObject:newProfile forKey:@"profile"];
-            
-            [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-            
-            [self reloadData];
-        }
-    }];
-    
-    [[ref child:child] observeEventType:FIRDataEventTypeChildRemoved withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-        NSLog(@"%@-%@", snapshot.key, snapshot.value);
-        
-        FIRDatabaseReference *childRef = [ref child:child];
-        [childObservers addObject:childRef];
-        
-        
-        NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-        
-        NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-        
-        NSMutableDictionary*phones = [[profile objectForKey:@"phones"] mutableCopy];
-        
-        [phones removeObjectForKey:snapshot.key];
-        // [phones setObject:snapshot.value forKey:snapshot.key];
-        
-        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-        [newProfile addEntriesFromDictionary:profile];
-        [newProfile removeObjectForKey:@"phones"];
-        [newProfile setObject:phones forKey:@"phones"];
-        
-        NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-        [newData addEntriesFromDictionary:data];
-        [newData removeObjectForKey:@"profile"];
-        [newData setObject:newProfile forKey:@"profile"];
-        
-        [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-        
-        [self reloadData];
-    }];
-    */
-    
     ref         = [[FIRDatabase database] reference];
-    profilesRepo = [[ProfilesRepo alloc] init];
 }
 
--(void)viewWillAppear:(BOOL)animated{
+-(void) viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)
-                                                 name:@"reloadData"
+                                                 name:RELOAD_DATA_PROFILES
                                                object:nil];
-    
-  
-    
     [self reloadData:nil];
 }
 
--(void)viewDidDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadData" object:nil];
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -175,11 +53,11 @@
  // Get the new view controller using [segue destinationViewController].
  // Pass the selected object to the new view controller.
      
-     if ([segue.identifier isEqualToString:@"EditPhone"]) {
-         EditPhone* v = segue.destinationViewController;
-         v.fction = @"add";
-         v.item_id = @"";
-     }
+ if ([segue.identifier isEqualToString:@"EditPhone"]) {
+     EditPhone* v = segue.destinationViewController;
+     v.fction = @"add";
+     v.item_id = @"";
+ }
 }
 
 
@@ -205,14 +83,6 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     UILabel *label = (UILabel *)[cell viewWithTag:10];
-    
-//    NSDictionary* item = [data_profile2 objectAtIndex:indexPath.row] ;
-//    label.text = [item objectForKey:@"value"];
-//    
-//    NSDictionary *_items = [data_profile2 objectForKey:indexPath.row];
-    // id aKey = [keys objectAtIndex:indexPath.row];
-    // id anObject = [[all_data objectForKey:[sectionTitleArray objectAtIndex:1]] objectForKey:aKey];
-    
     
     NSArray *keys = [phones allKeys];
     id aKey = [keys objectAtIndex:indexPath.row];
@@ -298,100 +168,42 @@
                 id aKey = [keys objectAtIndex:indexPath.row];
                 id anObject = [phones objectForKey:aKey];
                 
-                // NSDictionary* item = [data_profile2 objectAtIndex:indexPath.row];
-                // NSString* phone = [anObject objectForKey:@"number"];
-                
                 [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait"];
                 
-                EditPhoneThread *dThread = [[EditPhoneThread alloc] init];
-                [dThread setCompletionHandler:^(NSData *data) {
+                if([profiles objectForKey:@"phones"]){
+                    NSString *child = [NSString stringWithFormat:@"%@%@/profiles/phones/%@", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], aKey];
                     
-                    NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-                    
-                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                    
-                    if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                    [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
                         
-                        /*
-                        // delete phone number
-                        NSMutableDictionary*data =  [[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"data"] mutableCopy];
-                        
-                        NSMutableDictionary*profile =  [[data objectForKey:@"profile"] mutableCopy];
-                        // NSMutableDictionary*profile =  [[profile objectForKey:@"phones"] mutableCopy];
-                        
-                        NSMutableDictionary*phones = [[profile objectForKey:@"phones"] mutableCopy];
-                        
-                        [phones removeObjectForKey:jsonDict[@"item_id"]];
-                        // [phones setObject:jsonDict[@"data"] forKey:jsonDict[@"item_id"]];
-                        
-                        NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                        [newProfile addEntriesFromDictionary:profile];
-                        [newProfile removeObjectForKey:@"phones"];
-                        [newProfile setObject:phones forKey:@"phones"];
-                        
-                        NSMutableDictionary *newData = [[NSMutableDictionary alloc] init];
-                        [newData addEntriesFromDictionary:data];
-                        [newData removeObjectForKey:@"profile"];
-                        [newData setObject:newProfile forKey:@"profile"];
-                        
-                        [[Configs sharedInstance] saveData:_DATA :@{@"data": newData}];
-                        */
-                        
-                        NSMutableDictionary * phones = [[profiles objectForKey:@"phones"] mutableCopy];
-                        
-                        if ([phones objectForKey:jsonDict[@"item_id"]]) {
+                         [[Configs sharedInstance] SVProgressHUD_Dismiss];
+                        if (error == nil) {
+                            // จะได้ item_id
+                            NSString* key = [ref key];
                             
-                            // [phones setValue:jsonDict[@"item"] forKey:jsonDict[@"item_id"]];
-                            [phones removeObjectForKey:jsonDict[@"item_id"]];
-                            
-                            NSMutableDictionary *newProfile = [[NSMutableDictionary alloc] init];
-                            [newProfile addEntriesFromDictionary:profiles];
-                            [newProfile removeObjectForKey:@"phones"];
-                            [newProfile setObject:phones forKey:@"phones"];
-                            
-                            NSArray *profile = [profilesRepo get];
-                            
-                            /*
-                            Profiles *pf = [[Profiles alloc] init];
-                            NSError * err;
-                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                            pf.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                            pf.update    = [timeStampObj stringValue];
-                            
-                            // BOOL sv = [profilesRepo update:pf];
-                            // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pf];
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                BOOL sv = [profilesRepo update:pf];
-                            });
-                            */
-                            
-                            NSError * err;
-                            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfile options:0 error:&err];
-                            [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-                            
+                            if([profiles objectForKey:@"phones"]){
+                                NSMutableDictionary *phones = [profiles objectForKey:@"phones"];
+                                
+                                NSMutableDictionary *newPhones = [[NSMutableDictionary alloc] init];
+                                [newPhones addEntriesFromDictionary:phones];
+                                [newPhones removeObjectForKey:key];
+                                
+                                NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
+                                [newProfiles addEntriesFromDictionary:profiles];
+                                [newProfiles removeObjectForKey:@"phones"];
+                                [newProfiles setValue:newPhones forKey:@"phones"];
+                                
+                                NSError * err;
+                                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
+                                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                                
+                                if (error == nil) {
+                                    [self reloadData:nil];
+                                }else{
+                                }
+                            }
                         }
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            // code here
-                            [self reloadData:nil];
-                        });
-                        
-                    }else{
-                        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:jsonDict[@"output"]];
-                    }
-                }];
-                
-                [dThread setErrorHandler:^(NSString *error) {
-                    NSLog(@"%@", error);
-                    [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                    
-                    [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-                }];
-                // self.number
-                [dThread start:@"delete" :aKey : @""];
+                    }];
+                }
             }
             break;
         default:
@@ -400,21 +212,20 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    if ([profiles objectForKey:@"phones"]) {
-        phones = [profiles objectForKey:@"phones"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        profiles = [[Configs sharedInstance] getUserProfiles];
         
-        self._table.hidden = NO;
-        self.emptyMessage.hidden = YES;
-    }else{
-        self._table.hidden = YES;
-        self.emptyMessage.hidden = NO;
-    }
+        if ([profiles objectForKey:@"phones"]) {
+            phones = [profiles objectForKey:@"phones"];
+            
+            self._table.hidden = NO;
+            self.emptyMessage.hidden = YES;
+        }else{
+            self._table.hidden = YES;
+            self.emptyMessage.hidden = NO;
+        }
 
-    [self._table reloadData];
+        [self._table reloadData];
+    });
 }
 @end

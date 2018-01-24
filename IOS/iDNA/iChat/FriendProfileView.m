@@ -5,7 +5,6 @@
 //  Created by Somkid on 14/11/2560 BE.
 //  Copyright © 2560 klovers.org. All rights reserved.
 //
-
 #import "FriendProfileView.h"
 #import "Configs.h"
 #import "AppDelegate.h"
@@ -19,6 +18,7 @@
 #import "ProfilesRepo.h"
 #import "Friend_ListEmail.h"
 #import "Friend_ListPhone.h"
+#import "ChatViewController.h"
 
 @interface FriendProfileView (){
     FriendProfileRepo *friendProfileRepo;
@@ -28,7 +28,7 @@
 @end
 
 @implementation FriendProfileView
-@synthesize imagePicker, ref;
+@synthesize imagePicker, ref, friend_id;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -37,8 +37,16 @@
     friendProfileRepo = [[FriendProfileRepo alloc] init];
 }
 
--(void) viewWillAppear:(BOOL)animated{
+-(void)viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_FRIEND
+                                               object:nil];
     [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
 }
 
 -(void)dismissKeyboard {
@@ -51,8 +59,7 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    
-    NSArray *fprofile = [friendProfileRepo get:self.friend_id];
+    NSArray *fprofile = [friendProfileRepo get:friend_id];
     NSData *data =  [[fprofile objectAtIndex:[friendProfileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     friend_profile = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -363,7 +370,7 @@
                 UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                 
                 Friend_ListEmail* friendListEmail = [storybrd instantiateViewControllerWithIdentifier:@"Friend_ListEmail"];
-                friendListEmail.friend_id = self.friend_id;
+                friendListEmail.friend_id = friend_id;
                 [self.navigationController pushViewController:friendListEmail animated:YES];
             }
             break;
@@ -372,7 +379,7 @@
                 UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
                 
                 Friend_ListPhone* friendListPhone = [storybrd instantiateViewControllerWithIdentifier:@"Friend_ListPhone"];
-                friendListPhone.friend_id = self.friend_id;
+                friendListPhone.friend_id = friend_id;
                 [self.navigationController pushViewController:friendListPhone animated:YES];
             }
             break;
@@ -719,5 +726,13 @@
     return dateFormat;
 }
 
+- (IBAction)onChat:(id)sender {
+    
+    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ChatViewController *cV = [storybrd instantiateViewControllerWithIdentifier:@"ChatViewController"];
+    cV.type      = @"private";
+    cV.friend_id = friend_id;
+    [self.navigationController pushViewController:cV animated:YES];
+}
 @end
 

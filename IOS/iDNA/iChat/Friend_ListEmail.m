@@ -18,8 +18,12 @@
 
 #import "ProfilesRepo.h"
 #import "FriendProfileRepo.h"
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
-@interface Friend_ListEmail (){
+#import "SVProgressHUD.h"
+
+@interface Friend_ListEmail ()<MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate>{
     NSMutableDictionary *mails;
     NSMutableArray *sectionTitleArray;
     NSMutableArray *fieldSelected;
@@ -55,77 +59,22 @@
 -(void)viewWillAppear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)
-                                                 name:@"reloadData"
+                                                 name:RELOAD_DATA_FRIEND
                                                object:nil];
     [self reloadData:nil];
 }
 
--(void)viewDidDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"reloadData" object:nil];
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
 }
-
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-//    // Get the new view controller using [segue destinationViewController].
-//    // Pass the selected object to the new view controller.
-//    
-//    if ([segue.identifier isEqualToString:@"EditEmail"]) {
-//        EditEmail* v = segue.destinationViewController;
-//        v.fction = @"add";
-//    }
-//}
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-//    return 30;
-//}
-
-/*
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-
-    UIView *headerView              = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 30)];
-    
-    headerView.tag                  = section;
-    headerView.backgroundColor      = [UIColor brownColor];
-    UILabel *headerString           = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width-20-30, 30)];
-    
-   
-    headerString.textAlignment      = NSTextAlignmentLeft;
-    headerString.textColor          = [UIColor blackColor];
-    [headerView addSubview:headerString];
-    
-    switch (section) {
-        case 0:
-        {
-             headerString.text = [NSString stringWithFormat:@"%@", [sectionTitleArray objectAtIndex:section]];
-        }
-            break;
-        case 1:{
-            NSArray *_val = [mails objectForKey:[sectionTitleArray objectAtIndex:1]];
-            headerString.text = [NSString stringWithFormat:@"%@ (%d)", [sectionTitleArray objectAtIndex:section], [_val count]];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return headerView;
-}
-*/
 
 #pragma mark - Table view data source
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 60;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    // return 2;
-    
     return 1;
 }
 
@@ -134,104 +83,14 @@
     // Return the number of rows in the section.
     // return  3;//[data_profile2 count];
     
-    /*
-    switch (section) {
-        case 0:
-        {
-            return 1;
-        }
-            break;
-            
-        case 1:
-        {
-            return [[mails objectForKey:[sectionTitleArray objectAtIndex:1]] count];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return 0;
-    */
-    
     return [mails count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    /*
-    switch (indexPath.section) {
-        case 0:
-        {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-            UILabel *label = (UILabel *)[cell viewWithTag:10];
-            
-            
-            
-            NSDictionary* data =  [mails objectForKey:[sectionTitleArray objectAtIndex:0]];
-            if ([[[data objectForKey:@"name"] componentsSeparatedByString:@"@"][1] isEqualToString:@"annmousu"]) {
-                label.text = @"Not Register";
-            }else{
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                cell.accessoryType = UITableViewCellAccessoryNone;
-                label.text =[data objectForKey:@"name"];
-            }
-
-            [cell addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onRegisterTapped:)]];
-            return cell;
-        }
-            break;
-            
-        case 1:
-        {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-            
-            UILabel *label = (UILabel *)[cell viewWithTag:10];
-            
-            // NSDictionary* item = [all_data objectAtIndex:indexPath.row];
-            // label.text = [item objectForKey:@"value"];
-            
-            NSDictionary *_items = [mails objectForKey:[sectionTitleArray objectAtIndex:1]];
-            // id aKey = [keys objectAtIndex:indexPath.row];
-            // id anObject = [[all_data objectForKey:[sectionTitleArray objectAtIndex:1]] objectForKey:aKey];
-            
-            NSArray *keys = [_items allKeys];
-            id aKey = [keys objectAtIndex:indexPath.row];
-            id anObject = [_items objectForKey:aKey];
-            
-            label.text = [anObject objectForKey:@"name"];
-            
-            if ([fieldSelected containsObject:indexPath])
-            {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            else
-            {
-                cell.accessoryType = UITableViewCellAccessoryNone;
-            }
-            return cell;
-            
-        }
-            break;
-            
-        default:
-            break;
-    }
-    */
-    // return nil;
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     UILabel *label = (UILabel *)[cell viewWithTag:10];
-    
-    //  NSDictionary* item = [mails objectAtIndex:indexPath.row];
-    // label.text = [item objectForKey:@"value"];
-    
-    
-    // id aKey = [keys objectAtIndex:indexPath.row];
-    // id anObject = [[all_data objectForKey:[sectionTitleArray objectAtIndex:1]] objectForKey:aKey];
-    
     
     NSArray *keys = [mails allKeys];
     id aKey = [keys objectAtIndex:indexPath.row];
@@ -274,6 +133,27 @@
             break;
     }
     */
+    
+    NSArray *keys = [mails allKeys];
+    id aKey = [keys objectAtIndex:indexPath.row];
+    id anObject = [mails objectForKey:aKey];
+    
+    if([MFMailComposeViewController canSendMail]) {
+        MFMailComposeViewController *mailCont = [[MFMailComposeViewController alloc] init];
+        mailCont.mailComposeDelegate = self;        // Required to invoke mailComposeController when send
+        
+        [mailCont setSubject:@"iDNA"];
+        [mailCont setToRecipients:[NSArray arrayWithObject:[anObject objectForKey:@"name"]]];
+        [mailCont setMessageBody:@"" isHTML:NO];
+        
+        [self presentViewController:mailCont animated:YES completion:nil];
+    }else{
+        
+        NSString* URLEMail =[NSString stringWithFormat:@"mailto:%@?subject=subject&body=body", [anObject objectForKey:@"name"]];
+        
+        NSString *url = [URLEMail stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding ];
+        [[UIApplication sharedApplication]  openURL: [NSURL URLWithString: url]];
+    }
     
     [self reloadData:nil];
 }
@@ -562,6 +442,41 @@
     
     [self._table reloadData];
 }
+
+#pragma mark -  to the delegate:
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result) {
+        case MFMailComposeResultSent:
+            // NSLog(@"You sent the email.");
+            
+            [SVProgressHUD showSuccessWithStatus:@"You sent the email."];
+            break;
+        case MFMailComposeResultSaved:
+            // NSLog(@"You saved a draft of this email");
+            
+            [SVProgressHUD showSuccessWithStatus:@"You saved a draft of this email"];
+            break;
+        case MFMailComposeResultCancelled:
+            // NSLog(@"You cancelled sending this email.");
+            
+            // [SVProgressHUD showErrorWithStatus:@"You cancelled sending this email."];
+            break;
+        case MFMailComposeResultFailed:
+            // NSLog(@"Mail failed:  An error occurred when trying to compose this email");
+            
+            [SVProgressHUD showErrorWithStatus:@"Mail failed:  An error occurred when trying to compose this email."];
+            break;
+        default:
+            // NSLog(@"An error occurred when trying to compose this email");
+            
+            [SVProgressHUD showErrorWithStatus:@"An error occurred when trying to compose this email."];
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
 
 
 @end

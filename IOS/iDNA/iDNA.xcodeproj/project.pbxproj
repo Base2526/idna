@@ -42,6 +42,7 @@
 		600F85141FDE562B0091163B /* Following.m in Sources */ = {isa = PBXBuildFile; fileRef = 600F85131FDE562B0091163B /* Following.m */; };
 		600F85171FDE563D0091163B /* FollowingRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 600F85161FDE563D0091163B /* FollowingRepo.m */; };
 		60204D362001A3FC00B20AC9 /* FindFriendThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60204D352001A3FC00B20AC9 /* FindFriendThread.m */; };
+		602710572015977200FF894D /* ListDeviceLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 602710562015977200FF894D /* ListDeviceLogin.m */; };
 		60350E071F7E820100990C49 /* ChatView2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60350E061F7E820100990C49 /* ChatView2.m */; };
 		60350E081F7E835000990C49 /* PTSMessagingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 60350DFD1F7E7EDD00990C49 /* PTSMessagingCell.m */; };
 		60350E091F7E83F900990C49 /* person1.png in Resources */ = {isa = PBXBuildFile; fileRef = 60350E011F7E7EE500990C49 /* person1.png */; };
@@ -499,6 +500,8 @@
 		600F85161FDE563D0091163B /* FollowingRepo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FollowingRepo.m; sourceTree = "<group>"; };
 		60204D342001A3FC00B20AC9 /* FindFriendThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FindFriendThread.h; sourceTree = "<group>"; };
 		60204D352001A3FC00B20AC9 /* FindFriendThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FindFriendThread.m; sourceTree = "<group>"; };
+		602710552015977200FF894D /* ListDeviceLogin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ListDeviceLogin.h; sourceTree = "<group>"; };
+		602710562015977200FF894D /* ListDeviceLogin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListDeviceLogin.m; sourceTree = "<group>"; };
 		60350DF91F7E7EDD00990C49 /* balloon_selected_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_selected_right.png; sourceTree = "<group>"; };
 		60350DFA1F7E7EDD00990C49 /* balloon_unread_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_unread_right.png; sourceTree = "<group>"; };
 		60350DFB1F7E7EDD00990C49 /* balloon_selected_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_selected_left.png; sourceTree = "<group>"; };
@@ -1947,6 +1950,8 @@
 				609D3AAA1FC93B9300CC802F /* Tab_Center_Detail.m */,
 				609D3AAC1FC9507300CC802F /* Tab_Center_AppProfile.h */,
 				609D3AAD1FC9507300CC802F /* Tab_Center_AppProfile.m */,
+				602710552015977200FF894D /* ListDeviceLogin.h */,
+				602710562015977200FF894D /* ListDeviceLogin.m */,
 			);
 			name = Tab;
 			sourceTree = "<group>";
@@ -2658,6 +2663,7 @@
 				60E4A4FE1F7F63D800536B58 /* GroupChatView.m in Sources */,
 				60C47C011FC1DD0B00ECC5CC /* MyCard.m in Sources */,
 				605ED4EA1F794F7100AD621C /* ChatView.m in Sources */,
+				602710572015977200FF894D /* ListDeviceLogin.m in Sources */,
 				60D634331FB5578800AECA2B /* Follower.m in Sources */,
 				60C47C0D1FC1DDDD00ECC5CC /* TabStoreCell.m in Sources */,
 				600F84E51FDBDEDB0091163B /* floatTableViewCell.m in Sources */,

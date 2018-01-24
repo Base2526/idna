@@ -12,5 +12,6 @@
 @interface MyQRCode : UIViewController
 @property (weak, nonatomic) IBOutlet HJManagedImageV *hjhQR;
 
-@property (strong, nonatomic) NSString *uri;
+- (IBAction)onSettings:(id)sender;
+
 @end

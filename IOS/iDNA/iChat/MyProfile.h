@@ -24,6 +24,8 @@
 @property (nonatomic, strong) GKImagePicker *imagePicker;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
+- (IBAction)onShare:(id)sender;
+
 /*
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageV;
 @property (weak, nonatomic) IBOutlet UITextField *txtFName;
@@ -39,4 +41,9 @@
 
 - (IBAction)onSave:(id)sender;
 */
+
+/*
+ 1 : แสดงว่าถูกเรียกจากเมนู
+ */
+@property (strong, nonatomic) NSString *isMenu;
 @end

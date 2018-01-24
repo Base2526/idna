@@ -7,11 +7,9 @@
 //
 
 #import "EditAddress.h"
-#import "ProfilesRepo.h"
 #import "Configs.h"
 
 @interface EditAddress (){
-    ProfilesRepo *profilesRepo;
     NSMutableDictionary *profiles;
 }
 
@@ -23,14 +21,30 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     ref         = [[FIRDatabase database] reference];
-    profilesRepo = [[ProfilesRepo alloc] init];
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
     
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    profiles = [[Configs sharedInstance] getUserProfiles];
     
     if ([type isEqualToString:@"address"]) {
         self.title = @"Address";
@@ -48,11 +62,6 @@
             self.textAddress.text = [profiles objectForKey:@"company"];
         }
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 /*

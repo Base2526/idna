@@ -51,4 +51,9 @@
 #define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
 
 
+
+#define RELOAD_DATA_PROFILES       @"reload_data_profiles"
+#define RELOAD_DATA_FRIEND         @"reload_data_friend"
+#define RELOAD_DATA_GROUP          @"reload_data_group"
+
 #endif /* AppConstant_h */

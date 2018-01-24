@@ -33,7 +33,7 @@
     
     // NSString *token = [[FIRInstanceID instanceID] token];
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGOUT]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].USER_LOGOUT]];
         
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
@@ -41,10 +41,15 @@
     
 //    [dataToSend appendFormat:@"uid=%@", [[Configs sharedInstance] getUIDU]];
 //    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
-    
+
     NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU]};
     NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
     [request setHTTPBody:jsonBodyData];
+    
+    /*
+     เราต้อง เครียส์หลังจาก getUIDU เพราะว่าจะมีการเริ่มใช้งาน getUIDU อีกจะทำให้ error
+     */
+    [[Configs sharedInstance] saveData:_USER :nil];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];

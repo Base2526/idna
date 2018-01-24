@@ -195,14 +195,17 @@
  */
 -(NSString *)getIDDeviceAccess:(FIRDataSnapshot *)snap;
 
+/*
+ ดึง Profile User
+ */
+-(NSMutableDictionary *)getUserProfiles;
+
 
 // Cumstom SVProgressHUD
 -(void)SVProgressHUD_ShowWithStatus:(NSString *)message;
 -(void)SVProgressHUD_ShowSuccessWithStatus:(NSString *)message;
 -(void)SVProgressHUD_ShowErrorWithStatus:(NSString *)message;
 -(void)SVProgressHUD_Dismiss;
-
-
 
 @end
 

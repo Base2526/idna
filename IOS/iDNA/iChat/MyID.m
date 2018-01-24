@@ -312,7 +312,7 @@
         
         NSString *filename = [[[[profile objectForKey:@"qr"] objectForKey:@"ios"] objectForKey:BI] objectForKey:@"filename"];
         
-        v.uri = [[NSString stringWithFormat:@"%@/sites/default/files/qrcode/%@", [Configs sharedInstance].API_URL, filename] stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+        // v.uri = [[NSString stringWithFormat:@"%@/sites/default/files/qrcode/%@", [Configs sharedInstance].API_URL, filename] stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
         
     }else if([segue.identifier isEqualToString:@"StatusMessage"]){
     

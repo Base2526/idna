@@ -31,14 +31,29 @@
  */
 - (void)observeEventType;
 
+
+/*
+ force logout
+ */
+- (void)forceLogout;
+
+
+- (void)initMainView;
+
+
+/*
+ update ข้อมูล Profile
+ */
 - (void)updateProfile:(NSString*)data;
-
-
--(void)initMainView;
 
 /*
  เป็นการ update ข้อมูลของเพือน
  */
--(void)updateFriend:(NSString *)friend_id:(NSString *)data;
+- (void)updateFriend:(NSString *)friend_id:(NSString *)data;
+
+/*
+ เป็นการ update ข้อมูลของกลุ่ม
+ */
+- (void)updateGroup:(NSString *)group_id:(NSString *)data;
 @end
 

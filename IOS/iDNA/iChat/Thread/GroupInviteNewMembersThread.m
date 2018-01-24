@@ -22,7 +22,7 @@
     // [data release];
     
     // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].GROUP_INVITE_NEW_MEMBERS]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].GROUP_INVITE_NEW_MEMBERS]];
     
     //initialize a request from url
     // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:[Configs sharedInstance].timeOut];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
@@ -30,7 +30,7 @@
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
     //set http method
-    [request setHTTPMethod:@"POST"];
+    // [request setHTTPMethod:@"POST"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         
     UIDevice *deviceInfo = [UIDevice currentDevice];
@@ -44,18 +44,7 @@
         NSLog(@"%@", friend_id);
         [dataToSend appendFormat:@"members[]=%@&", friend_id];
     }
-    
     [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    /*
-    //initialize a connection from request
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    self.connection = connection;
-    // [connection release];
-    
-    //start the connection
-    [connection start];
-    */
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];

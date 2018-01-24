@@ -29,37 +29,27 @@
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
     
+    /*
+     เราต้อง set Content-Type = application/x-www-form-urlencoded เพราะว่ามีการ update image เพราะว่าส่ง image แบบ json จะช้า
+     */
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
     NSString *imgString =@"";
     if (image != nil) {
         NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
         imgString = [[Utility base64forData:imageData] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
     }
     
-    // NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    
     UIDevice *deviceInfo = [UIDevice currentDevice];
-    NSMutableString *dataToSend = [NSMutableString string];//[[NSString alloc] initWithFormat:@"uid=%@&image=%@", [[Configs sharedInstance] getUIDU], imgString];
+    NSMutableString *dataToSend = [NSMutableString string];
     
     [dataToSend appendFormat:@"uid=%@&name=%@&image=%@&", [[Configs sharedInstance] getUIDU], name, imgString];
     
     for (NSString *friend_id in members) {
-        // [dataToSend appendFormat:@"field[]=%d&",[restID.row]];
-        
-        NSLog(@"%@", friend_id);
         [dataToSend appendFormat:@"members[]=%@&", friend_id];
     }
     
     [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    /*
-    //initialize a connection from request
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    self.connection = connection;
-    // [connection release];
-    
-    //start the connection
-    [connection start];
-    */
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];

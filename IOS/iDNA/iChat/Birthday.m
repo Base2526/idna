@@ -7,12 +7,9 @@
 //
 
 #import "Birthday.h"
-#import "ProfilesRepo.h"
 #import "AppDelegate.h"
-
 @interface Birthday (){
     FIRDatabaseReference *ref;
-    ProfilesRepo *profilesRepo;
     NSMutableDictionary *profiles;
 }
 
@@ -29,34 +26,46 @@
     [datePicker setDatePickerMode:UIDatePickerModeDate];
     [datePicker addTarget:self action:@selector(onDatePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
     
-    profilesRepo = [[ProfilesRepo alloc] init];
-    
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    if ([profiles objectForKey:@"birthday"]) {
-        // selectedIndex = [profiles objectForKey:@"birthday"];
-        
-        NSTimeInterval timestamp = [[profiles objectForKey:@"birthday"] doubleValue];
-        NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSince1970:timestamp];
-        
-        labelText.text = [[self getDateFormatter]  stringFromDate:lastUpdate];
-        
-        // NSDate *date=[formatter dateFromString:@"12:30 AM"];
-        [datePicker setDate:lastUpdate];
-    }else{
-        NSTimeInterval timestamp = [datePicker.date timeIntervalSince1970];
-        NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSince1970:timestamp];
-        
-        labelText.text = [[self getDateFormatter]  stringFromDate:lastUpdate];
-    }
+}
+
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)reloadData:(NSNotification *) notification{
+    profiles = [[Configs sharedInstance] getUserProfiles];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if ([profiles objectForKey:@"birthday"]) {
+            // selectedIndex = [profiles objectForKey:@"birthday"];
+            
+            NSTimeInterval timestamp = [[profiles objectForKey:@"birthday"] doubleValue];
+            NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSince1970:timestamp];
+            
+            labelText.text = [[self getDateFormatter]  stringFromDate:lastUpdate];
+            
+            // NSDate *date=[formatter dateFromString:@"12:30 AM"];
+            [datePicker setDate:lastUpdate];
+        }else{
+            NSTimeInterval timestamp = [datePicker.date timeIntervalSince1970];
+            NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSince1970:timestamp];
+            
+            labelText.text = [[self getDateFormatter]  stringFromDate:lastUpdate];
+        }
+    });
 }
 
 - (void)onDatePickerValueChanged:(UIDatePicker *)datePicker{
@@ -68,7 +77,6 @@
     
     labelText.text = [[self getDateFormatter] stringFromDate:lastUpdate];
     
-    
     NSMutableDictionary *newProfiles = [[NSMutableDictionary alloc] init];
     [newProfiles addEntriesFromDictionary:profiles];
     
@@ -77,25 +85,7 @@
     }
     
     [newProfiles setValue:[NSString stringWithFormat:@"%f", timestamp] forKey:@"birthday"];
-    
-    /*
-    Profiles *pfs = [[Profiles alloc] init];
-    NSError * err;
-    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-    pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    pfs.update    = [timeStampObj stringValue];
-    
-    // BOOL sv = [profilesRepo update:pfs];
-    
-    // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL sv = [profilesRepo update:pfs];
         
-    });
-    */
-    
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
@@ -113,10 +103,9 @@
             
             
         }else{
-            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update name."];
+            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update birthday."];
         }
     }];
-    
 }
 
 -(NSDateFormatter *)getDateFormatter{

@@ -20,9 +20,14 @@
     self.receivedData = data;
     
     // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_GROUP ]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_GROUP ]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    
+    /*
+     เราต้อง set Content-Type = application/x-www-form-urlencoded เพราะว่ามีการ update image เพราะว่าส่ง image แบบ json จะช้า
+     */
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSString *imgString =@"";
     if (image != nil) {

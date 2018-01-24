@@ -13,8 +13,7 @@
 @interface Gender (){
     FIRDatabaseReference *ref;
     NSString* selectedIndex;
-    
-    ProfilesRepo *profilesRepo;
+
     NSMutableDictionary *profiles;
     
     NSDictionary *all_data;
@@ -30,9 +29,6 @@
     // Do any additional setup after loading the view.
     
     ref = [[FIRDatabase database] reference];
-    profilesRepo = [[ProfilesRepo alloc] init];
-    
-    
     all_data = [[Configs sharedInstance] loadData:_GENDER];
     
     if ([all_data count] == 0){
@@ -67,20 +63,21 @@
         sortedKeys = [[all_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
     }
     
-    NSArray *pf = [profilesRepo get];
-    NSData *data =  [[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
-    profiles = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    
-    if ([profiles objectForKey:@"gender"]) {
-        selectedIndex = [profiles objectForKey:@"gender"];
-    }else{
-        selectedIndex = @"";
-    }
 }
 
--(void)viewWillAppear:(BOOL)animated{
+-(void) viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
+    
+    
     [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -99,7 +96,18 @@
 */
 
 -(void)reloadData:(NSNotification *) notification{
-    [tableView reloadData];
+    
+    profiles = [[Configs sharedInstance] getUserProfiles];
+    
+    if ([profiles objectForKey:@"gender"]) {
+        selectedIndex = [profiles objectForKey:@"gender"];
+    }else{
+        selectedIndex = @"";
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+         [tableView reloadData];
+    });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -154,27 +162,9 @@
     
     [newProfiles setValue:selectedIndex forKey:@"gender"];
     
-    /*
-    Profiles *pfs = [[Profiles alloc] init];
-    NSError * err;
-    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
-    pfs.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    pfs.update    = [timeStampObj stringValue];
-    
-    // BOOL sv = [profilesRepo update:pfs];
-    
-    // [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:pfs];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        BOOL sv = [profilesRepo update:pfs];
-    });
-    */
-    
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newProfiles options:0 error:&err];
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfile:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-    
     
     NSString *child = [NSString stringWithFormat:@"%@%@/profiles/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU]];
     NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@/", child]: newProfiles};
@@ -186,8 +176,7 @@
 //            dispatch_async(dispatch_get_main_queue(), ^{
 //                [self.navigationController popViewControllerAnimated:NO];
 //            });
-            
-            
+        
         }else{
             [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:@"Error update name."];
         }

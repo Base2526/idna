@@ -36,8 +36,6 @@
 #import "FriendRequestCell.h"
 #import "FriendWaitForAFriendCell.h"
 
-#define __count 5
-
 @interface Tab_Contacts ()<UITableViewDataSource, UITableViewDelegate>{
     IBOutlet UITableView *tblView;
     NSMutableArray *arrSelectedSectionIndex;
@@ -60,28 +58,7 @@
 #pragma mark - View Life Cycle
 - (void)viewDidLoad{
     [super viewDidLoad];
-    
-    
-    
-    
-    /*
-    SWRevealViewController *revealViewController = self.revealViewController;
-    if ( revealViewController )
-    {
-        revealViewController.rightViewRevealWidth = kWIDTH;
-        revealViewController.rightViewRevealOverdraw = 0;
-        
-        [self.revealButton setTarget:revealViewController];
-        [self.revealButton setAction: @selector(revealToggle:)];
-        
-        [self.rightButton setTarget:revealViewController];
-        [self.rightButton setAction: @selector(rightRevealToggle:)];
-        
-        [self.revealViewController panGestureRecognizer];
-        [self.revealViewController tapGestureRecognizer];
-    }
-    */
-    
+
     ref = [[FIRDatabase database] reference];
     all_data = [[NSMutableDictionary alloc] init];
     
@@ -108,7 +85,7 @@
     //    [arrSelectedSectionIndex addObject:[NSNumber numberWithInt:count+2]];
     // }
     
-    for (int i=0; i< __count; i++) {
+    for (int i=0; i< 5; i++) {
         // เป็นการจะให้ section ได้ open โดยเราจะต้อง add section index
         [arrSelectedSectionIndex addObject:[NSNumber numberWithInt:i]];
     }
@@ -118,66 +95,33 @@
     [tblView registerNib:[UINib nibWithNibName:@"GroupTableViewCell" bundle:nil] forCellReuseIdentifier:@"GroupTableViewCell"];
     [tblView registerNib:[UINib nibWithNibName:@"FriendRequestCell" bundle:nil] forCellReuseIdentifier:@"FriendRequestCell"];
     [tblView registerNib:[UINib nibWithNibName:@"FriendWaitForAFriendCell" bundle:nil] forCellReuseIdentifier:@"FriendWaitForAFriendCell"];
-    
-    // NSDictionary *_data =  [[Configs sharedInstance] loadData:_DATA];
-    // NSLog(@"");
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reloadData:)
-                                                 name:@"Tab_Contacts_reloadData"
-                                               object:nil];
-    
-    
+
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
-        
-    [self reloadData:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
-//    if (![[Configs sharedInstance] isLogin]){
-//        
-//        [tblView setHidden:YES];
-//        
-//        [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
-//        
-//        AnNmousUThread * nThread = [[AnNmousUThread alloc] init];
-//        [nThread setCompletionHandler:^(NSData * data) {
-//            
-//            [[Configs sharedInstance] SVProgressHUD_Dismiss];
-//            
-//            NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-//            
-//            if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-//                
-//                NSMutableDictionary *idata  = jsonDict[@"data"];
-//              
-//            }else{
-//                [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
-//            }
-//        }];
-//        [nThread setErrorHandler:^(NSString * data) {
-//            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
-//        }];
-//        [nThread start];
-//    }else{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_PROFILES
+                                               object:nil];
     
-    /*
-        NSMutableDictionary *f = [[Configs sharedInstance] loadData:_PROFILE_FRIENDS];
-        for (NSString* key in f) {
-            [[(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] setObject:[f objectForKey:key] forKey:key];
-        }
-    */
-        
-//        [(AppDelegate *)[[UIApplication sharedApplication] delegate] observeEventType];
-//
-//
-//
-//
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self reloadData:nil];
-//    });
-        // [tblView reloadData];
-//    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_FRIEND
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_GROUP
+                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_PROFILES object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_GROUP object:nil];
 }
 
 // กลับจากการ ดึงข้อมูลของ user
@@ -212,26 +156,8 @@
         // [[Configs sharedInstance] saveData:_DATA :newDict];
         
         [all_data removeAllObjects];
-        
-        // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-        // NSMutableDictionary *friends = [data objectForKey:@"friends"];
-        
-        // #1 profile
-        /*
-         NSMutableDictionary *dic_profile= [[NSMutableDictionary alloc] init];
-         [all_data setValue:nil forKey:@"profiles"];
-         if ([data objectForKey:@"profiles"]) {
-         NSDictionary *profiles = [data objectForKey:@"profiles"];
-         [all_data setValue:profiles  forKey:@"profiles"];
-         
-         // self.title = [NSString stringWithFormat:@"CONTACTS-%@", [Configs sharedInstance].getUIDU] ;
-         }
-         */
-        
-        ProfilesRepo *profilesRepo = [[ProfilesRepo alloc] init];
-        NSArray *pf = [profilesRepo get];
-        
-        NSDictionary* profiles = [NSJSONSerialization JSONObjectWithData:[[pf objectAtIndex:[profilesRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+                
+        NSDictionary* profiles = [[Configs sharedInstance] getUserProfiles];
         
         [all_data setValue:profiles  forKey:@"profiles"];
         // #1 profile
@@ -1929,14 +1855,34 @@
     
     if (indexPath.section == 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//
+//            Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
+//            UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
+//            navTabHome.navigationBar.topItem.title = @"My Profile";
+//            [self presentViewController:navTabHome animated:YES completion:nil];
             
-            Tab_Home* tabHome = [storybrd instantiateViewControllerWithIdentifier:@"Tab_Home"];
-            UINavigationController* navTabHome = [[UINavigationController alloc] initWithRootViewController:tabHome];
-            navTabHome.navigationBar.topItem.title = @"My Profile";
-            [self presentViewController:navTabHome animated:YES completion:nil];
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            MyProfile* profile = [storybrd instantiateViewControllerWithIdentifier:@"MyProfile"];
+            [self.navigationController pushViewController:profile animated:YES];
         });
 
+    }else if(indexPath.section == 1){
+        // Groups
+        NSMutableDictionary *groups = [all_data valueForKey:@"groups"];
+        
+        ////---sort เราต้องการเรียงก่อนแสดงผล
+        NSArray *myKeys = [groups allKeys];
+        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+        }];
+    
+        UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        ManageGroup *manageGroup = [storybrd instantiateViewControllerWithIdentifier:@"ManageGroup"];
+        // manageGroup.group =item;//[friends objectAtIndex:indexPath.row];
+        manageGroup.group_id = [sortedKeys objectAtIndex:indexPath.row];
+        
+        [self.navigationController pushViewController:manageGroup animated:YES];
     }else if(indexPath.section == 2 || indexPath.section == 3){
         
         // ดึงข้อมูล

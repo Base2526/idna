@@ -30,6 +30,7 @@
 - (IBAction)onSave:(id)sender;
 - (IBAction)onManageMembers:(id)sender;
 - (IBAction)onInviteMember:(id)sender;
+- (IBAction)onChat:(id)sender;
 - (IBAction)onDeleteGroup:(id)sender;
 
 @end

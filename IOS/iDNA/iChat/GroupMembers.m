@@ -14,43 +14,58 @@
 #import "FriendProfileRepo.h"
 
 @interface GroupMembers (){
-    NSMutableDictionary *group;
+    NSArray* group_array;
+    NSMutableDictionary *group_data;
     NSMutableDictionary *members;
-    // NSMutableDictionary *friendsProfile;
+    GroupChatRepo *groupChatRepo;
+    FriendProfileRepo *friendProfileRepo;
 }
 
 @property(nonatomic, getter=isEditing) BOOL editing;
 @end
 
 @implementation GroupMembers
-@synthesize group_id, ref;
+@synthesize group_id, ref, bbiInvite, bbiEdit;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    ref = [[FIRDatabase database] reference];
+    ref                 = [[FIRDatabase database] reference];
+    groupChatRepo       = [[GroupChatRepo alloc] init];
+    friendProfileRepo   = [[FriendProfileRepo alloc] init];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
-    [self reloadData];
+    bbiInvite.enabled = YES;
+    bbiEdit.enabled = YES;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_GROUP
+                                               object:nil];
+    
+    [self reloadData:nil];
 }
 
--(void)reloadData{
-    
-    GroupChatRepo *groupChatRepo  = [[GroupChatRepo alloc] init];
-    
-    NSArray* arrayGroup =  [groupChatRepo get:group_id];
-        
-    NSString* group_id = [arrayGroup objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
-    NSString *data = [arrayGroup objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-    
-    group = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    
-    members = [group objectForKey:@"members"];
-    // friendsProfile = [(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] ;
-    
-    self.title = [NSString stringWithFormat:@"Group Members(%d)", [members count]];
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_GROUP object:nil];
+}
 
-    [self.tableView reloadData];
+-(void)reloadData:(NSNotification *) notification{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        group_array =  [groupChatRepo get:group_id];
+        
+        NSString* group_id = [group_array objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
+        NSString *data = [group_array objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+        
+        group_data = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+        
+        members = [group_data objectForKey:@"members"];
+        // friendsProfile = [(AppDelegate *)[[UIApplication sharedApplication] delegate] friendsProfile] ;
+        
+        self.title = [NSString stringWithFormat:@"Group Members(%d)", [members count]];
+        
+        [self.tableView reloadData];
+    });
 }
 
 - (void)didReceiveMemoryWarning {
@@ -133,12 +148,11 @@
     
     // NSMutableDictionary *f = [[Configs sharedInstance] loadData:[sortedKeys objectAtIndex:indexPath.row]];
     
-    FriendProfileRepo *friendPRepo = [[FriendProfileRepo alloc] init];
     
-    NSArray *arrayProfile = [friendPRepo get:[item objectForKey:@"friend_id"]];
     
-    NSData *data =  [[arrayProfile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+    NSArray *arrayProfile = [friendProfileRepo get:[item objectForKey:@"friend_id"]];
     
+    NSData *data =  [[arrayProfile objectAtIndex:[friendProfileRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
     NSMutableDictionary *fprofile = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
@@ -156,13 +170,22 @@
         [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
     }else{}
     
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if ( editingStyle== UITableViewCellEditingStyleDelete) {
-        NSArray *keys = [members allKeys];
-        id key = [keys objectAtIndex:indexPath.row];
+        // NSArray *keys = [members allKeys];
+        // id key = [keys objectAtIndex:indexPath.row];
+        
+        NSArray *myKeys = [members allKeys];
+        NSArray *sortedKeys = [myKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            return [(NSString *)obj1 compare:(NSString *)obj2 options:NSNumericSearch];
+        }];
+        
+        id key = [sortedKeys objectAtIndex:indexPath.row];
         
         NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/members/%@", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], group_id, key];
         [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
@@ -174,7 +197,6 @@
                 // จะได้ Group id
                 NSString* key = [ref key];
 
-                
                 // [members removeObjectForKey:key];
                 
                 NSMutableDictionary *newMembers = [[NSMutableDictionary alloc] init];
@@ -183,38 +205,39 @@
             
                 GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
                 
-                NSArray *_group = [groupChatRepo get:group_id];
-                NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+                // NSArray *_group = [groupChatRepo get:group_id];
+                // NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
                 
-                NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+                // NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
                 
                 NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-                [tgroup addEntriesFromDictionary:items];
+                [tgroup addEntriesFromDictionary:group_data];
                 [tgroup removeObjectForKey:@"members"];
                 [tgroup setObject:newMembers forKey:@"members"];
                 
-                GroupChat *groupChat = [[GroupChat alloc] init];
-                groupChat.group_id =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
-                groupChat.create   =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"create"]];
+//                GroupChat *groupChat = [[GroupChat alloc] init];
+//                groupChat.group_id =  group_id;
+//                groupChat.create   =  [group_array objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"create"]];
                 
                 // แปลกข้อมูลก่อนบันทึก local
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
-                groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                
-                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                groupChat.update    = [timeStampObj stringValue];
+//                groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//
+//                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+//                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//                groupChat.update    = [timeStampObj stringValue];
                 
                 // Update local database
-                [groupChatRepo update:groupChat];
+                // [groupChatRepo update:groupChat];
+                
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateGroup:group_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                 
 //                [self.tableView deleteRowsAtIndexPaths:[NSMutableArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
 //                [self.tableView setEditing:NO animated:YES];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadData];
-                });
+                
+                [self reloadData:nil];
             }
         }];
 

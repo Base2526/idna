@@ -23,7 +23,7 @@ def login():
     # Attempt to login to Facebook
     response = session.post('https://m.facebook.com/login.php', data={
                             'email': 'android.somkid@gmail.com',
-                            'pass': 'somkid'
+                            'pass': 'S058848391'
                             }, allow_redirects=False)
                             
     r = session.get('https://www.facebook.com/app_scoped_user_id/1343652125739871')

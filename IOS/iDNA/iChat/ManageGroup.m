@@ -13,15 +13,14 @@
 #import "GroupMembers.h"
 #import "GroupInvite.h"
 #import "UserDataUIAlertView.h"
-
 #import "GroupChatRepo.h"
+#import "ChatViewController.h"
 
 @interface ManageGroup (){
-    NSDictionary *group;
-    
+    NSDictionary *group_data;
+    NSArray *array_group;
     GroupChatRepo *groupChatRepo;
 }
-
 @end
 
 @implementation ManageGroup
@@ -30,12 +29,12 @@
 @synthesize imageV, ref;
 @synthesize imagePicker;
 @synthesize popoverController;
+@synthesize txtGroupName;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     ref = [[FIRDatabase database] reference];
-    
     groupChatRepo  = [[GroupChatRepo alloc] init];
     
     imageV.userInteractionEnabled = YES;
@@ -47,7 +46,21 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated{
-    [self reloadData];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_GROUP
+                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_GROUP object:nil];
+}
+
+// กรณีเปิด จะมีการ hide Tabbar
+-(BOOL)hidesBottomBarWhenPushed{
+    return YES;
 }
 
 -(void)dismissKeyboard {
@@ -59,28 +72,34 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)reloadData{
-    NSArray *_group = [groupChatRepo get:group_id];
-    NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-    NSMutableDictionary *items = [data dataUsingEncoding:NSUTF8StringEncoding];
-    
-    group = [NSJSONSerialization JSONObjectWithData:items options:0 error:nil];
-    
-    if ([group objectForKey:@"image_url"]) {
-        [imageV clear];
-        [imageV showLoadingWheel]; // API_URL
-        [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [group objectForKey:@"image_url"]]]];
-        [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV];
-    }else{
-        [imageV clear];
-    }
-    self.txtGroupName.text = [group objectForKey:@"name"];
-    
-    NSDictionary *members = [group objectForKey:@"members"];
-    self.title = [NSString stringWithFormat:@"Manage Group(%d)", [members count] ];
-    NSLog(@"");
-    
-    [self.btnManageMembers setTitle:[NSString stringWithFormat:@"Manage Members(%d)", [members count] ] forState:UIControlStateNormal];
+-(void)reloadData:(NSNotification *) notification{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        array_group    = [groupChatRepo get:group_id];
+        
+        if(array_group != nil){
+            NSString *data  = [array_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+            
+            group_data = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+            
+            if ([group_data objectForKey:@"image_url"]) {
+                [imageV clear];
+                [imageV showLoadingWheel]; // API_URL
+                [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [group_data objectForKey:@"image_url"]]]];
+                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV];
+            }else{
+                [imageV clear];
+            }
+            txtGroupName.text = [group_data objectForKey:@"name"];
+            
+            NSDictionary *members = [group_data objectForKey:@"members"];
+            self.title = [NSString stringWithFormat:@"Manage Group(%d)", [members count] ];
+            NSLog(@"");
+            
+            [self.btnManageMembers setTitle:[NSString stringWithFormat:@"Manage Members(%d)", [members count] ] forState:UIControlStateNormal];
+        }else{
+            [self.navigationController popViewControllerAnimated:NO];
+        }
+    });
 }
 /*
 #pragma mark - Navigation
@@ -143,34 +162,6 @@
  กรณีเลือกรูปจาก gallery ในเครื่อง
  */
 - (void)imagePicker:(GKImagePicker *)imagePicker pickedImage:(UIImage *)image{
-    
-//    [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
-//    UpdateProfileGroupThread *uThread = [[UpdateProfileGroupThread alloc] init];
-//    [uThread setCompletionHandler:^(NSString *data) {
-//
-//        NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
-//
-//        [[Configs sharedInstance] SVProgressHUD_Dismiss];
-//
-//        if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-//
-////            [imageV clear];
-////            [imageV showLoadingWheel];
-////            [imageV setUrl:[NSURL URLWithString:jsonDict[@"url"]]];
-////            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
-////
-////            [self updateURI:jsonDict[@"url"]];
-//        }
-//        [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
-//    }];
-//
-//    [uThread setErrorHandler:^(NSString *error) {
-//        [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-//    }];
-//    [uThread start:[self.group objectForKey:@"group_id"] :image];
-    
-    // [self.imageV setImage:image];
-    
     [self UpdatePicture:image];
     
     if (UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM()) {
@@ -201,71 +192,32 @@
 
     [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Update"];
     
-    /*
-     Update name ของ group
-     
     NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-    [tgroup addEntriesFromDictionary:group];
-    [tgroup removeObjectForKey:@"name"];
-    [tgroup setObject:self.txtGroupName.text forKey:@"name"];
+    [tgroup addEntriesFromDictionary:group_data];
     
-    /*
-     Update group ของ groups
-     
-    NSMutableDictionary *newGroups = [[NSMutableDictionary alloc] init];
-    [newGroups addEntriesFromDictionary:[[[Configs sharedInstance] loadData:_DATA] objectForKey:@"groups"]];
-    [newGroups removeObjectForKey:[tgroup objectForKey:@"group_id"]];
-    [newGroups setValue:tgroup forKey:[tgroup objectForKey:@"group_id"]];
-     */
-    
-    /*
-     Update groups ของ DATA
-     
-    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-    [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-    [newDict removeObjectForKey:@"groups"];
-    [newDict setObject:newGroups forKey:@"groups"];
-    */
-    
-   // [[Configs sharedInstance] saveData:_DATA :newDict];
-    
-    // ดึงข้อมูลจาก local มาเพื่อเราจะมา update field image_url
-    NSArray *_group = [groupChatRepo get:group_id];
-    NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-    
-    NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-    
-    NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-    [tgroup addEntriesFromDictionary:items];
-    [tgroup removeObjectForKey:@"name"];
-    [tgroup setObject:self.txtGroupName.text forKey:@"name"];
-    
-    GroupChat *groupChat = [[GroupChat alloc] init];
-    groupChat.group_id =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"group_id"]];
-    groupChat.create   =  [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"create"]];
+    if ([tgroup objectForKey:@"name"]) {
+        [tgroup removeObjectForKey:@"name"];
+    }
+    [tgroup setObject:txtGroupName.text forKey:@"name"];
     
     // แปลกข้อมูลก่อนบันทึก local
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
-    groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    groupChat.update    = [timeStampObj stringValue];
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateGroup:group_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     
-    // Update local database
-    [groupChatRepo update:groupChat];
-    
-    NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU], groupChat.group_id];
+    NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH], [[Configs sharedInstance] getUIDU], group_id];
     NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@", child]: tgroup};
     
     [ref updateChildValues:childUpdates withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error == nil) {
-            [[Configs sharedInstance] SVProgressHUD_Dismiss];
-            
+        
             [self.navigationController popViewControllerAnimated:NO];
         }else{
+            [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[err description]];
         }
+        
+        [[Configs sharedInstance] SVProgressHUD_Dismiss];
     }];
 }
 
@@ -284,6 +236,16 @@
     invite.group_id = group_id;
     
     [self.navigationController pushViewController:invite animated:YES];
+}
+
+- (IBAction)onChat:(id)sender {
+    NSLog(@"onChat");
+    
+    UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ChatViewController *cV = [storybrd instantiateViewControllerWithIdentifier:@"ChatViewController"];
+    cV.type = @"Groups";
+    cV.friend_id = group_id;
+    [self.navigationController pushViewController:cV animated:YES];
 }
 
 - (IBAction)onDeleteGroup:(id)sender {
@@ -313,36 +275,28 @@
                 break;
                 
             case 1:{
-                // Close
-                NSLog(@"Delete");
-                
+                // Delete
                 NSString *child = [NSString stringWithFormat:@"%@%@/groups/%@/", [[Configs sharedInstance] FIREBASE_DEFAULT_PATH],[[Configs sharedInstance] getUIDU], group_id];
                 [[ref child:child] removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
                     
                     if (error == nil) {
-                        // [ref parent]
-                        //NSString* parent = ref.parent.key;
-                        
                         // จะได้ Group id
                         NSString* key = [ref key];
                         
-                        // NSMutableDictionary *groups = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"];
-                        
-                        /*
-                         เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
-                         */
-                        if ([groupChatRepo get:key] != nil){
-                            BOOL sv = [groupChatRepo deleteGroup:key];
-                        }
-                        
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            /*
+                             เช็ดก่อนว่ามี group_id นี้หรือเปล่าเพราะบางที่อาจโดนลบไปแล้ว ก็ได้จาก main control (firebase อาจ return มาเร็วมาก)
+                             */
+                            if ([groupChatRepo get:key] != nil){
+                                BOOL sv = [groupChatRepo deleteGroup:key];
+                            }
+                            
                             [self.navigationController popViewControllerAnimated:YES];
                         });
-                        
                     }
                 }];
             }
-                break;
+            break;
         }
     }
 }
@@ -355,67 +309,39 @@
         NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            /*
-             Update image_url ของ group
-             
-            NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-            [tgroup addEntriesFromDictionary:group];
-            [tgroup removeObjectForKey:@"image_url"];
-            [tgroup setObject:jsonDict[@"image_url"] forKey:@"image_url"];
-            
-            /*
-             Update group ของ groups
-             
-            NSMutableDictionary *groups = [[NSMutableDictionary alloc] init];
-            [groups addEntriesFromDictionary:[[[Configs sharedInstance] loadData:_DATA] valueForKey:@"groups"]];
-            [groups removeObjectForKey:[tgroup objectForKey:@"group_id"]];
-            [groups setObject:tgroup forKey:[tgroup objectForKey:@"group_id"]];
-            
-            /*
-             Update groups ของ DATA
-             
-            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-            [newDict removeObjectForKey:@"groups"];
-            [newDict setObject:groups forKey:@"groups"];
-            
-            [[Configs sharedInstance] saveData:_DATA :newDict];
-             */
-            
-            // ดึงข้อมูลจาก local มาเพื่อเราจะมา update field image_url
-            NSArray *_group = [groupChatRepo get:group_id];
-            NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
-
-            NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-            
-            NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
-            [tgroup addEntriesFromDictionary:items];
-            [tgroup removeObjectForKey:@"image_url"];
-            [tgroup setObject:jsonDict[@"image_url"] forKey:@"image_url"];
-            
-            GroupChat *groupChat = [[GroupChat alloc] init];
-            groupChat.group_id  = group_id;
-            
-            // แปลกข้อมูลก่อนบันทึก local
-            NSError * err;
-            NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
-            groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            
-            NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-            NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-            groupChat.update    = [timeStampObj stringValue];
-            
-            // Update local database
-            [groupChatRepo update:groupChat];
-            
-            // [self reloadData];
-            
-            //  Update UIImageView
-            // [imageV setImage:image];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadData];
+                // ดึงข้อมูลจาก local มาเพื่อเราจะมา update field image_url
+                NSArray *_group = [groupChatRepo get:group_id];
+                NSString *data = [_group objectAtIndex:[groupChatRepo.dbManager.arrColumnNames indexOfObject:@"data"]];
+                
+                NSMutableDictionary *items = [NSJSONSerialization JSONObjectWithData:[data dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+                
+                NSMutableDictionary *tgroup = [[NSMutableDictionary alloc] init];
+                [tgroup addEntriesFromDictionary:items];
+                
+                if ([tgroup objectForKey:@"image_url"]) {
+                    [tgroup removeObjectForKey:@"image_url"];
+                }
+                
+                [tgroup setObject:jsonDict[@"image_url"] forKey:@"image_url"];
+                
+                GroupChat *groupChat = [[GroupChat alloc] init];
+                groupChat.group_id  = group_id;
+                
+                // แปลกข้อมูลก่อนบันทึก local
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:tgroup options:0 error:&err];
+                groupChat.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                
+                NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+                groupChat.update    = [timeStampObj stringValue];
+                
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateGroup:group_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             });
+        
+            [self reloadData:nil];
             
             [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
         }else{

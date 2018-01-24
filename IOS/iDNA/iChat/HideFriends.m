@@ -12,7 +12,6 @@
 #import "FriendProfileRepo.h"
 #import "HJManagedImageV.h"
 #import "AppDelegate.h"
-
 #import "FriendsRepo.h"
 
 @interface HideFriends (){
