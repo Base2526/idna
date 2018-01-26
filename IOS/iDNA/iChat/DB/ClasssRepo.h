@@ -18,13 +18,13 @@
 
 - (BOOL)check:(NSString *)item_id;
 - (NSArray *)get:(NSString *)item_id;
-- (BOOL)insert:(Classs *)data;
-- (BOOL)update:(Classs *)data;
+//- (BOOL)insert:(Classs *)data;
+//- (BOOL)update:(Classs *)data;
+
+- (BOOL)update:(NSString* )item_id :(NSString *)data;
 
 - (NSMutableArray *) getClasssAll;
-
 - (BOOL)deleteClasss:(NSString *)item_id;
-
 - (BOOL) deleteClasssAll;
 @end
 

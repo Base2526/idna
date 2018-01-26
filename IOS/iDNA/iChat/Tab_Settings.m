@@ -60,7 +60,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadData:)
-                                                 name:@"Tab_Contacts_reloadData"
+                                                 name:RELOAD_DATA_FRIEND
                                                object:nil];
 }
 
@@ -70,32 +70,31 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
-    friends = [[NSMutableDictionary alloc] init];
-    
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
+        friends = [[NSMutableDictionary alloc] init];
         
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        if ([friend objectForKey:@"hide"]) {
-            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
-                [friends setObject:friend forKey:friend_id];
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    [friends setObject:friend forKey:friend_id];
+                }
+            }
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    [friends setObject:friend forKey:friend_id];
+                }
             }
         }
-        if ([friend objectForKey:@"block"]) {
-            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
-                [friends setObject:friend forKey:friend_id];
-            }
-        }
-    }
-    
-    [self.tableView reloadData];
+        [self.tableView reloadData];
+    });
 }
 
 /*
@@ -292,24 +291,23 @@
                 
             case 1:{
                 // Logout
-                NSLog(@"Logout");
-            
                 [[Configs sharedInstance] SVProgressHUD_ShowWithStatus:@"Wait."];
                 LogoutThread * logoutThread = [[LogoutThread alloc] init];
                 [logoutThread setCompletionHandler:^(NSData * data) {
                      [[Configs sharedInstance] SVProgressHUD_Dismiss];
-                 
+                    
                      NSDictionary *jsonDict= [NSJSONSerialization JSONObjectWithData:data  options:kNilOptions error:nil];
                  
                      if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                             NSMutableDictionary *idata  = jsonDict[@"data"];
                  
-                        NSMutableDictionary *idata  = jsonDict[@"data"];
+                             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                             PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
+                             UINavigationController *navPreLogin = [[UINavigationController alloc] initWithRootViewController:preLogin];
                  
-                        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                        PreLogin *preLogin = [storyboard instantiateViewControllerWithIdentifier:@"PreLogin"];
-                        UINavigationController *navPreLogin = [[UINavigationController alloc] initWithRootViewController:preLogin];
-                 
-                        [self presentViewController:navPreLogin animated:YES completion:nil];
+                             [self presentViewController:navPreLogin animated:YES completion:nil];
+                        });
                     }else{
                         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:[jsonDict valueForKey:@"message"]];
                     }
@@ -318,9 +316,6 @@
                      [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:data];
                  }];
                  [logoutThread start];
-                
-                
-                
             }
                 break;
         }

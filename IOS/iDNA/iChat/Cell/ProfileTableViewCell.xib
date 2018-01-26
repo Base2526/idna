@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="17A405" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,8 +20,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Name :" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0sl-5x-x6F">
-                        <rect key="frame" x="105" y="10" width="56" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <rect key="frame" x="113" y="10" width="56" height="29"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="56" id="ENG-9J-DYd"/>
                             <constraint firstAttribute="height" constant="29" id="Ktl-Va-vYe"/>
@@ -31,8 +30,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Status :" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AG7-Zw-wmH">
-                        <rect key="frame" x="105" y="48" width="56" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <rect key="frame" x="113" y="48" width="56" height="29"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="56" id="PkX-LS-ZwQ"/>
                             <constraint firstAttribute="height" constant="29" id="xVb-08-lVb"/>
@@ -42,8 +40,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Somkid Simajarn" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="idb-fJ-Wxs">
-                        <rect key="frame" x="169" y="10" width="198" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <rect key="frame" x="177" y="10" width="198" height="29"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="198" id="lA1-Jh-E9G"/>
                             <constraint firstAttribute="height" constant="29" id="oBf-jH-5hJ"/>
@@ -53,16 +50,15 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IgZ-5e-zLA" customClass="HJManagedImageV">
-                        <rect key="frame" x="9" y="10" width="80" height="80"/>
-                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <rect key="frame" x="17" y="10" width="80" height="80"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="80" id="gtw-4c-a45"/>
                             <constraint firstAttribute="height" constant="80" id="m7G-Nw-Ytz"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="HII." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2wh-fB-c3e">
-                        <rect key="frame" x="169" y="48" width="198" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <rect key="frame" x="177" y="48" width="198" height="29"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="29" id="OvX-nd-nsc"/>
                             <constraint firstAttribute="width" constant="198" id="SyY-wv-lZQ"/>

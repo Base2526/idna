@@ -12,13 +12,19 @@
 #import "HJManagedImageV.h"
 #import "AppDelegate.h"
 
+#import "ClasssRepo.h"
+
+#import "FriendsRepo.h"
+
 @interface ClasssListFriends (){
     NSMutableDictionary *blockFriends;
     FriendProfileRepo *friendPRepo;
     FIRDatabaseReference *ref;
+    NSMutableDictionary *friends;
     
+    ClasssRepo *classsRepo;
     
-    NSMutableArray *friends;
+    FriendsRepo *friendsRepo;
 }
 @end
 
@@ -29,18 +35,38 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    ref = [[FIRDatabase database] reference];
+    self.title = @"List Class Users";
     
+    ref         = [[FIRDatabase database] reference];
     friendPRepo = [[FriendProfileRepo alloc] init];
+    friends     = [[NSMutableDictionary alloc] init];
     
-    friends = [[NSMutableArray alloc] init];
+    classsRepo  = [[ClasssRepo alloc] init];
     
-    [self reloadData:nil];
+    friendsRepo = [[FriendsRepo alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_FRIEND
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_CLASSS
+                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_CLASSS object:nil];
 }
 
 /*
@@ -76,23 +102,91 @@
     }
     */
     
-    NSMutableDictionary *local_friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-    
-    int count = 0;
-    for (NSString* key in local_friends) {
-        NSDictionary* value = [local_friends objectForKey:key];
-        // do stuff
+    /*
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *local_friends = [classsRepo get:item_id];//[[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
         
-        if ([value objectForKey:@"classs"]) {
-            NSString *classs = [value objectForKey:@"classs"];
+        NSData *data =  [[local_friends objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        int count = 0;
+        for (NSString* key in f) {
+            NSDictionary* value = [f objectForKey:key];
+            // do stuff
             
-            if ([classs isEqualToString:item_id]) {
-                [friends addObject:key];
+            if ([value objectForKey:@"classs"]) {
+                NSString *classs = [value objectForKey:@"classs"];
+                
+                if ([classs isEqualToString:item_id]) {
+                    [friends addObject:key];
+                }
             }
         }
-    }
+        
+        [self.tableView reloadData];
+    });
+    */
     
-    [self.tableView reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // data_all = [classsRepo getClasssAll];
+        
+        
+        [friends removeAllObjects];
+        
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            Boolean flag = true;
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    flag = false;
+                }
+            }
+            
+            
+            // สถานะรอการตอบรับคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
+            }
+            
+            // สถานะทีเราส่งคำขอเป้นเพือน
+            if ([friend objectForKey:@"status"]) {
+                if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
+                    
+                    flag = false;
+                }
+            }
+            
+            if (flag) {
+                
+                
+                if ([friend objectForKey:@"classs"]) {
+                    NSString *classs = [friend objectForKey:@"classs"];
+                    
+                    if ([classs isEqualToString:item_id]) {
+                        [friends setObject:friend forKey:friend_id];
+                    }
+                }
+            }
+        }
+        
+        [self.tableView reloadData];
+    });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -111,16 +205,15 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
     }
     
-    
     HJManagedImageV *imageV = (HJManagedImageV *)[cell viewWithTag:9];
     UILabel *labelName = (UILabel *)[cell viewWithTag:10];
     
-//    NSArray *keys = [blockFriends allKeys];
-//    id aKey = [keys objectAtIndex:indexPath.row];
-//    id anObject = [blockFriends objectForKey:aKey];
     
+    NSArray *keys = [friends allKeys];
+    id aKey = [keys objectAtIndex:indexPath.row];
+    // id anObject = [friends objectForKey:aKey];
     
-    NSArray *fprofile = [friendPRepo get:[friends objectAtIndex:indexPath.row]];
+    NSArray *fprofile = [friendPRepo get:aKey];
     
     NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
     
@@ -135,8 +228,7 @@
         [imageV clear];
     }
     [labelName setText:[NSString stringWithFormat:@"%@", [f objectForKey:@"name"]]];
-    
-    // cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
+
     return cell;
 }
 @end

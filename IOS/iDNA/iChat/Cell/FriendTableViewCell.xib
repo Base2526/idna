@@ -21,7 +21,6 @@
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Name :" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RgA-mR-mEP">
                         <rect key="frame" x="113" y="11" width="56" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="56" id="Su0-A8-jBA"/>
                             <constraint firstAttribute="height" constant="29" id="nLV-cM-Shr"/>
@@ -32,7 +31,6 @@
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Somkid Simajarn" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8uh-OH-XpD">
                         <rect key="frame" x="177" y="11" width="198" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="198" id="oJQ-b8-m5v"/>
                             <constraint firstAttribute="height" constant="29" id="os2-Rc-57h"/>
@@ -43,7 +41,6 @@
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Change friend's name :" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hB5-8m-ODJ">
                         <rect key="frame" x="113" y="45" width="57" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="57" id="2BU-ah-9EP"/>
                             <constraint firstAttribute="height" constant="29" id="9JM-ZC-Euk"/>
@@ -54,7 +51,6 @@
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Somkid Simajarn 2" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-uO-t2Q">
                         <rect key="frame" x="177" y="45" width="198" height="29"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="29" id="JuO-VV-lsm"/>
                             <constraint firstAttribute="width" constant="198" id="Xjz-bE-aqa"/>
@@ -63,9 +59,8 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type :" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vtk-K9-I4O">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status :" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vtk-K9-I4O">
                         <rect key="frame" x="113" y="82" width="56" height="16"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="PY4-LU-uht"/>
                             <constraint firstAttribute="width" constant="56" id="ise-Q0-Nv8"/>
@@ -74,9 +69,8 @@
                         <color key="textColor" red="0.33333333329999998" green="0.33333333329999998" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YOU, FRIEND, GROUD, MUTI-CHAT" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mWU-bw-Zxw">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mWU-bw-Zxw">
                         <rect key="frame" x="177" y="82" width="198" height="16"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="16" id="XK5-WI-k1K"/>
                             <constraint firstAttribute="width" constant="198" id="giJ-l0-rWx"/>
@@ -95,7 +89,6 @@
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YES, NO" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="quN-nU-ND0">
                         <rect key="frame" x="167" y="106" width="32" height="21"/>
-                        <color key="backgroundColor" red="1" green="0.60332634259999995" blue="0.84151722220000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="fm1-Jz-ZXq"/>
                             <constraint firstAttribute="width" constant="32" id="x1q-7z-Mw8"/>
@@ -144,6 +137,7 @@
                 <outlet property="lblChangeFriendsName" destination="9Sr-uO-t2Q" id="33j-gh-h1U"/>
                 <outlet property="lblName" destination="8uh-OH-XpD" id="VJx-Tg-ZB4"/>
                 <outlet property="lblOnline" destination="quN-nU-ND0" id="9gp-ji-RdA"/>
+                <outlet property="lblStatusMessage" destination="mWU-bw-Zxw" id="27R-tW-meh"/>
             </connections>
             <point key="canvasLocation" x="33.5" y="37"/>
         </tableViewCell>

@@ -35,6 +35,7 @@
 #import "ChatViewController.h"
 #import "FriendRequestCell.h"
 #import "FriendWaitForAFriendCell.h"
+#import "CustomTapGestureRecognizer.h"
 
 @interface Tab_Contacts ()<UITableViewDataSource, UITableViewDelegate>{
     IBOutlet UITableView *tblView;
@@ -44,6 +45,7 @@
     
     FriendProfileRepo *friendPRepo;
     FriendsRepo *friendsRepo;
+    GroupChatRepo *groupChatRepo;
 }
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *revealButton;
@@ -63,6 +65,7 @@
     all_data = [[NSMutableDictionary alloc] init];
     
     friendPRepo  = [[FriendProfileRepo alloc] init];
+    groupChatRepo  = [[GroupChatRepo alloc] init];
     
     /*
      // 0 : Profile
@@ -156,12 +159,11 @@
         // [[Configs sharedInstance] saveData:_DATA :newDict];
         
         [all_data removeAllObjects];
-                
-        NSDictionary* profiles = [[Configs sharedInstance] getUserProfiles];
         
+        // #1 profile
+        NSDictionary* profiles = [[Configs sharedInstance] getUserProfiles];
         [all_data setValue:profiles  forKey:@"profiles"];
         // #1 profile
-        
         
         friendsRepo = [[FriendsRepo alloc] init];
         NSMutableArray * fs = [friendsRepo getFriendsAll];
@@ -200,12 +202,6 @@
              #define _FRIEND_STATUS_FRIEND_REQUEST    @"11"
              #define _FRIEND_STATUS_WAIT_FOR_A_FRIEND @"12"
              */
-            
-            //        if ([friend objectForKey:@"status"]) {
-            //            if (![[friend objectForKey:@"status"] isEqualToString:_FRIEND_STATUS_FRIEND]) {
-            //                flag = false;
-            //            }
-            //        }
             
             // สถานะรอการตอบรับคำขอเป้นเพือน
             if ([friend objectForKey:@"status"]) {
@@ -247,33 +243,12 @@
         // #2 favorite
         
         // #3 friends
-        /*
-         NSMutableArray *_f = [[NSMutableArray alloc] init];
-         for (NSString* key in friends) {
-         
-         NSMutableDictionary *item =[friends objectForKey:key];
-         [item setObject:key forKey:@"friend_id"];
-         [item setObject:@"friend" forKey:@"type"];
-         
-         [_f addObject:item];
-         }
-         
-         [data setValue:_f forKey:@"friends"];
-         */
-        
         [all_data setValue:friends forKey:@"friends"];
         // #3 friends
         
         
         // #4 groups
-        
-        GroupChatRepo *groupChatRepo  = [[GroupChatRepo alloc] init];
-        
         NSMutableArray* groupChat_All =  [groupChatRepo getGroupChatAll];
-        /*
-         NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-         */
-        
         NSMutableDictionary *groups = [[NSMutableDictionary alloc] init];
         for (int i = 0; i<[groupChat_All count]; i++) {
             NSArray* group = [groupChat_All objectAtIndex:i];
@@ -405,28 +380,6 @@
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    ViewControllerCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ViewControllerCell"];
-//    if (cell ==nil){
-//        [tblView registerClass:[ViewControllerCell class] forCellReuseIdentifier:@"ViewControllerCell"];
-//        cell = [tblView dequeueReusableCellWithIdentifier:@"ViewControllerCell"];
-//    }
-//
-//    switch (indexPath.section) {
-//        case 0:{
-//            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//        }
-//            break;
-//
-//        default:{
-//            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-//        }
-//            break;
-//    }
-//
-//    cell.lblName.text = [NSString stringWithFormat:@"%ld", (long)indexPath.row];
-//    cell.backgroundColor = indexPath.row%2==0?[UIColor lightTextColor]:[[UIColor lightTextColor] colorWithAlphaComponent:0.5f];
-//    return cell;
-    
     // NSDictionary *data = [[Configs sharedInstance] loadData:_DATA];
     if (indexPath.section == 0) {
         
@@ -464,20 +417,8 @@
        
         return cell;
     }else{
-        
-        /*
         FriendTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"FriendTableViewCell"];
-        if (!cell){
-            cell = [tableView dequeueReusableCellWithIdentifier:@"FriendTableViewCell"];
-        }
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-        return cell;
-        */
-        FriendTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"FriendTableViewCell"];
-        // if (!cell){
         cell = [tableView dequeueReusableCellWithIdentifier:@"FriendTableViewCell"];
-        // }
         
         switch (indexPath.section) {
             case 1:{
@@ -757,32 +698,25 @@
                 }
                 
                 UITapGestureRecognizer *singleBtnConfirmTap =
-                [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                        action:@selector(handleSingleBtnConfirmTap:)];
+                [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleBtnConfirmTap:)];
                 
                 cell.btnConfirm.tag = indexPath.row;
                 [cell.btnConfirm addGestureRecognizer:singleBtnConfirmTap];
                 
-                
                 UITapGestureRecognizer *singleBtnDeleteRequestTap =
-                [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                        action:@selector(handleSingleBtnDeleteRequestTap:)];
+                [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleBtnDeleteRequestTap:)];
                 
                 cell.btnDeleteRequest.tag = indexPath.row;
                 [cell.btnDeleteRequest addGestureRecognizer:singleBtnDeleteRequestTap];
                 
-                
                 return cell;
             }
                 
-                
             case 5:{
-                
                 FriendWaitForAFriendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FriendWaitForAFriendCell"];
                 cell = [tableView dequeueReusableCellWithIdentifier:@"FriendWaitForAFriendCell"];
                 
                 NSMutableDictionary *friend_request = [all_data objectForKey:@"friend_wait_for_a_friend"];
-                
                 
                 NSArray *keys = [friend_request allKeys];
                 id key = [keys objectAtIndex:indexPath.row];
@@ -791,7 +725,6 @@
                 NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
                 
                 NSArray *fprofile = [friendPRepo get:friend_id];
-                
                 
                 NSData *data =  [[fprofile objectAtIndex:[friendPRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
                 
@@ -1022,8 +955,8 @@
             if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:section]]){
                 headerView.btnShowHide.selected = YES;
             }
-            [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+//            [[headerView btnShowHide] setTag:section];
+//            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
             
             [[headerView btnShowHide] setHidden:YES];
             
@@ -1043,8 +976,16 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+            
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
         case 2:{
@@ -1055,8 +996,17 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
             
@@ -1067,8 +1017,16 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+            
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
             
@@ -1080,8 +1038,16 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+            
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
         case 5:{
@@ -1091,8 +1057,16 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+            
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
             
@@ -1102,8 +1076,16 @@
                 headerView.btnShowHide.selected = YES;
             }
             [[headerView btnShowHide] setTag:section];
-            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSection:) forControlEvents:UIControlEventTouchUpInside];
+            [[headerView btnShowHide] addTarget:self action:@selector(btnTapShowHideSectionButton:) forControlEvents:UIControlEventTouchUpInside];
             [headerView.contentView setBackgroundColor:section%2==0?[UIColor groupTableViewBackgroundColor]:[[UIColor groupTableViewBackgroundColor] colorWithAlphaComponent:0.5f]];
+            
+            //The setup code (in viewDidLoad in your view controller)
+            CustomTapGestureRecognizer *singleFingerTap = [[CustomTapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTapShowHideSection:)];
+            
+            singleFingerTap.object = headerView.btnShowHide;
+            
+            [headerView.contentView setTag:section];
+            [headerView.contentView addGestureRecognizer:singleFingerTap];
         }
             break;
     }
@@ -1239,7 +1221,36 @@
     }];
 }
 
--(IBAction)btnTapShowHideSection:(UIButton*)sender{
+//The event handling method
+- (void)btnTapShowHideSection:(CustomTapGestureRecognizer *)recognizer
+{
+    // CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+    // NSLog(@"%d", [recognizer.view tag]);
+    NSInteger tag = [recognizer.view tag];
+    UIButton *sender = (UIButton*)recognizer.object;
+
+    if (!sender.selected){
+        if (!isMultipleExpansionAllowed) {
+            [arrSelectedSectionIndex replaceObjectAtIndex:0 withObject:[NSNumber numberWithInteger:tag]];
+        }else {
+            [arrSelectedSectionIndex addObject:[NSNumber numberWithInteger:tag]];
+        }
+        sender.selected = YES;
+    }else{
+        sender.selected = NO;
+        if ([arrSelectedSectionIndex containsObject:[NSNumber numberWithInteger:tag]])
+        {
+            [arrSelectedSectionIndex removeObject:[NSNumber numberWithInteger:tag]];
+        }
+    }
+    if (!isMultipleExpansionAllowed) {
+        [tblView reloadData];
+    }else {
+        [tblView reloadSections:[NSIndexSet indexSetWithIndex:tag] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+-(IBAction)btnTapShowHideSectionButton:(UIButton*)sender{
     if (!sender.selected){
         if (!isMultipleExpansionAllowed) {
             [arrSelectedSectionIndex replaceObjectAtIndex:0 withObject:[NSNumber numberWithInteger:sender.tag]];
@@ -2326,7 +2337,6 @@
                 break;
             case 1:{
                 
-                GroupChatRepo *groupChatRepo = [[GroupChatRepo alloc] init];
                 if ([groupChatRepo get:group_id] != nil){
                     BOOL sv = [groupChatRepo deleteGroup:group_id];
                    

@@ -43,6 +43,7 @@
 		600F85171FDE563D0091163B /* FollowingRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = 600F85161FDE563D0091163B /* FollowingRepo.m */; };
 		60204D362001A3FC00B20AC9 /* FindFriendThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 60204D352001A3FC00B20AC9 /* FindFriendThread.m */; };
 		602710572015977200FF894D /* ListDeviceLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 602710562015977200FF894D /* ListDeviceLogin.m */; };
+		6027105A2018799100FF894D /* CustomTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 602710592018799000FF894D /* CustomTapGestureRecognizer.m */; };
 		60350E071F7E820100990C49 /* ChatView2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60350E061F7E820100990C49 /* ChatView2.m */; };
 		60350E081F7E835000990C49 /* PTSMessagingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 60350DFD1F7E7EDD00990C49 /* PTSMessagingCell.m */; };
 		60350E091F7E83F900990C49 /* person1.png in Resources */ = {isa = PBXBuildFile; fileRef = 60350E011F7E7EE500990C49 /* person1.png */; };
@@ -502,6 +503,8 @@
 		60204D352001A3FC00B20AC9 /* FindFriendThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FindFriendThread.m; sourceTree = "<group>"; };
 		602710552015977200FF894D /* ListDeviceLogin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ListDeviceLogin.h; sourceTree = "<group>"; };
 		602710562015977200FF894D /* ListDeviceLogin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListDeviceLogin.m; sourceTree = "<group>"; };
+		602710582018799000FF894D /* CustomTapGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomTapGestureRecognizer.h; sourceTree = "<group>"; };
+		602710592018799000FF894D /* CustomTapGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomTapGestureRecognizer.m; sourceTree = "<group>"; };
 		60350DF91F7E7EDD00990C49 /* balloon_selected_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_selected_right.png; sourceTree = "<group>"; };
 		60350DFA1F7E7EDD00990C49 /* balloon_unread_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_unread_right.png; sourceTree = "<group>"; };
 		60350DFB1F7E7EDD00990C49 /* balloon_selected_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = balloon_selected_left.png; sourceTree = "<group>"; };
@@ -1625,6 +1628,8 @@
 				60D6342D1FB5555D00AECA2B /* CustomAlertView.m */,
 				60B92C791FB66A7300F96698 /* UIPlaceHolderTextView.h */,
 				60B92C7A1FB66A7300F96698 /* UIPlaceHolderTextView.m */,
+				602710582018799000FF894D /* CustomTapGestureRecognizer.h */,
+				602710592018799000FF894D /* CustomTapGestureRecognizer.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -2728,6 +2733,7 @@
 				60CF734120084A1200076C10 /* FriendProfileView2.m in Sources */,
 				60C679741FB7C7FD00077098 /* SignUpThread.m in Sources */,
 				60E102691FE6068800637FB8 /* MXSegmentedPager.m in Sources */,
+				6027105A2018799100FF894D /* CustomTapGestureRecognizer.m in Sources */,
 				600F84FB1FDCDA9A0091163B /* UpdatePictureBGThread.m in Sources */,
 				60BAF62620109868005598DE /* FriendWaitForAFriendCell.m in Sources */,
 				60414EEF1FE89C0C0035F03B /* ResultSearchFriend.m in Sources */,

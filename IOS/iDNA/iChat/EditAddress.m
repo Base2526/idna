@@ -61,6 +61,11 @@
         if ([profiles objectForKey:@"company"]) {
             self.textAddress.text = [profiles objectForKey:@"company"];
         }
+    }else if([type isEqualToString:@"line_id"]){
+        self.title = @"Line ID";
+        if ([profiles objectForKey:@"line_id"]) {
+            self.textAddress.text = [profiles objectForKey:@"line_id"];
+        }
     }
 }
 
@@ -108,6 +113,12 @@
         }
         
         [newProfiles setValue:strName forKey:@"company"];
+    }else if([type isEqualToString:@"line_id"]){
+        if ([newProfiles objectForKey:@"line_id"]) {
+            [newProfiles removeObjectForKey:@"line_id"];
+        }
+        
+        [newProfiles setValue:strName forKey:@"line_id"];
     }
     
     /*

@@ -18,8 +18,9 @@
 
 - (BOOL)check:(NSString *)friend_id;
 - (NSArray *)get:(NSString *)friend_id;
-- (BOOL)insert:(FriendProfile *)data;
-- (BOOL)update:(FriendProfile *)data;
+//- (BOOL)insert:(FriendProfile *)data;
+//- (BOOL)update:(FriendProfile *)data;
+- (BOOL)update:(NSString* )friend_id :(NSString *)data;
 
 - (BOOL)deleteFriendProfileById:(NSString *)friend_id;
 /*

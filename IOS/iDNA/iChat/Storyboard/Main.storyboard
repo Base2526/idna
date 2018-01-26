@@ -345,7 +345,7 @@
                                             <subviews>
                                                 <view tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hki-FI-DLf" customClass="HJManagedImageV">
                                                     <rect key="frame" x="15" y="9" width="80" height="80"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="80" id="gwG-XC-Bz4"/>
                                                         <constraint firstAttribute="width" constant="80" id="ufO-hK-aBg"/>
@@ -353,7 +353,6 @@
                                                 </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6YN-nS-R6A" customClass="TopAlignedLabel">
                                                     <rect key="frame" x="103" y="9" width="211" height="50"/>
-                                                    <color key="backgroundColor" red="0.18442927219999999" green="1" blue="0.086154822749999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="211" id="MzS-KE-lIJ"/>
                                                         <constraint firstAttribute="height" constant="50" id="eQR-ax-7f3"/>
@@ -364,7 +363,6 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wnf-NA-DRa">
                                                     <rect key="frame" x="103" y="60" width="211" height="21"/>
-                                                    <color key="backgroundColor" red="1" green="0.93243781160000005" blue="0.24614285020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="211" id="9DM-a6-W9K"/>
                                                         <constraint firstAttribute="height" constant="21" id="cz9-ys-tfW"/>
@@ -384,7 +382,6 @@
                                                 <constraint firstItem="hki-FI-DLf" firstAttribute="centerY" secondItem="gKG-41-4TJ" secondAttribute="centerY" id="utS-Jp-UDh"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -404,7 +401,7 @@
                     <navigationItem key="navigationItem" title="Manage Class" id="ip7-d1-5Xr">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="ffy-tc-Gl9">
                             <connections>
-                                <segue destination="k1T-rB-Cm6" kind="push" id="PBh-9R-AO2"/>
+                                <segue destination="k1T-rB-Cm6" kind="push" identifier="CreateClass" id="PBh-9R-AO2"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -441,7 +438,7 @@
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qey-rC-mW6" customClass="HJManagedImageV">
                                 <rect key="frame" x="138" y="85" width="100" height="100"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="cKI-Ut-iAv"/>
                                     <constraint firstAttribute="height" constant="100" id="ef2-Re-kZS"/>
@@ -844,7 +841,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qqP-oc-3nw" customClass="HJManagedImageV">
                                 <rect key="frame" x="127" y="96" width="120" height="120"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="Svw-Bl-bT8"/>
                                     <constraint firstAttribute="width" constant="120" id="uSB-RE-AnN"/>
@@ -1470,7 +1467,7 @@
                                             <subviews>
                                                 <view tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yFT-oX-iW3" customClass="HJManagedImageV">
                                                     <rect key="frame" x="16" y="10" width="60" height="60"/>
-                                                    <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="60" id="Rao-a2-ZbD"/>
                                                         <constraint firstAttribute="width" constant="60" id="vuS-Ro-p0o"/>
@@ -1488,7 +1485,6 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ba9-Dk-Ihv">
                                                     <rect key="frame" x="154" y="10" width="211" height="21"/>
-                                                    <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="Ppv-lV-GM4"/>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="211" id="TGl-tK-8QD"/>
@@ -1573,7 +1569,7 @@
                                             <subviews>
                                                 <view tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xYY-sC-TtK" customClass="HJManagedImageV">
                                                     <rect key="frame" x="17" y="9" width="60" height="60"/>
-                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="5tG-0J-SYM"/>
                                                         <constraint firstAttribute="height" constant="60" id="eAd-He-7xV"/>
@@ -1591,7 +1587,6 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d8d-ga-KJ1">
                                                     <rect key="frame" x="156" y="9" width="211" height="21"/>
-                                                    <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="211" id="K3O-iN-ZDB"/>
                                                         <constraint firstAttribute="height" constant="21" id="NIp-9v-bSP"/>
@@ -5252,7 +5247,7 @@
                                             <subviews>
                                                 <view tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R5R-CO-VsP" customClass="HJManagedImageV">
                                                     <rect key="frame" x="17" y="9" width="60" height="60"/>
-                                                    <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="NSS-y7-1qr"/>
                                                         <constraint firstAttribute="height" constant="60" id="g8B-y6-6cI"/>
@@ -5260,7 +5255,6 @@
                                                 </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NSl-cS-GNv">
                                                     <rect key="frame" x="85" y="9" width="275" height="21"/>
-                                                    <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="04j-Wf-HOi"/>
                                                         <constraint firstAttribute="width" constant="275" id="hsu-SZ-wEV"/>
@@ -5728,7 +5722,7 @@
                                                 </label>
                                                 <view tag="11" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2dh-B1-xfx" customClass="HJManagedImageV">
                                                     <rect key="frame" x="284" y="10" width="60" height="60"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="5RY-0P-WS4"/>
                                                         <constraint firstAttribute="height" constant="60" id="rY9-7a-FLh"/>
@@ -5742,7 +5736,6 @@
                                                 <constraint firstItem="2dh-B1-xfx" firstAttribute="top" secondItem="rOH-Qv-RIb" secondAttribute="top" constant="10" id="xZy-Kw-8Fb"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.18442927219999999" green="1" blue="0.086154822749999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="2dh-B1-xfx" secondAttribute="trailing" constant="31" id="wvb-W0-A81"/>
                                         </constraints>
@@ -5785,7 +5778,6 @@
                                                 <constraint firstItem="4dF-xw-CBV" firstAttribute="top" secondItem="LpW-tC-Beb" secondAttribute="topMargin" id="kv2-Wf-Gj6"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.93243781160000005" blue="0.24614285020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="cell_text" id="qhC-PI-t1h">
                                         <rect key="frame" x="0.0" y="251" width="375" height="44"/>
@@ -7098,7 +7090,7 @@
                                                 </label>
                                                 <view tag="11" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HN3-99-zlA" customClass="HJManagedImageV">
                                                     <rect key="frame" x="284" y="10" width="60" height="60"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="60" id="SzR-N5-9In"/>
                                                         <constraint firstAttribute="width" constant="60" id="kzm-ga-D1B"/>
@@ -7112,7 +7104,6 @@
                                                 <constraint firstItem="HN3-99-zlA" firstAttribute="top" secondItem="Obf-Ap-YeI" secondAttribute="top" constant="10" id="sxF-5A-vKe"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.18442927219999999" green="1" blue="0.086154822749999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="HN3-99-zlA" secondAttribute="trailing" constant="31" id="TG7-xS-0Ep"/>
                                         </constraints>
@@ -7155,7 +7146,6 @@
                                                 <constraint firstItem="bdp-a8-9X3" firstAttribute="top" secondItem="KLS-jQ-9LZ" secondAttribute="top" constant="7" id="yjf-r2-gmZ"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.93243781160000005" blue="0.24614285020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="cell_text" id="NWh-iG-ydW">
                                         <rect key="frame" x="0.0" y="251" width="375" height="44"/>

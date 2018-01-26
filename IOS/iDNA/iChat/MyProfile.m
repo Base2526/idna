@@ -211,11 +211,9 @@
 }
 
 -(void)reloadData:(NSNotification *) notification{
-    
-    profiles = [[Configs sharedInstance] getUserProfiles];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         
+        profiles = [[Configs sharedInstance] getUserProfiles];
         /*
          จะ call ทุกครั้งที refresh ซึงไม่ถูกแต่ทำงานได้ เอาแบบนี้ไม่ก่อน วิธีการที่ถูกต้อง check ว่าข้อมูลเปลียมแปลงหรือเปล่าค่อย เรียก
          */
@@ -236,7 +234,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 14;
+    return 15;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -547,6 +545,26 @@
             return cell;
         }
             break;
+            
+        case 14:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Line ID :"];
+            [label2 setText:@""];
+            
+            if ([profiles objectForKey:@"line_id"]) {
+                [label2 setText:[profiles objectForKey:@"line_id"]];
+            }else{
+                [label2 setText:[profiles objectForKey:@"-"]];
+            }
+            return cell;
+        }
+            break;
         default:{
             
         }
@@ -562,7 +580,7 @@
                                                                      delegate:self
                                                             cancelButtonTitle:@"Cancel"
                                                        destructiveButtonTitle:nil
-                                                            otherButtonTitles:@"Take Photo", @"Library", nil];
+                                                            otherButtonTitles:/*@"Take Photo", */ @"Library", nil];
             
             actionSheet.tag = 101;
             [actionSheet showInView:self.view];
@@ -633,7 +651,7 @@
                                                                      delegate:self
                                                             cancelButtonTitle:@"Cancel"
                                                        destructiveButtonTitle:nil
-                                                            otherButtonTitles:@"Take Photo", @"Library", nil];
+                                                            otherButtonTitles: /*@"Take Photo",*/ @"Library", nil];
             
             actionSheet.tag = 102;
             [actionSheet showInView:self.view];
@@ -698,6 +716,15 @@
         }
             break;
             
+        case 14:{
+            // Line ID
+            UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            EditAddress* editAddress = [storybrd instantiateViewControllerWithIdentifier:@"EditAddress"];
+            editAddress.type = @"line_id";
+            [self.navigationController pushViewController:editAddress animated:YES];
+        }
+            break;
+            
         default:
             break;
     }
@@ -707,6 +734,7 @@
     
     if (actionSheet.tag == 101) {
         switch (buttonIndex) {
+                /*
             case 0:{
                 UIImagePickerController *picker = [[UIImagePickerController alloc] init];
                 picker.delegate = self;
@@ -716,8 +744,8 @@
                 [self presentViewController:picker animated:YES completion:NULL];
             }
                 break;
-                
-            case 1:{
+                */
+            case 0:{
                 self.imagePicker = [[GKImagePicker alloc] init];
                 self.imagePicker.cropSize = CGSizeMake(280, 280);
                 self.imagePicker.delegate = self;
@@ -742,6 +770,7 @@
         }
     }else {
         switch (buttonIndex) {
+                /*
             case 0:
             {
                 UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -752,8 +781,8 @@
                 [self presentViewController:picker animated:YES completion:NULL];
             }
                 break;
-                
-            case 1:
+                */
+            case 0:
             {
                 self.imagePicker = [[GKImagePicker alloc] init];
                 self.imagePicker.cropSize = CGSizeMake(280, 280);
@@ -877,8 +906,9 @@
 
 - (IBAction)onShare:(id)sender {
     
-    NSString *textToShare = @"Look at this awesome website for aspiring iOS Developers!";
-    NSURL *myWebsite = [NSURL URLWithString:@"http://www.codingexplorer.com/"];
+    NSString *textToShare = @"iDNA iOS Developers!";
+    // @"http://188.166.208.70/profile-main/729"
+    NSURL *myWebsite = [NSURL URLWithString:[NSString stringWithFormat:@"%@/profile-main/%@", [Configs sharedInstance].API_URL, [[Configs sharedInstance] getUIDU] ] ];
     
     NSArray *objectsToShare = @[textToShare, myWebsite];
     

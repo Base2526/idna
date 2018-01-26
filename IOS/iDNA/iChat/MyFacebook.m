@@ -99,7 +99,7 @@
     
     NSDictionary *facebook = [profiles objectForKey:@"facebook"];
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"fb://profile/%@", @"573395209427571"]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [facebook objectForKey:@"link"] ]];
     [[UIApplication sharedApplication] openURL:url];
 //    if([facebook objectForKey:@"link"]){
 //        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[facebook objectForKey:@"link"]]];

@@ -63,21 +63,64 @@
     }
 }
 
-- (BOOL) update:(FriendProfile *)friend{
-    //  แสดงว่ามีให้ทำการ udpate
-    NSString *query = [NSString stringWithFormat:@"UPDATE friend_profile set 'data'='%@' WHERE friend_id='%@';", friend.data, friend.friend_id];
-    
-    //  Execute the query.
-    [self.dbManager executeQuery:query];
-    
-    //  If the query was succesfully executed then pop the view controller.
-    if (self.dbManager.affectedRows != 0) {
-        NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
-        return true;
+//- (BOOL) update:(FriendProfile *)friend{
+//    //  แสดงว่ามีให้ทำการ udpate
+//    NSString *query = [NSString stringWithFormat:@"UPDATE friend_profile set 'data'='%@' WHERE friend_id='%@';", friend.data, friend.friend_id];
+//
+//    //  Execute the query.
+//    [self.dbManager executeQuery:query];
+//
+//    //  If the query was succesfully executed then pop the view controller.
+//    if (self.dbManager.affectedRows != 0) {
+//        NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+//        return true;
+//    }else{
+//        NSLog(@"Could not execute the query");
+//        return false;
+//    }
+//}
+
+- (BOOL)update:(NSString* )friend_id :(NSString *)data{
+    NSArray *f = [self get:friend_id];
+    if(f != nil){
+        
+        NSString *val = [f objectAtIndex:[self.dbManager.arrColumnNames indexOfObject:@"data"]];
+        if([val isEqualToString:data]){
+            NSLog(@"FriendProfileRepo : update -- xx");
+            return true;
+        }
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        NSString* update    = [timeStampObj stringValue];
+        
+        //  แสดงว่ามีให้ทำการ udpate
+        NSString *query = [NSString stringWithFormat:@"UPDATE friend_profile set 'data'='%@', 'update'='%@' WHERE friend_id='%@';", data, update, friend_id];
+        
+        //  Execute the query.
+        [self.dbManager executeQuery:query];
+        
+        //  If the query was succesfully executed then pop the view controller.
+        if (self.dbManager.affectedRows != 0) {
+            NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+            return true;
+        }else{
+            NSLog(@"Could not execute the query");
+            return false;
+        }
     }else{
-        NSLog(@"Could not execute the query");
-        return false;
+        FriendProfile *friendProfile = [[FriendProfile alloc] init];
+        friendProfile.friend_id  = friend_id;
+        friendProfile.data       = data;
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        friendProfile.create    = [timeStampObj stringValue];
+        friendProfile.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [self insert:friendProfile];
     }
+    return false;
 }
 
 - (BOOL)deleteFriendProfileById:(NSString *)friend_id{

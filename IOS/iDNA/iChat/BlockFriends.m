@@ -28,15 +28,25 @@
     // Do any additional setup after loading the view.
     
     ref = [[FIRDatabase database] reference];
-    
     friendPRepo = [[FriendProfileRepo alloc] init];
-    
-    [self reloadData:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_FRIEND
+                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
 }
 
 /*
@@ -50,46 +60,28 @@
 */
 
 -(void)reloadData:(NSNotification *) notification{
-    
-    // blockFriends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
-    
-    /*
-    for (NSString* key in blockFriends) {
-        NSDictionary* value = [blockFriends objectForKey:key];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
         
-        if ([value objectForKey:@"block"]) {
-            if ([[value objectForKey:@"block"] isEqualToString:@"1"]) {
-                continue;
+        blockFriends = [[NSMutableDictionary alloc] init];
+        
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            if ([friend objectForKey:@"block"]) {
+                if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
+                    [blockFriends setObject:friend forKey:friend_id];
+                }
             }
         }
-        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-        [newFriends addEntriesFromDictionary:blockFriends];
-        [newFriends removeObjectForKey:key];
-        blockFriends = newFriends;
-    }
-    [self.tableView reloadData];
-    */
-    
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
-    blockFriends = [[NSMutableDictionary alloc] init];
-    
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
-        
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-        
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        if ([friend objectForKey:@"block"]) {
-            if ([[friend objectForKey:@"block"] isEqualToString:@"1"]) {
-                [blockFriends setObject:friend forKey:friend_id];
-            }
-        }
-    }
-    [self.tableView reloadData];
+        [self.tableView reloadData];
+    });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -148,7 +140,9 @@
         NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@", child]: @"0"};
         [ref updateChildValues:childUpdates];
         
-        [self updateUnblockFriend:aKey];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateUnblockFriend:aKey];
+        });
     }];
     btnUnblock.backgroundColor = [UIColor redColor];
 //    UITableViewRowAction *btnHide = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Hide" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -166,30 +160,10 @@
  Unblock
  */
 -(void)updateUnblockFriend:(NSString*)friend_id{
-    
-    /*
-    NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-    
-    // ดึงเพือนตาม friend_id แล้ว set change_friends_name
-    NSMutableDictionary *friend  = [friends objectForKey:friend_id];
-    [friend setValue:@"0" forKey:@"block"];
-    
-    // Update friends ของ DATA
-    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-    [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-    [newDict removeObjectForKey:@"friends"];
-    [newDict setObject:friends forKey:@"friends"];
-    
-    [[Configs sharedInstance] saveData:_DATA :newDict];
-    */
-    
     FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
     NSArray *val =  [friendRepo get:friend_id];
     
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-//    Friends *friend  = [[Friends alloc] init];
-//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -198,21 +172,10 @@
     
     NSError * err;
     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newDict options:0 error:&err];
-    // friend.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    // NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    // NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-    // friend.update    = [timeStampObj stringValue];
-    
-    // BOOL rs= [friendRepo update:friend];
-    
+
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        BOOL rs= [friendRepo update:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-//
-//        [self reloadData:nil];
-//    });
+    [self reloadData:nil];
 }
 
 

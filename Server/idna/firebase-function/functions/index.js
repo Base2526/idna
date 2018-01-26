@@ -65,6 +65,8 @@ var PATH_DELETE_POST_MY_APPLICATION  	 = '/delete_post';
 var PATH_DELETE_MAIL  					 = '/edit_multi_email';
 var PATH_DELETE_PHONE  					 = '/edit_multi_phone';
 
+var PATH_DELETE_CLASSS					 = "/delete_classs";
+
 // Refer : https://stackoverflow.com/questions/43486278/how-do-i-structure-cloud-functions-for-firebase-to-deploy-multiple-functions-fro
 exports.iDNA = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/{type}/').onWrite(event => {
     
@@ -332,6 +334,25 @@ exports.iDNA_Group_Chat_Member_Delete = functions.database.ref(PATH_ROOT_IDNA + 
 });
 
 /*
+ function : ลบ Classs
+*/
+exports.iDNA_Classs_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/classs/{class_id}/').onDelete(event => {
+	/*
+	กรณีมีการ Delete Group Member
+	*/
+	request.post({url:API_URL_IDNA + END_POINT_IDNA + PATH_DELETE_CLASSS, form: {uid:event.params.uid, item_id:event.params.class_id}, headers: headers}, function(err,httpResponse,body){ 
+			/* ... */
+			// เราต้อง parse value ก่อนถึงจะสามารถใช้งานได้
+			// var objectValue = JSON.parse(body);
+			// if (!objectValue.result) {
+			// 	console.log('#1 : iDNA Group Delete, Erorr : ' + err);
+			// }
+
+			// console.log(body)
+	});
+});
+
+/*
  กรณี ลบ Post ของ My Application
 */
 exports.iDNA_MyApplication_Post_Delete = functions.database.ref(PATH_ROOT_IDNA + '/'+ PATH_USER_IDNA + '/{uid}/my_applications/{app_id}/posts/{post_id}/').onDelete(event => {
@@ -503,6 +524,8 @@ var GROUP_DELETE_MEMBERS 		= "/group_delete_members";
 
 var MULTI_CHAT_DELETE_MEMBERS 	= "/multi_chat_delete_members"; 
 var DELETE_MULTI_CHAT         	= "/delete_multi_chat";
+
+
 // ----------> PATH CONFIG
 
 

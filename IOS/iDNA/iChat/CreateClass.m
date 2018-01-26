@@ -10,26 +10,49 @@
 #import "Configs.h"
 #import "AppDelegate.h"
 #import "CreateClassThread.h"
-
 #import "ClasssRepo.h"
 #import "Classs.h"
 
-@interface CreateClass ()
-
+@interface CreateClass (){
+    ClasssRepo* classsRepo;
+}
 @end
 
 @implementation CreateClass
 @synthesize imagePicker;
 @synthesize popoverController;
 
-@synthesize imageProfile, textfieldName;
+@synthesize imageProfile, textfieldName, fction, item_id;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    classsRepo = [[ClasssRepo alloc] init];
+    
     imageProfile.userInteractionEnabled = YES;
     [imageProfile addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectImage:)]];
+    
+    if ([fction isEqualToString:@"edit"]) {
+        NSArray *array_classs=  [classsRepo get:item_id];
+        
+        // NSString *item_id = [value objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
+        NSData *data =  [[array_classs objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        if ([f objectForKey:@"image_url"]) {
+            [imageProfile clear];
+            [imageProfile showLoadingWheel];
+            [imageProfile setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [Configs sharedInstance].API_URL, [f objectForKey:@"image_url"]]]];
+            [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageProfile];
+        }else{
+            
+        }
+        
+        [textfieldName setText:[f objectForKey:@"name"]];
+        NSLog(@"");
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,7 +75,7 @@
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Take Photo", @"Library", nil];
+                                                    otherButtonTitles:/*@"Take Photo",*/ @"Library", nil];
     
     actionSheet.tag = 101;
     [actionSheet showInView:self.view];
@@ -61,6 +84,7 @@
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     switch (buttonIndex) {
+            /*
         case 0:{
             UIImagePickerController *picker = [[UIImagePickerController alloc] init];
             picker.delegate = self;
@@ -70,8 +94,9 @@
             [self presentViewController:picker animated:YES completion:NULL];
         }
             break;
+            */
             
-        case 1:{
+        case 0:{
             self.imagePicker = [[GKImagePicker alloc] init];
             self.imagePicker.cropSize = CGSizeMake(280, 280);
             self.imagePicker.delegate = self;
@@ -146,72 +171,47 @@
         [[Configs sharedInstance] SVProgressHUD_Dismiss];
         
         if ([jsonDict[@"result"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            
-            /*
             dispatch_async(dispatch_get_main_queue(), ^{
-                // code here
-                [imageV clear];
-                [imageV showLoadingWheel];
-                [imageV setUrl:[NSURL URLWithString:jsonDict[@"url"]]];
-                
-                [imageV setUrl:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [Configs sharedInstance].API_URL,jsonDict[@"url"]]]];
-                [[(AppDelegate*)[[UIApplication sharedApplication] delegate] obj_Manager ] manage:imageV ];
-            });
-            // [self updateURI:jsonDict[@"url"]];
-            
-            NSMutableDictionary *profiles = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"profiles"];
-            [profiles setValue:jsonDict[@"url"] forKey:@"image_url"];
-            
-            NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-            // เราต้อง addEntriesFromDictionary ก่อน ถึงจะสามารถลบได้ แ้วค่อย update ข้อมูล
-            [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-            //  ลบข้อมูล key profiles ออกไป
-            [newDict removeObjectForKey:@"profiles"];
-            
-            [newDict setObject:profiles forKey:@"profiles"];
-            
-            [[Configs sharedInstance] saveData:_DATA :newDict];
-            */
-            
-            // NSMutableDictionary *data = [[Configs sharedInstance] loadData:_DATA];
-            
-            NSString*item_id = jsonDict[@"item_id"];
-            
-            ClasssRepo *classsRepo = [[ClasssRepo alloc] init];
-            if ([classsRepo get:item_id] == nil){
-             
-                 Classs *class = [[Classs alloc] init];
-                 class.item_id = item_id;
-                 
-                 NSError * err;
-                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:jsonDict[@"value"] options:0 error:&err];
-                 class.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                 
-                 NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-                 NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-                 class.create    = [timeStampObj stringValue];
-                 class.update    = [timeStampObj stringValue];
-                 
-                 BOOL sv = [classsRepo insert:class];
-                
-                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ManageClass_reloadData" object:self userInfo:@{}];
-            }
-            NSMutableArray * l = [classsRepo getClasssAll];
-
-            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString*item_id = jsonDict[@"item_id"];
+                if ([jsonDict[@"fction"] isEqualToString:@"add"]) {
+                    NSError * err;
+                    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:jsonDict[@"value"] options:0 error:&err];
+                    
+                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:item_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                    
+                }else if ([jsonDict[@"fction"] isEqualToString:@"edit"]) {
+                    NSDictionary * value = jsonDict[@"value"];
+                    
+                    NSArray *array_classs=  [classsRepo get:item_id];
+                    
+                    // NSString *item_id = [value objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"item_id"]];
+                    NSData *data =  [[array_classs objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                    
+                    NSMutableDictionary *f = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                    
+                    NSMutableDictionary *newClasss = [[NSMutableDictionary alloc] init];
+                    [newClasss addEntriesFromDictionary:f];
+                    [newClasss removeObjectForKey:@"name"];
+                    [newClasss removeObjectForKey:@"image_url"];
+                    
+                    [newClasss setValue:[value objectForKey:@"name"] forKey:@"name"];
+                    [newClasss setValue:[value objectForKey:@"image_url"] forKey:@"image_url"];
+                    
+                    
+                    NSError * err;
+                    NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:newClasss options:0 error:&err];
+                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateClasss:item_id : [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+                    
+                }
                 [self.navigationController popViewControllerAnimated:YES];
             });
-            
-            NSLog(@"");
         }
         [[Configs sharedInstance] SVProgressHUD_ShowSuccessWithStatus:@"Update success."];
     }];
     
     [createClassThread setErrorHandler:^(NSString *error) {
         [[Configs sharedInstance] SVProgressHUD_ShowErrorWithStatus:error];
-    }];
-    // [createClassThread start:image:name];
-    
-    [createClassThread start:image :name];
+    }];    
+    [createClassThread start:fction :item_id :image :name];
 }
 @end

@@ -284,7 +284,7 @@
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Take Photo", @"Library", nil];
+                                                    otherButtonTitles:/*@"Take Photo", */ @"Library", nil];
     
     actionSheet.tag = 101;
     [actionSheet showInView:self.view];
@@ -293,6 +293,7 @@
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     
     switch (buttonIndex) {
+            /*
         case 0:
         {
             UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -303,8 +304,8 @@
             [self presentViewController:picker animated:YES completion:NULL];
         }
             break;
-            
-        case 1:
+            */
+        case 0:
         {
             NSLog(@"");
             self.imagePicker = [[GKImagePicker alloc] init];

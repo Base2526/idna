@@ -29,15 +29,25 @@
     // Do any additional setup after loading the view.
     
     ref = [[FIRDatabase database] reference];
-    
     friendPRepo = [[FriendProfileRepo alloc] init];
-    
-    [self reloadData:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadData:)
+                                                 name:RELOAD_DATA_FRIEND
+                                               object:nil];
+    
+    [self reloadData:nil];
+}
+
+-(void) viewDidDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RELOAD_DATA_FRIEND object:nil];
 }
 
 /*
@@ -51,47 +61,29 @@
 */
 
 -(void)reloadData:(NSNotification *) notification{
-    
-    // hideFriends = [[[Configs sharedInstance] loadData:_DATA] objectForKey:@"friends"];
-    
-//    for (NSString* key in hideFriends) {
-//        NSDictionary* value = [hideFriends objectForKey:key];
-//
-//        if ([value objectForKey:@"hide"]) {
-//            if ([[value objectForKey:@"hide"] isEqualToString:@"1"]) {
-//                continue;
-//            }
-//        }
-//
-//        NSMutableDictionary *newFriends = [[NSMutableDictionary alloc] init];
-//        [newFriends addEntriesFromDictionary:hideFriends];
-//
-//        [newFriends removeObjectForKey:key];
-//
-//        hideFriends = newFriends;
-//    }
-    
-    FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
-    NSMutableArray * fs = [friendsRepo getFriendsAll];
-    
-    hideFriends = [[NSMutableDictionary alloc] init];
-    
-    for (int i = 0; i < [fs count]; i++) {
-        NSArray *val =  [fs objectAtIndex:i];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        FriendsRepo *friendsRepo = [[FriendsRepo alloc] init];
+        NSMutableArray * fs = [friendsRepo getFriendsAll];
         
-        NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
-        NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+        hideFriends = [[NSMutableDictionary alloc] init];
         
-        NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        
-        if ([friend objectForKey:@"hide"]) {
-            if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
-                [hideFriends setObject:friend forKey:friend_id];
+        for (int i = 0; i < [fs count]; i++) {
+            NSArray *val =  [fs objectAtIndex:i];
+            
+            NSString* friend_id =[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"friend_id"]];
+            NSData *data =  [[val objectAtIndex:[friendsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSDictionary* friend = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            
+            if ([friend objectForKey:@"hide"]) {
+                if ([[friend objectForKey:@"hide"] isEqualToString:@"1"]) {
+                    [hideFriends setObject:friend forKey:friend_id];
+                }
             }
         }
-    }
-    
-    [self.tableView reloadData];
+        
+        [self.tableView reloadData];
+    });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -140,7 +132,6 @@
 
 -(NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewRowAction *btnUnhide = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Unhide" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-        NSLog(@"Unhide");
         
         NSArray *keys = [hideFriends allKeys];
         id aKey = [keys objectAtIndex:indexPath.row];
@@ -150,7 +141,9 @@
         NSDictionary *childUpdates = @{[NSString stringWithFormat:@"%@", child]: @"0"};
         [ref updateChildValues:childUpdates];
         
-        [self updateUnhideFriend:aKey];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateUnhideFriend:aKey];
+        });
     }];
     btnUnhide.backgroundColor = [UIColor redColor];
 
@@ -165,28 +158,11 @@
  Unhide
  */
 -(void)updateUnhideFriend:(NSString*)friend_id{
-    /*
-    NSMutableDictionary *friends = [[[Configs sharedInstance] loadData:_DATA] valueForKey:@"friends"];
-    //  ดึงเพือนตาม friend_id แล้ว set change_friends_name
-    NSMutableDictionary *friend  = [friends objectForKey:friend_id];
-    [friend setValue:@"0" forKey:@"hide"];
-    
-    // Update friends ของ DATA
-    NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
-    [newDict addEntriesFromDictionary:[[Configs sharedInstance] loadData:_DATA]];
-    [newDict removeObjectForKey:@"friends"];
-    [newDict setObject:friends forKey:@"friends"];
-    
-    [[Configs sharedInstance] saveData:_DATA :newDict];
-    */
     
     FriendsRepo *friendRepo = [[FriendsRepo alloc] init];
     NSArray *val =  [friendRepo get:friend_id];
     
     NSData *data =  [[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-    
-//    Friends *friend  = [[Friends alloc] init];
-//    friend.friend_id = friend_id;
     
     NSMutableDictionary *newDict = [[NSMutableDictionary alloc] init];
     [newDict addEntriesFromDictionary:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -204,5 +180,7 @@
     // BOOL rs= [friendRepo update:friend];
     
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:friend_id :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+    
+    [self reloadData:nil];
 }
 @end

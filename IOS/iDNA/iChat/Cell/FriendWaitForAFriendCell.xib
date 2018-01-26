@@ -21,7 +21,7 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IBM-VW-kXd" customClass="HJManagedImageV">
                         <rect key="frame" x="8" y="6" width="80" height="80"/>
-                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="80" id="6vu-Rn-LYW"/>
                             <constraint firstAttribute="height" constant="80" id="nrV-dW-Vif"/>
@@ -29,7 +29,6 @@
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name :" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J8E-u1-2pZ">
                         <rect key="frame" x="154" y="6" width="166" height="21"/>
-                        <color key="backgroundColor" red="1" green="0.1742455604" blue="0.16842276640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="166" id="BmE-wK-oti"/>
                             <constraint firstAttribute="height" constant="21" id="RZw-cQ-xmx"/>
@@ -40,7 +39,6 @@
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name :" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="egh-gG-JS0">
                         <rect key="frame" x="96" y="6" width="55" height="21"/>
-                        <color key="backgroundColor" red="1" green="0.93243781160000005" blue="0.24614285020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="dC3-Ox-fkL"/>
                             <constraint firstAttribute="width" constant="55" id="mh0-ep-Y3z"/>

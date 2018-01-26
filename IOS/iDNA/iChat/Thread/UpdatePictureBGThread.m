@@ -11,8 +11,6 @@
 #import "AppConstant.h"
 
 @implementation UpdatePictureBGThread
-
-/*
 -(void)start: (UIImage *)image
 {
     //if there is a connection going on just cancel it.
@@ -26,6 +24,7 @@
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_BG ]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSString *imgString =@"";
     if (image != nil) {
@@ -61,7 +60,7 @@
     [postDataTask resume];
     
 }
-*/
+/*
 
 -(void)start: (UIImage *)image{
     // NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"REST URL PATH"]];
@@ -122,5 +121,6 @@
         }
     }];
 }
+ */
 @end
 

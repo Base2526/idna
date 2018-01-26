@@ -61,6 +61,7 @@
     }
 }
 
+/*
 - (BOOL) update:(Classs *)data{
     //  แสดงว่ามีให้ทำการ udpate
     NSString *query = [NSString stringWithFormat:@"UPDATE classs set 'data'='%@' WHERE item_id='%@';", data.data, data.item_id];
@@ -76,6 +77,50 @@
         NSLog(@"Could not execute the query");
         return false;
     }
+}
+*/
+
+- (BOOL)update:(NSString* )item_id :(NSString *)data{
+    NSArray *f = [self get:item_id];
+    if(f != nil){
+        
+        NSString *val = [f objectAtIndex:[self.dbManager.arrColumnNames indexOfObject:@"data"]];
+        if([val isEqualToString:data]){
+            NSLog(@"ClasssRepo : update -- xx");
+            return true;
+        }
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        NSString* update    = [timeStampObj stringValue];
+        
+        //  แสดงว่ามีให้ทำการ udpate
+        NSString *query = [NSString stringWithFormat:@"UPDATE classs set 'data'='%@', 'update'='%@' WHERE item_id='%@';", data, update, item_id];
+        
+        //  Execute the query.
+        [self.dbManager executeQuery:query];
+        
+        //  If the query was succesfully executed then pop the view controller.
+        if (self.dbManager.affectedRows != 0) {
+            NSLog(@"Query was executed successfully. Affacted rows = %d", self.dbManager.affectedRows);
+            return true;
+        }else{
+            NSLog(@"Could not execute the query");
+            return false;
+        }
+    }else{
+        Classs *classs  = [[Classs alloc] init];
+        classs.item_id  = item_id;
+        classs.data     = data;
+        
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+        classs.create    = [timeStampObj stringValue];
+        classs.update    = [timeStampObj stringValue];
+        
+        BOOL sv = [self insert:classs];
+    }
+    return false;
 }
 
 - (NSMutableArray *) getClasssAll{

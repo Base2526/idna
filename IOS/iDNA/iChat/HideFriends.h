@@ -10,6 +10,4 @@
 
 @interface HideFriends : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-
 @end

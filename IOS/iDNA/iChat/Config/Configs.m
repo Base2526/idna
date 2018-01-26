@@ -553,9 +553,9 @@
             for (NSString* key in classs) {
                 NSDictionary* val = [classs objectForKey:key];
                 
+                /*
                 Classs *cs = [[Classs alloc] init];
                 cs.item_id = key;
-                
                 
                 NSError * err;
                 NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
@@ -567,7 +567,15 @@
                 cs.update    = [timeStampObj stringValue];
                 
                 BOOL sv = [classsRepo insert:cs];
+                */
+                
+                NSError * err;
+                NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:val options:0 error:&err];
+                
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateFriend:key :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             }
+            
+            
         }
         // #4 ส่วนของ classs
         
@@ -626,11 +634,12 @@
                 FriendProfileRepo *friendProfileRepo = [[FriendProfileRepo alloc] init];
                 
                 if (![friendProfileRepo check:parent]) {
-                    FriendProfile *friendProfile = [[FriendProfile alloc] init];
-                    friendProfile.friend_id = parent;
+                    //FriendProfile *friendProfile = [[FriendProfile alloc] init];
+                    // friendProfile.friend_id = parent;
                     
                     NSError * err;
                     NSData * jsonData    = [NSJSONSerialization dataWithJSONObject:snapshot.value options:0 error:&err];
+                    /*
                     friendProfile.data   = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                     
                     NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
@@ -639,6 +648,9 @@
                     friendProfile.update    = [timeStampObj stringValue];
                     
                     BOOL sv = [friendProfileRepo insert:friendProfile];
+                    */
+                    
+                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateProfileFriend:parent :[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
                 }
                 
                 // จะออกก็ต่อเมือดึงข้อมูล ถึงคนสุดท้ายเท่านั้น

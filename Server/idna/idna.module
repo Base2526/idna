@@ -2032,6 +2032,27 @@ function idna_services_resources()
         ),
       ),
     ),
+
+    'delete_classs'=>array(
+      'create' =>array(
+        'help'=>'Services ลบ Classs : param uid, group_id',
+        'callback'=>'delete_classs',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        /* กรณีที่เราต้องการ pass parameter */
+        'args' => array(
+          array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+          ),
+        ),
+      ),
+    ),
     'update_picture_group'=>array(
       'create' =>array(
         'help'=>'Update Profile Group : group_id, picture',
@@ -6384,25 +6405,26 @@ function update_picture_profile(){
     return $result;
   }
   
-  if (empty($_REQUEST['uid']) || empty($_FILES)) {
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
     $result['result'] = FALSE;
-    $result['message']  = "function : update_picture_bg, parameter";
+    $result['message']  = "function : update_picture_profile, parameter";
+    $result['_REQUEST']  = $_REQUEST;
     return $result;
   }
 
   global $firebase;
 
   $uid   = $_REQUEST['uid'];
-  $image = $_FILES['image_key'];
+  $image = $_REQUEST['image'];
 
   $profile = profile2_by_uid_load($uid, 'main');
 
   if($image != ""){
 
     // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
-    // $binary = base64_decode($image);
+    $binary = base64_decode($image);
 
-    $binary = file_get_contents($image['tmp_name']);
+    // $binary = file_get_contents($image['tmp_name']);
 
     //Create the directory if it does not already exist, otherwise check the permissions
     $directory = 'public://';
@@ -6454,25 +6476,26 @@ function update_picture_bg(){
 
   // return $result;
 
-  if (empty($_REQUEST['uid']) || empty($_FILES)) {
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['image'])) {
     $result['result'] = FALSE;
     $result['message']  = "function : update_picture_bg, parameter";
+    $result['_REQUEST']  = $_REQUEST;
     return $result;
   }
 
   global $firebase;
 
   $uid   = $_REQUEST['uid'];
-  $image = $_FILES['image_key'];
+  $image = $_REQUEST['image'];
 
   $profile = profile2_by_uid_load($uid, 'main');
 
   if($image != ""){
 
     // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
-    // $binary = base64_decode($image);
+    $binary = base64_decode($image);
 
-    $binary = file_get_contents($image['tmp_name']);
+    // $binary = file_get_contents($image['tmp_name']);
 
 
     //Create the directory if it does not already exist, otherwise check the permissions
@@ -8221,79 +8244,150 @@ function create_group_chat(){
 function create_class(){
   $result = array();
 
-  global $firebase;
-
   if (!check_header()) {
     $result['result'] = FALSE;
     $result['message']= "check_header()";
     return $result;
   }
 
-  if (empty($_REQUEST['uid']) || empty($_REQUEST['name']) || empty($_REQUEST['image'])) {
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['fction']) || empty($_REQUEST['item_id']) || empty($_REQUEST['name']) || empty($_REQUEST['image'])) {
     $result['result'] = FALSE;
     $result['message']  = "function : create_class, parameter";
     return $result;
   }
 
+  global $firebase;
+
   $uid    = $_REQUEST['uid'];
+  $fction = $_REQUEST['fction'];
+  $item_id= $_REQUEST['item_id'];
   $name   = $_REQUEST['name'];
   $image  = $_REQUEST['image'];
 
-  $profile = profile2_by_uid_load($uid, 'main');
+  switch ($fction) {
+    case 'add':{
+        $profile = profile2_by_uid_load($uid, 'main');
 
-  $values = array();
-  $values['field_name'] = 'field_field_my_class'; 
+        $values = array();
+        $values['field_name'] = 'field_field_my_class'; 
 
-  $image_url = array();
-  if($image != ""){
+        $image_url = array();
+        if($image != ""){
 
-    // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
-    $binary = base64_decode($image);
+          // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+          $binary = base64_decode($image);
 
-    //Create the directory if it does not already exist, otherwise check the permissions
-    $directory = 'public://';
-    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+          //Create the directory if it does not already exist, otherwise check the permissions
+          $directory = 'public://';
+          file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
 
-    $currentDate = date("Ymd");
-    $file_name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+          $currentDate = date("Ymd");
+          $file_name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+          
+          //Saves a file to the specified destination and creates a database entry.
+          $file = klovers_file_save_data($uid, $binary, $directory. '/' . $file_name, FILE_EXISTS_RENAME);
+
+          // save รูป profile
+          // $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
+
+          $image_url= (array)$file;
+        }
+
+        // #1 field_class_image_profile
+        $values['field_class_image_profile'][LANGUAGE_NONE][0] = $image_url;
+        
+        // #2 field_name_group
+        $values['field_class_name'][LANGUAGE_NONE][0]['value'] = $name;
+
+         // Create the field collection entry and associate it with the profile
+        $field_entity = entity_create('field_collection_item', $values);
+        $field_entity->setHostEntity('profile2', $profile);
+        $field_entity->save();
+       
+        // เป็น node id ของ group
+        $item_id = $field_entity->item_id;
+
+        $value = array(      
+            "create"   => time(),
+            "update"   => time(),
+            "name"     => $name,
+            // เราจะไม่เอา path host เราจะเอาเฉพาะ ex. /sites/default/files/20171003_570645200.png
+            "image_url"=> substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
+            "status"   => 'active'
+        );
+
+        $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . PATH_CLASSS . '/' . $item_id . '/' , $value);
+
+        $result['result'] = TRUE;
+        $result['item_id']= $item_id;
+        $result['value']  = $value;
+        $result['fction'] = $fction;
+
+        return  $result;
+      }
+      break;
+
+    case 'edit':{
+        // field_field_my_class
+
+        $item_load = field_collection_item_load($item_id);
+        if ($item_load) {
+          $wrapper = entity_metadata_wrapper('field_collection_item', $item_load);
+
+          $wrapper->field_class_name->set($data['name']);
+
+
+          $value = array();
+
+          $value["name"]    = $name;
+
+          if($image != ""){
+            // http://stackoverflow.com/questions/8241242/drupal-7-upload-image-programatically
+            $binary = base64_decode($image);
+
+            //Create the directory if it does not already exist, otherwise check the permissions
+            $directory = 'public://';
+            file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+
+            $currentDate = date("Ymd");
+            $name  = $currentDate .'_'. rand(0, 999) . rand(0, 999) . rand(0, 999) . ".png";
+            
+            //Saves a file to the specified destination and creates a database entry.
+            $file = klovers_file_save_data($uid, $binary, $directory. '/' . $name, FILE_EXISTS_RENAME);
+
+            // save รูป profile
+            // $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
+
+            $image_url= (array)$file;
+
+            $wrapper->field_class_image_profile->set((array)$file);
+
+
+            $value['image_url'] =  substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url']));
+          }
+
+          $wrapper->save();
+
+          
+          $value["update"]  = time();
+            
+          $firebase->update(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . PATH_CLASSS . '/' . $item_id .'/' , $value);
+
+          $result['result'] = TRUE;
+          $result['item_id']= $item_id;
+          $result['value']  = $value;
+          $result['fction'] = $fction;
+
+          return  $result;
+        }
+      }
+      break;
     
-    //Saves a file to the specified destination and creates a database entry.
-    $file = klovers_file_save_data($uid, $binary, $directory. '/' . $file_name, FILE_EXISTS_RENAME);
-
-    // save รูป profile
-    // $profile->field_profile_image[LANGUAGE_NONE][0] = (array)$file;
-
-    $image_url= (array)$file;
+    default:
+      # code...
+      break;
   }
 
-  // #1 field_class_image_profile
-  $values['field_class_image_profile'][LANGUAGE_NONE][0] = $image_url;
-  
-  // #2 field_name_group
-  $values['field_class_name'][LANGUAGE_NONE][0]['value'] = $name;
-
-   // Create the field collection entry and associate it with the profile
-  $field_entity = entity_create('field_collection_item', $values);
-  $field_entity->setHostEntity('profile2', $profile);
-  $field_entity->save();
- 
-  // เป็น node id ของ group
-  $item_id = $field_entity->item_id;
-
-  $value = array(      
-      "create"   => time(),
-      "name"     => $name,
-      // เราจะไม่เอา path host เราจะเอาเฉพาะ ex. /sites/default/files/20171003_570645200.png
-      "image_url"=> substr(file_create_url($image_url['uri']), strlen($GLOBALS['base_url'])),
-      "status"   => 'active'
-  );
-
-  $firebase->set(FIREBASE_DEFAULT_PATH . FIREBASE_LOGIN_PATH . $uid . '/' . PATH_CLASSS . '/' . $item_id . '/' , $value);
-
-  $result['result'] = TRUE;
-  $result['item_id']= $item_id;
-  $result['value']   = $value;
-  return  $result;
 }
 
 
@@ -8659,6 +8753,35 @@ function delete_member_group_chat(){
   $data_item_load = field_collection_item_load($member_id);
 
   $wrapper = entity_metadata_wrapper('field_collection_item', $data_item_load);    
+  entity_delete_multiple('field_collection_item', array($wrapper->getIdentifier()));
+
+  $result['result'] = TRUE;
+  
+  return  $result;
+}
+
+function delete_classs(){
+  $result = array();
+
+  if (!check_header()) {
+    $result['result'] = FALSE;
+    $result['message']= "check_header()";
+    return $result;
+  }
+
+  if (empty($_REQUEST['uid']) || empty($_REQUEST['item_id'])) { // 
+    $result['result'] = FALSE;
+    $result['message']  = "function : delete_classs, parameter";
+    return $result;
+  }
+
+  $uid = $_REQUEST['uid'];
+  $item_id = $_REQUEST['item_id'];
+
+  // ลบ group ออกตาม group id
+  $item_load = field_collection_item_load($item_id);
+
+  $wrapper = entity_metadata_wrapper('field_collection_item', $item_load);    
   entity_delete_multiple('field_collection_item', array($wrapper->getIdentifier()));
 
   $result['result'] = TRUE;

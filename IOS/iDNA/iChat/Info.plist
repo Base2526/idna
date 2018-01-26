@@ -28,7 +28,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>17</string>
 	<key>FacebookAppID</key>
 	<string>208899142990759</string>
 	<key>FacebookDisplayName</key>
@@ -39,6 +39,7 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>line</string>
 		<string>fb</string>
 		<string>fbapi</string>
 		<string>fb-messenger-share-api</string>

@@ -17,5 +17,7 @@
 @property (weak, nonatomic) IBOutlet HJManagedImageV *imageProfile;
 @property (weak, nonatomic) IBOutlet UITextField *textfieldName;
 
+@property (strong, nonatomic) NSString *fction, *item_id;
+
 - (IBAction)onCreate:(id)sender;
 @end

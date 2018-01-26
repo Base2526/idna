@@ -11,7 +11,7 @@
 #import "AppConstant.h"
 
 @implementation UpdatePictureProfileThread
-/*
+
 -(void)start: (UIImage *)image
 {
     //if there is a connection going on just cancel it.
@@ -22,26 +22,43 @@
     // [data release];
     
     // http://localhost/test-parse/gen_qrcode.php?user=52So6zp2om
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_PROFILE ]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].UPDATE_PICTURE_PROFILE ]];
     
     //initialize a request from url
     // NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:[Configs sharedInstance].timeOut];;//[NSMutableURLRequest requestWithURL:[url standardizedURL]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSString *imgString =@"";
     if (image != nil) {
         NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
         imgString = [[Utility base64forData:imageData] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];
     }
+ 
+//    NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU], @"image":imgString};
+//    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
+//    [request setHTTPBody:jsonBodyData];
     
+//    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+//    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+//    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+//
+//        if (error == nil) {
+//            self.completionHandler(data);
+//        }else{
+//            self.errorHandler([error description]);
+//        }
+//    }];
+//
+//    [postDataTask resume];
     
+    NSMutableString *dataToSend = [NSMutableString string];
     
-    NSDictionary *jsonBodyDict = @{@"uid":[[Configs sharedInstance] getUIDU], @"image":imgString};
-    NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
-    [request setHTTPBody:jsonBodyData];
+    [dataToSend appendFormat:@"uid=%@&image=%@&", [[Configs sharedInstance] getUIDU], imgString];
     
-  
+    [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
+    
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
     NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -55,7 +72,7 @@
     
     [postDataTask resume];
 }
-*/
+/*
 
 -(void)start: (UIImage *)image{
     // NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"REST URL PATH"]];
@@ -116,4 +133,5 @@
         }
     }];
 }
+ */
 @end

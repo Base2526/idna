@@ -55,5 +55,6 @@
 #define RELOAD_DATA_PROFILES       @"reload_data_profiles"
 #define RELOAD_DATA_FRIEND         @"reload_data_friend"
 #define RELOAD_DATA_GROUP          @"reload_data_group"
+#define RELOAD_DATA_CLASSS         @"reload_data_classs"
 
 #endif /* AppConstant_h */

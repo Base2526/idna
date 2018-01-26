@@ -22,6 +22,7 @@
 
 @interface FriendProfileView (){
     FriendProfileRepo *friendProfileRepo;
+    FriendsRepo *friendRepo;
     
     NSMutableDictionary *friend_profile;
 }
@@ -35,6 +36,7 @@
     // Do any additional setup after loading the view.
     ref = [[FIRDatabase database] reference];
     friendProfileRepo = [[FriendProfileRepo alloc] init];
+    friendRepo        = [[FriendsRepo alloc] init];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -84,7 +86,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 4;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -230,6 +232,86 @@
                 
                 return cell;
             }
+            
+        case 4:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Classs :"];
+            
+            NSArray *val =  [friendRepo get:friend_id];
+            NSDictionary* fc = [NSJSONSerialization JSONObjectWithData:[[val objectAtIndex:[friendRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+            
+            if ([fc objectForKey:@"classs"]) {
+                ClasssRepo * classsRepo = [[ClasssRepo alloc] init];
+                NSArray *class = [classsRepo get:[fc objectForKey:@"classs"]];
+                
+                NSData *class_data =  [[class objectAtIndex:[classsRepo.dbManager.arrColumnNames indexOfObject:@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSMutableDictionary *tmp = [NSJSONSerialization JSONObjectWithData:class_data options:0 error:nil];
+                
+                label2.text = [tmp objectForKey:@"name"];
+            }else{
+                label2.text = @"not classs";
+            }
+            
+            return cell;
+        }
+            
+        case 5:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Line ID :"];
+
+            if ([friend_profile objectForKey:@"line_id"]) {
+            
+                [label2 setText:[friend_profile objectForKey:@"line_id"]];;
+            }else{
+                label2.text = @"not line id";
+            }
+            
+            return cell;
+        }
+            
+            /*
+             
+             NSDictionary *facebook = [profiles objectForKey:@"facebook"];
+             
+             NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [facebook objectForKey:@"link"] ]];
+             [[UIApplication sharedApplication] openURL:url];
+             //    if([facebook objectForKey:@"link"]){
+             */
+            
+        case 6:{
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
+            
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *label1 = [cell viewWithTag:10];
+            UILabel *label2 = [cell viewWithTag:11];
+            
+            [label1 setText:@"Facebook :"];
+            
+            if ([friend_profile objectForKey:@"facebook"]) {
+                
+                NSDictionary *facebook = [friend_profile objectForKey:@"facebook"];
+                [label2 setText:[friend_profile objectForKey:@"name"]];;
+            }else{
+                label2.text = @"not facebook";
+            }
+            
+            return cell;
+        }
             
             //        case 5:{
             //            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell_text"];
@@ -384,6 +466,41 @@
             }
             break;
             
+            case 4:{
+                UIStoryboard *storybrd = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
+                SelectFriendClasss* selectFriendClasss = [storybrd instantiateViewControllerWithIdentifier:@"SelectFriendClasss"];
+                selectFriendClasss.friend_id = friend_id;
+                [self.navigationController pushViewController:selectFriendClasss animated:YES];
+            }
+            break;
+            
+            case 5:{
+                
+                if ([friend_profile objectForKey:@"line_id"]) {
+                    
+                    NSURL *appURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://line.me/ti/p/~%@", [friend_profile objectForKey:@"line_id"]]];
+                    if ([[UIApplication sharedApplication] canOpenURL: appURL]) {
+                        [[UIApplication sharedApplication] openURL: appURL];
+                    }
+                    else { //如果使用者沒有安裝，連結到App Store
+                        NSURL *itunesURL = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id443904275"];
+                        [[UIApplication sharedApplication] openURL:itunesURL];
+                    }
+                }else{
+                    
+                }
+            }
+            break;
+            
+            case 6:{
+                if ([friend_profile objectForKey:@"facebook"]) {
+                    NSDictionary *facebook = [friend_profile objectForKey:@"facebook"];
+                    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [facebook objectForKey:@"link"] ]];
+                    [[UIApplication sharedApplication] openURL:url];
+                }
+            }
+            break;
             default:{
                 
             }

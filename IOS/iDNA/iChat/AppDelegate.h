@@ -52,8 +52,19 @@
 - (void)updateFriend:(NSString *)friend_id:(NSString *)data;
 
 /*
+ เป็นการ update ข้อมูลโปรไฟล์ของเพือน
+ */
+- (void)updateProfileFriend:(NSString *)friend_id:(NSString *)data;
+
+/*
  เป็นการ update ข้อมูลของกลุ่ม
  */
 - (void)updateGroup:(NSString *)group_id:(NSString *)data;
+
+/*
+ เป็นการ update Class
+ */
+- (void)updateClasss:(NSString* )item_id :(NSString *)data;
+
 @end
 

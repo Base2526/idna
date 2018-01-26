@@ -12,16 +12,17 @@
 
 @implementation CreateClassThread
 
--(void)start: (UIImage *)image:(NSString *)name{
+-(void)start:(NSString*)fction: (NSString*) item_id: (UIImage *)image:(NSString *)name{
     //if there is a connection going on just cancel it.
     [self.connection cancel];
     
     NSMutableData *data = [[NSMutableData alloc] init];
     self.receivedData = data;
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.json",  [Configs sharedInstance].API_URL, [Configs sharedInstance].CREATE_CLASS ]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",  [Configs sharedInstance].API_URL, [Configs sharedInstance].CREATE_CLASS ]];
     
     NSMutableURLRequest *request = [[Configs sharedInstance] setURLRequest_HTTPHeaderField:url];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSString *imgString =@"";
     if (image != nil) {
@@ -32,7 +33,7 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     UIDevice *deviceInfo = [UIDevice currentDevice];
-    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&image=%@&name=%@", [[Configs sharedInstance] getUIDU], imgString, name];
+    NSString *dataToSend = [[NSString alloc] initWithFormat:@"uid=%@&fction=%@&item_id=%@&image=%@&name=%@", [[Configs sharedInstance] getUIDU], fction, item_id, imgString, name];
     [request setHTTPBody:[dataToSend dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];

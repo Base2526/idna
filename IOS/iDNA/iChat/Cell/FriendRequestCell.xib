@@ -20,7 +20,7 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qiG-Jr-p0b" customClass="HJManagedImageV">
                         <rect key="frame" x="10" y="10" width="80" height="80"/>
-                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="80" id="8Yz-EI-sBH"/>
                             <constraint firstAttribute="width" constant="80" id="yfx-iK-uav"/>
@@ -28,7 +28,6 @@
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name :" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Izf-bq-PHG">
                         <rect key="frame" x="94" y="10" width="55" height="21"/>
-                        <color key="backgroundColor" red="1" green="0.93243781160000005" blue="0.24614285020000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="YcR-eY-yDV"/>
                             <constraint firstAttribute="width" constant="55" id="oPK-oN-JDA"/>
@@ -37,9 +36,8 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name :" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MF6-xW-5l0">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MF6-xW-5l0">
                         <rect key="frame" x="150" y="10" width="166" height="21"/>
-                        <color key="backgroundColor" red="1" green="0.1742455604" blue="0.16842276640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="166" id="D4c-2e-nmr"/>
                             <constraint firstAttribute="height" constant="21" id="zLo-20-9aD"/>
